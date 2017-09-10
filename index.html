@@ -92,15 +92,15 @@
 Since <tt>geometry-processing-js</tt> already implements many of the fundamental operations needed for geometry processing, it's easy to get up and running very quickly.  Here's a short snippet showing how to solve a Poisson equation on a mesh loaded by the GUI, which uses built-in routines for constructing the Laplace and mass matrices:
 
 <div class="highlighter-rouge"><pre class="highlight"><code class="language-javascript" data-lang="javascript">// assign an index to each vertex of the mesh
-this.vertexIndex = indexElements(geometry.mesh.vertices);
+let vertexIndex = indexElements(geometry.mesh.vertices);
 
 // build cotan-Laplace and mass matrices
-this.A = geometry.laplaceMatrix(this.vertexIndex);
-this.M = geometry.massMatrix(this.vertexIndex);
-let rhs = this.M.timesDense(rho);
+let A = geometry.laplaceMatrix(vertexIndex);
+let M = geometry.massMatrix(vertexIndex);
+let rhs = M.timesDense(rho);
 
 // solve Poisson equation with a given right-hand side rhs
-let llt = this.A.chol();
+let llt = A.chol();
 let phi = llt.solvePositiveDefinite(rhs);
 </code></pre></div>
 
