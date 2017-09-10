@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<title>Parameterization</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+	<link rel="stylesheet" href="../../style/main.css">
+</head>
+
+<body>
+	<div id="info">
+		<input type="file" id="fileInput" style="visibility:hidden">
+	</div>
+	<div id="info">
+		<h2>Parameterization</h2>
+		<div id="meta">Loading...</div>
+	</div>
+	<div id="logo">
+		<a href="http://geometry.cs.cmu.edu" target="_blank">
+			<img src="../../imgs/logo.png" width="192" height="152" border="0">
+		</a>
+	</div>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/87/three.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.6.5/dat.gui.min.js"></script>
+	<script src="../../libs/detector.js"></script>
+	<script src="../../libs/trackball-controls.js"></script>
+	<script src="../../linear-algebra/linear-algebra-asm.js"></script>
+	<script src="../../linear-algebra/vector.js"></script>
+	<script src="../../linear-algebra/complex.js"></script>
+	<script src="../../linear-algebra/emscripten-memory-manager.js"></script>
+	<script src="../../linear-algebra/dense-matrix.js"></script>
+	<script src="../../linear-algebra/sparse-matrix.js"></script>
+	<script src="../../linear-algebra/complex-dense-matrix.js"></script>
+	<script src="../../linear-algebra/complex-sparse-matrix.js"></script>
+	<script src="../../core/vertex.js"></script>
+	<script src="../../core/edge.js"></script>
+	<script src="../../core/face.js"></script>
+	<script src="../../core/halfedge.js"></script>
+	<script src="../../core/corner.js"></script>
+	<script src="../../core/mesh.js"></script>
+	<script src="../../core/geometry.js"></script>
+	<script src="../../input/face.js"></script>
+	<script src="../../utils/meshio.js"></script>
+	<script src="../../utils/colormap.js"></script>
+	<script src="../../utils/distortion.js"></script>
+	<script src="../../utils/solvers.js"></script>
+	<script src="boundary-first-flattening.js"></script>
+	<script src="spectral-conformal-parameterization.js"></script>
+	<script>
+		if (!Detector.webgl) Detector.addGetWebGLMessage();
+
+		let input = document.getElementById("fileInput");
+		let renderer = undefined;
+		let camera = undefined;
+		let uvCamera = undefined;
+		let controls = undefined;
+		let shiftClick = false;
+		let showWireframe = false;
+		let scene = undefined;
+		let threeMesh = undefined;
+		let threeGeometry = undefined;
+		let wireframe = undefined;
+		let uvScene = undefined;
+		let threeUvMesh = undefined;
+		let threeUvGeometry = undefined;
+		let uvWireframe = undefined;
+		let checkerboard = undefined;
+		let threeSphereMap = new Map();
+		let selectedVertex = undefined;
+		let materialSettings = {
+			vertexColors: THREE.VertexColors,
+			polygonOffset: true,
+			polygonOffsetFactor: 1,
+			polygonOffsetUnits: 1,
+			side: THREE.DoubleSide
+		};
+
+		let positions = undefined;
+		let uvs = undefined;
+		let normals = undefined;
+		let colors = undefined;
+		let uvColors = undefined;
+		let indices = undefined;
+
+		let memoryManager = new EmscriptenMemoryManager();
+		let mesh = undefined;
+		let geometry = undefined;
+		let flattening = undefined;
+		let targetCurvatures = undefined;
+		let boundaryFirstFlattening = undefined;
+		let spectralConformalParameterization = undefined;
+
+		let filename = "face.obj";
+
+		const ORANGE = new Vector(1.0, 0.5, 0.0);
+		let guiFields = {
+			"Load Mesh": function() {
+				input.click();
+			},
+			"Export Mesh": function() {
+				exportFile(MeshIO.writeOBJ({
+					"v": positions,
+					"vt": uvs,
+					"vn": normals,
+					"f": indices
+				}));
+			},
+			"Method": "BFF",
+			"Plot": "Shaded",
+			"Curvature": "90.0",
+			"Target Boundary": "Isometric Lengths",
+			"Flatten": function() {
+				// flatten
+				flatten();
+
+				if (flattening) {
+					// cleanup
+					let exceptList = [];
+					if (boundaryFirstFlattening) {
+						exceptList = exceptList.concat([boundaryFirstFlattening.K, boundaryFirstFlattening.k,
+							boundaryFirstFlattening.l, boundaryFirstFlattening.A, boundaryFirstFlattening.Aii,
+							boundaryFirstFlattening.Aib, boundaryFirstFlattening.Abb, targetCurvatures
+						]);
+					}
+					memoryManager.deleteExcept(exceptList);
+
+					// update uvs, colors, spheres and camera aspect ratio
+					updateUVs();
+					updateUvColors(this.Plot);
+					updateThreeSphereMeshes();
+					camera.aspect = 0.5 * window.innerWidth / window.innerHeight;
+					camera.updateProjectionMatrix();
+				}
+			},
+			"Reset": function() {
+				// clear spheres
+				for (let threeSphereMesh of threeSphereMap.values()) uvScene.remove(threeSphereMesh);
+				threeSphereMap = new Map();
+
+				// reset target curvatures
+				if (targetCurvatures) {
+					for (let i = 0; i < targetCurvatures.nRows(); i++) {
+						targetCurvatures.set(0, i, 0);
+					}
+				}
+
+				selectedVertex = undefined;
+			},
+			"Show Wireframe": showWireframe
+		};
+
+		init();
+		animate();
+
+		function init() {
+			let container = document.createElement("div");
+			document.body.appendChild(container);
+
+			initRenderer(container);
+			initGUI();
+			initCamera();
+			initScene();
+			initLights();
+			initMesh(face);
+			initControls();
+			addEventListeners();
+		}
+
+		function initRenderer(container) {
+			renderer = new THREE.WebGLRenderer({
+				antialias: true
+			});
+			renderer.setPixelRatio(window.devicePixelRatio);
+			renderer.setClearColor(0xffffff, 1.0);
+			renderer.setSize(window.innerWidth, window.innerHeight);
+			container.appendChild(renderer.domElement);
+		}
+
+		function initGUI() {
+			let gui = new dat.GUI();
+
+			let io = gui.addFolder("IO");
+			io.add(guiFields, "Load Mesh");
+			io.add(guiFields, "Export Mesh");
+			io.close();
+
+			gui.add(guiFields, "Method", ["BFF", "SCP"]).onChange(toggleCurvatureEditing).listen();
+			gui.add(guiFields, "Plot", ["Shaded", "Conformal Error", "Area Scaling"]).onChange(updateUvColors).listen();
+
+			let options = gui.addFolder("BFF Options");
+			options.add(guiFields, "Target Boundary", ["Isometric Lengths", "Specified Curvatures", "Disk"]).onChange(toggleCurvatureEditing).listen();
+			options.add(guiFields, "Curvature").onFinishChange(updateCurvatureValue).listen();
+			options.add(guiFields, "Reset");
+			options.close();
+
+			gui.add(guiFields, "Flatten");
+			gui.add(guiFields, "Show Wireframe").onChange(toggleWireframe).listen();
+		}
+
+		window.onload = function() {
+			input.addEventListener("change", function(e) {
+				let file = input.files[0];
+				filename = file.name;
+
+				if (filename.endsWith(".obj")) {
+					let reader = new FileReader();
+					reader.onload = function(e) {
+						initMesh(reader.result);
+					}
+
+					reader.onerror = function(e) {
+						alert("Unable to load OBJ file");
+					}
+
+					reader.readAsText(file);
+
+				} else {
+					alert("Please load an OBJ file");
+				}
+			});
+		}
+
+		function exportFile(text) {
+			let element = document.createElement("a");
+			element.setAttribute("href", "data:text/plain;charset=utf-8," + encodeURIComponent(text));
+			element.setAttribute("download", filename);
+
+			element.style.display = "none";
+			document.body.appendChild(element);
+
+			element.click();
+
+			document.body.removeChild(element);
+		}
+
+		function flatten() {
+			if (guiFields["Method"] === "BFF" && boundaryFirstFlattening) {
+				if (guiFields["Target Boundary"] === "Isometric Lengths") {
+					let targetScaleFactors = DenseMatrix.zeros(boundaryFirstFlattening.nB, 1);
+					flattening = boundaryFirstFlattening.flatten(targetScaleFactors, true);
+
+				} else if (guiFields["Target Boundary"] === "Specified Curvatures") {
+					if (Math.abs(2 * Math.PI - targetCurvatures.sum()) < 1e-8) {
+						flattening = boundaryFirstFlattening.flatten(targetCurvatures, false);
+
+					} else if (!flattening) {
+						alert("Flatten mesh to specify curvature values");
+
+					} else {
+						alert("Target curvatures do not satisfy Gauss Bonnet - they must sum to 2π");
+					}
+
+				} else if (guiFields["Target Boundary"] === "Disk") {
+					flattening = boundaryFirstFlattening.flattenToDisk();
+				}
+
+			} else if (guiFields["Method"] === "BFF" && mesh.boundaries.length > 1) {
+				alert("Boundary First Flattening only works on meshes with a single boundary");
+
+			} else if (guiFields["Method"] === "SCP" && spectralConformalParameterization) {
+				flattening = spectralConformalParameterization.flatten();
+			}
+		}
+
+		function updateDisplayText() {
+			let element = document.getElementById("meta");
+			if (guiFields["Method"] === "BFF" && boundaryFirstFlattening && guiFields["Target Boundary"] === "Specified Curvatures") {
+				element.textContent = "Click on boundary vertices of the flattening to specify curvatures";
+				element.textContent += "\nShift click on boundary vertices to remove curvature values";
+				element.textContent += "\n∑curvature = " + (targetCurvatures.sum() / Math.PI).toFixed(2) + "π";
+
+			} else {
+				element.textContent = "";
+			}
+		}
+
+		function toggleCurvatureEditing() {
+			if (guiFields["Method"] === "SCP" || (guiFields["Method"] === "BFF" &&
+					boundaryFirstFlattening &&
+					guiFields["Target Boundary"] !== "Specified Curvatures")) {
+				guiFields["Reset"]();
+			}
+
+			updateDisplayText();
+		}
+
+		function addCurvatureValue(v) {
+			selectedVertex = v;
+			let i = boundaryFirstFlattening.bVertexIndex[v];
+			if (initThreeSphereMesh(v)) {
+				targetCurvatures.set(Math.PI / 2, i, 0);
+				guiFields["Curvature"] = "90.00";
+
+			} else {
+				guiFields["Curvature"] = (targetCurvatures.get(i, 0) * 180 / Math.PI).toFixed(2);
+			}
+
+			updateDisplayText();
+		}
+
+		function updateCurvatureValue(value) {
+			if (selectedVertex) {
+				let floatValue = parseFloat(value);
+				let i = boundaryFirstFlattening.bVertexIndex[selectedVertex];
+				if (!isNaN(floatValue)) {
+					targetCurvatures.set(floatValue * Math.PI / 180, i, 0);
+
+				} else {
+					alert("Curvature value must be a number");
+				}
+
+				guiFields["Curvature"] = (targetCurvatures.get(i, 0) * 180 / Math.PI).toFixed(2);
+			}
+
+			updateDisplayText();
+		}
+
+		function removeCurvatureValue(v) {
+			if (deleteThreeSphereMesh(v)) {
+				let i = boundaryFirstFlattening.bVertexIndex[v];
+				targetCurvatures.set(0, i, 0);
+				if (selectedVertex === v) selectedVertex = undefined;
+			}
+
+			updateDisplayText();
+		}
+
+		function updateUVs() {
+			for (let v of mesh.vertices) {
+				let i = v.index;
+
+				let uv = flattening[v];
+				uvs[3 * i + 0] = uv.x;
+				uvs[3 * i + 1] = uv.y;
+				uvs[3 * i + 2] = 0;
+			}
+
+			threeGeometry.attributes.uv.needsUpdate = true;
+			wireframe.geometry = new THREE.WireframeGeometry(threeGeometry);
+
+			threeUvGeometry.attributes.position.needsUpdate = true;
+			threeUvGeometry.attributes.uv.needsUpdate = true;
+			uvWireframe.geometry = new THREE.WireframeGeometry(threeUvGeometry);
+
+			if (threeMesh.material.map === null) {
+				threeMesh.material.map = checkerboard;
+				threeMesh.material.needsUpdate = true;
+			}
+		}
+
+		function updateUvColors(value) {
+			if (flattening) {
+				if (value === "Shaded") {
+					for (let v of mesh.vertices) {
+						let i = v.index;
+
+						uvColors[3 * i + 0] = ORANGE.x;
+						uvColors[3 * i + 1] = ORANGE.y;
+						uvColors[3 * i + 2] = ORANGE.z;
+					}
+
+					if (threeUvMesh.material.isMeshBasicMaterial) {
+						threeUvMesh.material = new THREE.MeshPhongMaterial(materialSettings);
+					}
+
+					if (threeUvMesh.material.map === null) {
+						threeUvMesh.material.map = checkerboard;
+						threeUvMesh.material.needsUpdate = true;
+					}
+
+				} else {
+					if (value === "Conformal Error") {
+						Distortion.computeQuasiConformalError(uvColors, flattening, geometry);
+
+					} else if (value === "Area Scaling") {
+						Distortion.computeAreaScaling(uvColors, flattening, geometry);
+					}
+
+					if (threeUvMesh.material.isMeshPhongMaterial) {
+						threeUvMesh.material = new THREE.MeshBasicMaterial(materialSettings);
+					}
+				}
+
+				threeUvGeometry.attributes.color.needsUpdate = true;
+			}
+		}
+
+		function updateThreeSphereMeshes() {
+			for (let [index, threeSphereMesh] of threeSphereMap) {
+				let v = mesh.vertices[index];
+				let center = flattening[v];
+
+				threeSphereMesh.position.set(center.x - 0.4, center.y, center.z);
+			}
+		}
+
+		function toggleWireframe(checked) {
+			showWireframe = checked;
+			if (showWireframe) {
+				threeMesh.add(wireframe);
+				threeUvMesh.add(uvWireframe);
+
+			} else {
+				threeMesh.remove(wireframe);
+				threeUvMesh.remove(uvWireframe);
+			}
+		}
+
+		function initCamera() {
+			const fov = 45.0;
+			const aspect = window.innerWidth / window.innerHeight;
+			const near = 0.1;
+			const far = 1000;
+			const eyeZ = 3.5;
+
+			camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
+			camera.position.z = eyeZ;
+
+			uvCamera = new THREE.PerspectiveCamera(fov, 0.5 * aspect, near, far);
+			uvCamera.position.z = eyeZ;
+		}
+
+		function initScene() {
+			scene = new THREE.Scene();
+			scene.background = new THREE.Color(0xffffff);
+
+			uvScene = new THREE.Scene();
+			uvScene.background = new THREE.Color(0xffffff);
+		}
+
+		function initLights() {
+			let ambient = new THREE.AmbientLight(0xffffff, 0.35);
+			camera.add(ambient);
+
+			let point = new THREE.PointLight(0xffffff);
+			point.position.set(2, 20, 15);
+			camera.add(point);
+
+			let uvAmbient = new THREE.AmbientLight(0xffffff, 0.35);
+			uvCamera.add(uvAmbient);
+
+			let uvPoint = new THREE.PointLight(0xffffff);
+			uvPoint.position.set(2, 20, 15);
+			uvCamera.add(uvPoint);
+
+			scene.add(camera);
+			uvScene.add(uvCamera);
+		}
+
+		function initMesh(text) {
+			let polygonSoup = MeshIO.readOBJ(text);
+			mesh = new Mesh();
+			if (mesh.build(polygonSoup)) {
+				// remove any previously loaded mesh from scene
+				scene.remove(threeMesh);
+				uvScene.remove(threeUvMesh);
+				memoryManager.deleteExcept([]);
+				targetCurvatures = undefined;
+
+				camera.aspect = window.innerWidth / window.innerHeight;
+				camera.updateProjectionMatrix();
+				flattening = undefined;
+
+				// create geometry object
+				geometry = new Geometry(mesh, polygonSoup["v"]);
+
+				// create THREE.js mesh (and geometry) objects
+				initThreeMesh();
+				scene.add(threeMesh);
+
+				initThreeUvMesh();
+				uvScene.add(threeUvMesh);
+
+				guiFields["Reset"]();
+
+				// toggle wireframe
+				toggleWireframe(showWireframe);
+
+				// initialize parameterizations
+				if (mesh.boundaries.length === 0) {
+					alert("Mesh must have atleast one boundary loop");
+					boundaryFirstFlattening = undefined;
+					spectralConformalParameterization = undefined;
+
+				} else {
+					spectralConformalParameterization = new SpectralConformalParameterization(geometry);
+					if (mesh.boundaries.length === 1) {
+						boundaryFirstFlattening = new BoundaryFirstFlattening(geometry);
+						targetCurvatures = DenseMatrix.zeros(boundaryFirstFlattening.nB, 1);
+
+					} else {
+						boundaryFirstFlattening = undefined;
+					}
+				}
+
+				// update metadata
+				updateDisplayText();
+
+			} else {
+				alert("Unable to build halfedge mesh");
+			}
+		}
+
+		function initThreeMesh() {
+			// create geometry object
+			threeGeometry = new THREE.BufferGeometry();
+
+			// fill position, normal and color buffers
+			let V = mesh.vertices.length;
+			positions = new Float32Array(V * 3);
+			uvs = new Float32Array(V * 3);
+			normals = new Float32Array(V * 3);
+			colors = new Float32Array(V * 3);
+			for (let v of mesh.vertices) {
+				let i = v.index;
+
+				let position = geometry.positions[v];
+				positions[3 * i + 0] = position.x;
+				positions[3 * i + 1] = position.y;
+				positions[3 * i + 2] = position.z;
+
+				let normal = geometry.vertexNormalEquallyWeighted(v);
+				normals[3 * i + 0] = normal.x;
+				normals[3 * i + 1] = normal.y;
+				normals[3 * i + 2] = normal.z;
+
+				colors[3 * i + 0] = ORANGE.x;
+				colors[3 * i + 1] = ORANGE.y;
+				colors[3 * i + 2] = ORANGE.z;
+			}
+
+			// fill index buffer
+			let F = mesh.faces.length;
+			indices = new Uint32Array(F * 3);
+			for (let f of mesh.faces) {
+				let i = 0;
+				for (let v of f.adjacentVertices()) {
+					indices[3 * f.index + i++] = v.index;
+				}
+			}
+
+			// set geometry
+			threeGeometry.setIndex(new THREE.BufferAttribute(indices, 1));
+			threeGeometry.addAttribute("position", new THREE.BufferAttribute(positions, 3));
+			threeGeometry.addAttribute("uv", new THREE.BufferAttribute(uvs, 3));
+			threeGeometry.addAttribute("normal", new THREE.BufferAttribute(normals, 3));
+			threeGeometry.addAttribute("color", new THREE.BufferAttribute(colors, 3));
+
+			// create checkerboard
+			const textureHeight = 64;
+			const textureWidth = 64;
+			let checkData = new Uint8Array(textureHeight * textureWidth * 3);
+			for (let i = 0; i < textureHeight; i++) {
+				for (let j = 0; j < textureWidth; j++) {
+					let c = (((i & 0x8) === 0) ^ ((j & 0x8) === 0)) * 255;
+					if (c === 0) c = 155;
+					checkData[3 * (textureWidth * i + j) + 0] = c;
+					checkData[3 * (textureWidth * i + j) + 1] = c;
+					checkData[3 * (textureWidth * i + j) + 2] = c;
+				}
+			}
+			checkerboard = new THREE.DataTexture(checkData, textureHeight, textureWidth, THREE.RGBFormat);
+			checkerboard.wrapS = THREE.RepeatWrapping;
+			checkerboard.wrapT = THREE.RepeatWrapping;
+			checkerboard.generateMipmaps = true;
+			checkerboard.needsUpdate = true;
+
+			// create material
+			let threeMaterial = new THREE.MeshPhongMaterial(materialSettings);
+
+			// create wireframe
+			wireframe = new THREE.LineSegments();
+			wireframe.geometry = new THREE.WireframeGeometry(threeGeometry);
+			wireframe.material = new THREE.LineBasicMaterial({
+				color: 0x000000,
+				linewidth: 0.75
+			});
+
+			// create mesh
+			threeMesh = new THREE.Mesh(threeGeometry, threeMaterial);
+		}
+
+		function initThreeUvMesh() {
+			// create geometry object
+			threeUvGeometry = new THREE.BufferGeometry();
+
+			// allocate color buffer
+			let V = mesh.vertices.length;
+			uvColors = new Float32Array(V * 3);
+
+			// set geometry
+			threeUvGeometry.setIndex(new THREE.BufferAttribute(indices, 1));
+			threeUvGeometry.addAttribute("position", new THREE.BufferAttribute(uvs, 3));
+			threeUvGeometry.addAttribute("uv", new THREE.BufferAttribute(uvs, 3));
+			threeUvGeometry.addAttribute("normal", new THREE.BufferAttribute(normals, 3));
+			threeUvGeometry.addAttribute("color", new THREE.BufferAttribute(uvColors, 3));
+
+			// create material
+			let threeUvMaterial = new THREE.MeshPhongMaterial(materialSettings);
+
+			// create wireframe
+			uvWireframe = new THREE.LineSegments();
+			uvWireframe.geometry = new THREE.WireframeGeometry(threeUvGeometry);
+			uvWireframe.material = new THREE.LineBasicMaterial({
+				color: 0x000000,
+				linewidth: 0.75
+			});
+
+			// create mesh
+			threeUvMesh = new THREE.Mesh(threeUvGeometry, threeUvMaterial);
+			threeUvMesh.translateX(-0.4);
+		}
+
+		function initThreeSphereMesh(v) {
+			let createdSphere = false;
+			if (!threeSphereMap.has(v.index)) {
+				let threeSphereMesh = new THREE.Mesh(new THREE.SphereGeometry(0.015));
+
+				let center = flattening[v];
+				threeSphereMesh.position.set(center.x - 0.4, center.y, center.z);
+				uvScene.add(threeSphereMesh);
+				threeSphereMap.set(v.index, threeSphereMesh);
+
+				createdSphere = true;
+			}
+
+			for (let [index, threeSphereMesh] of threeSphereMap) {
+				if (index === v.index) threeSphereMesh.material.color.setHex(0xff5500);
+				else threeSphereMesh.material.color.setHex(0xffff00);
+			}
+
+			return createdSphere;
+		}
+
+		function deleteThreeSphereMesh(v) {
+			let deletedSphere = false;
+			if (threeSphereMap.has(v.index)) {
+				let threeSphereMesh = threeSphereMap.get(v.index);
+
+				uvScene.remove(threeSphereMesh);
+				threeSphereMap.delete(v.index);
+
+				deletedSphere = true;
+			}
+
+			return deletedSphere;
+		}
+
+		function initControls() {
+			controls = new THREE.TrackballControls(camera, renderer.domElement);
+			controls.rotateSpeed = 5.0;
+		}
+
+		function addEventListeners() {
+			window.addEventListener("click", onMouseClick, false);
+			window.addEventListener("resize", onWindowResize, false);
+		}
+
+		function onMouseClick(event) {
+			if (guiFields["Method"] === "BFF" && boundaryFirstFlattening &&
+				guiFields["Target Boundary"] === "Specified Curvatures" && flattening) {
+				if (event.clientX >= Math.floor(window.innerWidth * 0.5) &&
+					event.clientX <= window.innerWidth &&
+					event.clientY >= 0 && event.clientY <= window.innerHeight) {
+					shiftClick = event.shiftKey;
+					pick(event.clientX, event.clientY);
+				}
+			}
+		}
+
+		function onWindowResize() {
+			camera.aspect = window.innerWidth / window.innerHeight;
+			if (flattening) camera.aspect *= 0.5;
+			camera.updateProjectionMatrix();
+
+			uvCamera.aspect = 0.5 * window.innerWidth / window.innerHeight;
+			uvCamera.updateProjectionMatrix();
+
+			renderer.setSize(window.innerWidth, window.innerHeight);
+			controls.handleResize();
+			render();
+		}
+
+		function pick(clickX, clickY) {
+			let width = Math.floor(window.innerWidth * 0.5);
+			let mouseX = Math.max(Math.min(2 * ((clickX - width) / width) - 1, 1), -1);
+			let mouseY = Math.max(Math.min(1 - 2 * (clickY / window.innerHeight), 1), -1);
+
+			let boundary = mesh.boundaries[0];
+			if (boundary) {
+				for (let h of boundary.adjacentHalfedges()) {
+					let v = h.vertex;
+					let uv = new THREE.Vector3(flattening[v].x - 0.4, flattening[v].y, 0);
+					let projected = uv.project(uvCamera);
+
+					if (Math.pow(mouseX - projected.x, 2) + Math.pow(mouseY - projected.y, 2) < 0.0002) {
+						if (!shiftClick) addCurvatureValue(v);
+						else removeCurvatureValue(v);
+						break;
+					}
+				}
+			}
+		}
+
+		function animate() {
+			requestAnimationFrame(animate);
+			controls.update();
+			render();
+		}
+
+		function render() {
+			// set viewport and render mesh
+			let width = window.innerWidth;
+			if (flattening) width = Math.floor(width * 0.5);
+
+			renderer.setViewport(0.0, 0.0, width, window.innerHeight);
+			renderer.setScissor(0.0, 0.0, width, window.innerHeight);
+			renderer.setScissorTest(true);
+			renderer.render(scene, camera);
+
+			// set viewport and render flattening
+			if (flattening) {
+				renderer.setViewport(width, 0.0, width, window.innerHeight);
+				renderer.setScissor(width, 0.0, width, window.innerHeight);
+				renderer.setScissorTest(true);
+				renderer.render(uvScene, uvCamera);
+			}
+		}
+	</script>
+</body>
+
+</html>

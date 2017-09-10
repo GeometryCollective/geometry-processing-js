@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<title>Vector Field Decomposition</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+	<link rel="stylesheet" href="../../style/main.css">
+</head>
+
+<body>
+	<div id="info">
+		<input type="file" id="fileInput" style="visibility:hidden">
+	</div>
+	<div id="info">
+		<h2>Vector Field Decomposition</h2>
+		<div id="meta">Loading...</div>
+	</div>
+	<div id="logo">
+		<a href="http://geometry.cs.cmu.edu" target="_blank">
+			<img src="../../imgs/logo.png" width="192" height="152" border="0">
+		</a>
+	</div>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/87/three.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.6.5/dat.gui.min.js"></script>
+	<script src="../../libs/detector.js"></script>
+	<script src="../../libs/trackball-controls.js"></script>
+	<script src="../../linear-algebra/linear-algebra-asm.js"></script>
+	<script src="../../linear-algebra/vector.js"></script>
+	<script src="../../linear-algebra/emscripten-memory-manager.js"></script>
+	<script src="../../linear-algebra/dense-matrix.js"></script>
+	<script src="../../linear-algebra/sparse-matrix.js"></script>
+	<script src="../../core/vertex.js"></script>
+	<script src="../../core/edge.js"></script>
+	<script src="../../core/face.js"></script>
+	<script src="../../core/halfedge.js"></script>
+	<script src="../../core/corner.js"></script>
+	<script src="../../core/mesh.js"></script>
+	<script src="../../core/geometry.js"></script>
+	<script src="../../core/discrete-exterior-calculus.js"></script>
+	<script src="../../input/bunny.js"></script>
+	<script src="../../utils/meshio.js"></script>
+	<script src="../poisson-problem/scalar-poisson-problem.js"></script>
+	<script src="hodge-decomposition.js"></script>
+	<script src="tree-cotree.js"></script>
+	<script src="harmonic-bases.js"></script>
+	<script>
+		if (!Detector.webgl) Detector.addGetWebGLMessage();
+
+		let input = document.getElementById("fileInput");
+		let renderer = undefined;
+		let camera = undefined;
+		let controls = undefined;
+		let showWireframe = false;
+		let currentBasis = -1;
+		let scene = undefined;
+		let threeMesh = undefined;
+		let threeGeometry = undefined;
+		let omegaMesh = undefined;
+		let dAlphaMesh = undefined;
+		let deltaBetaMesh = undefined;
+		let gammaMesh = undefined;
+		let treeMesh = undefined;
+		let cotreeMesh = undefined;
+		let generatorMesh = undefined;
+		let basesMeshes = [];
+		let wireframe = undefined;
+
+		let positions = undefined;
+		let uvs = undefined;
+		let normals = undefined;
+		let colors = undefined;
+		let indices = undefined;
+
+		let memoryManager = new EmscriptenMemoryManager();
+		let mesh = undefined;
+		let geometry = undefined;
+		let omega = undefined;
+		let dAlpha = undefined;
+		let deltaBeta = undefined;
+		let gamma = undefined;
+		let hodgeDecomposition = undefined;
+		let bases = [];
+		let harmonicBases = undefined;
+		let scalarPoissonProblem = undefined;
+
+		let filename = "bunny.obj";
+
+		const ORANGE = new Vector(1.0, 0.5, 0.0);
+		let guiFields = {
+			"Load Mesh": function() {
+				input.click();
+			},
+			"Export Mesh": function() {
+				exportFile(MeshIO.writeOBJ({
+					"v": positions,
+					"vt": uvs,
+					"vn": normals,
+					"f": indices
+				}));
+			},
+			"Plot": "1-Form ω",
+			"Generate New ω": function() {
+				if (omega) {
+					// generate ω
+					generateRandomOneForm();
+
+					// perform hodge decomposition
+					dAlpha = hodgeDecomposition.computeExactComponent(omega);
+					deltaBeta = hodgeDecomposition.computeCoExactComponent(omega);
+					gamma = hodgeDecomposition.computeHarmonicComponent(omega, dAlpha, deltaBeta);
+
+					// cleanup
+					let exceptList = [omega, dAlpha, deltaBeta, gamma, hodgeDecomposition.hodge1,
+						hodgeDecomposition.hodge2, hodgeDecomposition.d0, hodgeDecomposition.d1,
+						hodgeDecomposition.hodge1Inv, hodgeDecomposition.hodge2Inv, hodgeDecomposition.d0T,
+						hodgeDecomposition.d1T, hodgeDecomposition.A, hodgeDecomposition.B,
+						scalarPoissonProblem.A, scalarPoissonProblem.M
+					];
+					exceptList = exceptList.concat(bases);
+					memoryManager.deleteExcept(exceptList);
+
+					// update hodge meshes and plot
+					updateHodgeMeshes();
+					updatePlot(this.Plot);
+				}
+			},
+			"Cycle to Next γi": function() {
+				if (bases.length !== 0) {
+					currentBasis = (currentBasis + 1) % bases.length;
+					updatePlot("Harmonic Basis γi");
+				}
+			},
+			"Show Wireframe": showWireframe
+		};
+
+		init();
+		animate();
+
+		function init() {
+			let container = document.createElement("div");
+			document.body.appendChild(container);
+
+			initRenderer(container);
+			initGUI();
+			initCamera();
+			initScene();
+			initLights();
+			initMesh(bunny);
+			initControls();
+			addEventListeners();
+		}
+
+		function initRenderer(container) {
+			renderer = new THREE.WebGLRenderer({
+				antialias: true
+			});
+			renderer.setPixelRatio(window.devicePixelRatio);
+			renderer.setSize(window.innerWidth, window.innerHeight);
+			container.appendChild(renderer.domElement);
+		}
+
+		function initGUI() {
+			let gui = new dat.GUI();
+
+			let io = gui.addFolder("IO");
+			io.add(guiFields, "Load Mesh");
+			io.add(guiFields, "Export Mesh");
+			io.open();
+
+			gui.add(guiFields, "Plot", ["1-Form ω", "Exact Part dα", "Co-Exact Part 𝛿β", "Harmonic Part γ", "Tree Cotree", "Generators", "Harmonic Basis γi"]).onChange(updatePlot).listen();
+			gui.add(guiFields, "Generate New ω");
+			gui.add(guiFields, "Cycle to Next γi");
+			gui.add(guiFields, "Show Wireframe").onChange(toggleWireframe).listen();
+		}
+
+		window.onload = function() {
+			input.addEventListener("change", function(e) {
+				let file = input.files[0];
+				filename = file.name;
+
+				if (filename.endsWith(".obj")) {
+					let reader = new FileReader();
+					reader.onload = function(e) {
+						initMesh(reader.result);
+					}
+
+					reader.onerror = function(e) {
+						alert("Unable to load OBJ file");
+					}
+
+					reader.readAsText(file);
+
+				} else {
+					alert("Please load an OBJ file");
+				}
+			});
+		}
+
+		function exportFile(text) {
+			let element = document.createElement("a");
+			element.setAttribute("href", "data:text/plain;charset=utf-8," + encodeURIComponent(text));
+			element.setAttribute("download", filename);
+
+			element.style.display = "none";
+			document.body.appendChild(element);
+
+			element.click();
+
+			document.body.removeChild(element);
+		}
+
+		function generateRandomOneForm() {
+			// compute random vector and scalar potentials
+			let i = 0;
+			let V = mesh.vertices.length;
+			let n = Math.max(2, Math.trunc(V / 1000));
+			let rho1 = DenseMatrix.zeros(V, 1);
+			let rho2 = DenseMatrix.zeros(V, 1);
+			while (i < n) {
+				rho1.set(Math.random() * 5000 - 2500, Math.trunc(Math.random() * V), 0);
+				rho2.set(Math.random() * 5000 - 2500, Math.trunc(Math.random() * V), 0);
+
+				i++;
+			}
+
+			let scalarPotential = scalarPoissonProblem.solve(rho1);
+			let vectorPotential = scalarPoissonProblem.solve(rho2);
+
+			// compute per face field
+			let field = {};
+			for (let f of mesh.faces) {
+				field[f] = new Vector();
+				let A = geometry.area(f);
+				let N = geometry.faceNormal(f);
+				let C = geometry.centroid(f);
+
+				// add exact and coexact components (i.e., ∇s and ∇ x v)
+				for (let h of f.adjacentHalfedges()) {
+					let i = scalarPoissonProblem.vertexIndex[h.prev.vertex];
+					let e = geometry.vector(h);
+					let eT = N.cross(e);
+
+					field[f].incrementBy(eT.times(scalarPotential.get(i, 0) / (2 * A)));
+					field[f].incrementBy(e.times(vectorPotential.get(i, 0) / (2 * A)));
+				}
+
+				// add harmonic component
+				let u = new Vector(-C.z, 0.0, C.x);
+				u.decrementBy(N.times(u.dot(N)));
+				u.normalize();
+				field[f].incrementBy(u.times(0.3));
+			}
+
+			// set ω values
+			for (let e of mesh.edges) {
+				let i = hodgeDecomposition.edgeIndex[e];
+				let h = e.halfedge;
+				let f1 = h.onBoundary ? new Vector() : field[h.face];
+				let f2 = h.twin.onBoundary ? new Vector() : field[h.twin.face];
+
+				omega.set(f1.plus(f2).dot(geometry.vector(h)) / 2, i, 0);
+			}
+		}
+
+		function interpolateWhitney(oneForm) {
+			let field = {};
+			for (let f of mesh.faces) {
+				let h = f.halfedge;
+
+				let pi = geometry.positions[h.vertex];
+				let pj = geometry.positions[h.next.vertex];
+				let pk = geometry.positions[h.prev.vertex];
+				let eij = pj.minus(pi);
+				let ejk = pk.minus(pj);
+				let eki = pi.minus(pk);
+
+				let cij = oneForm.get(hodgeDecomposition.edgeIndex[h.edge], 0);
+				let cjk = oneForm.get(hodgeDecomposition.edgeIndex[h.next.edge], 0);
+				let cki = oneForm.get(hodgeDecomposition.edgeIndex[h.prev.edge], 0);
+				if (h.edge.halfedge !== h) cij *= -1;
+				if (h.next.edge.halfedge !== h.next) cjk *= -1;
+				if (h.prev.edge.halfedge !== h.prev) cki *= -1;
+
+				let A = geometry.area(f);
+				let N = geometry.faceNormal(f);
+				let a = eki.minus(ejk).times(cij);
+				let b = eij.minus(eki).times(cjk);
+				let c = ejk.minus(eij).times(cki);
+				field[f] = N.cross(a.plus(b).plus(c)).over(6 * A);
+			}
+
+			return field;
+		}
+
+		function updatePlot(value) {
+			// remove all field, tree, cotree, generator meshes
+			scene.remove(omegaMesh);
+			scene.remove(dAlphaMesh);
+			scene.remove(deltaBetaMesh);
+			scene.remove(gammaMesh);
+			scene.remove(treeMesh);
+			scene.remove(cotreeMesh);
+			scene.remove(generatorMesh);
+			for (let basisMesh of basesMeshes) scene.remove(basisMesh);
+
+			// add selected mesh
+			if (value === "1-Form ω" && omegaMesh) {
+				scene.add(omegaMesh);
+
+			} else if (value === "Exact Part dα" && dAlphaMesh) {
+				scene.add(dAlphaMesh);
+
+			} else if (value === "Co-Exact Part 𝛿β" && deltaBetaMesh) {
+				scene.add(deltaBetaMesh);
+
+			} else if (value === "Harmonic Part γ" && gammaMesh) {
+				scene.add(gammaMesh);
+
+			} else if (value === "Tree Cotree" && treeMesh && cotreeMesh) {
+				scene.add(treeMesh);
+				scene.add(cotreeMesh);
+
+			} else if (value === "Generators" && generatorMesh) {
+				scene.add(generatorMesh);
+
+			} else if (value === "Harmonic Basis γi" && basesMeshes.length !== 0) {
+				scene.add(basesMeshes[currentBasis]);
+			}
+		}
+
+		function toggleWireframe(checked) {
+			showWireframe = checked;
+			if (showWireframe) threeMesh.add(wireframe);
+			else threeMesh.remove(wireframe);
+		}
+
+		function initCamera() {
+			const fov = 45.0;
+			const aspect = window.innerWidth / window.innerHeight;
+			const near = 0.1;
+			const far = 1000;
+			const eyeZ = 3.5;
+
+			camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
+			camera.position.z = eyeZ;
+		}
+
+		function initScene() {
+			scene = new THREE.Scene();
+			scene.background = new THREE.Color(0xffffff);
+		}
+
+		function initLights() {
+			let ambient = new THREE.AmbientLight(0xffffff, 0.35);
+			camera.add(ambient);
+
+			let point = new THREE.PointLight(0xffffff);
+			point.position.set(2, 20, 15);
+			camera.add(point);
+
+			scene.add(camera);
+		}
+
+		function initMesh(text) {
+			let polygonSoup = MeshIO.readOBJ(text);
+			mesh = new Mesh();
+			if (mesh.build(polygonSoup)) {
+				// remove any previously loaded mesh from scene
+				scene.remove(threeMesh);
+				updatePlot("");
+				memoryManager.deleteExcept([]);
+				currentBasis = -1;
+				omegaMesh = undefined;
+				dAlphaMesh = undefined;
+				deltaBetaMesh = undefined;
+				gammaMesh = undefined;
+				treeMesh = undefined;
+				cotreeMesh = undefined;
+				generatorMesh = undefined;
+				basesMeshes = [];
+				omega = undefined;
+				bases = [];
+
+				// create geometry object
+				geometry = new Geometry(mesh, polygonSoup["v"]);
+
+				// create a THREE.js mesh (and geometry) object
+				initThreeMesh();
+				scene.add(threeMesh);
+
+				if (mesh.boundaries.length === 0) {
+					// initialize hodge decomposition
+					let E = mesh.edges.length;
+					omega = DenseMatrix.zeros(E, 1);
+					hodgeDecomposition = new HodgeDecomposition(geometry);
+
+					// build tree, cotree and generators
+					let treeCotree = new TreeCotree(mesh);
+					treeCotree.buildGenerators();
+					initTreeCotreeMeshes(treeCotree);
+
+					// compute harmonic bases
+					harmonicBases = new HarmonicBases(geometry);
+					bases = harmonicBases.compute(hodgeDecomposition);
+					if (bases.length !== 0) {
+						currentBasis = 0;
+						initBasesMeshes();
+					}
+
+					// initialize scalar poisson
+					scalarPoissonProblem = new ScalarPoissonProblem(geometry);
+
+					guiFields["Generate New ω"]();
+
+				} else {
+					alert("Mesh must be boundaryless");
+				}
+
+				// update metadata
+				let element = document.getElementById("meta");
+				element.textContent = "";
+
+			} else {
+				alert("Unable to build halfedge mesh");
+			}
+		}
+
+		function initThreeMesh() {
+			// create geometry object
+			threeGeometry = new THREE.BufferGeometry();
+
+			// fill position, normal and color buffers
+			let V = mesh.vertices.length;
+			positions = new Float32Array(V * 3);
+			normals = new Float32Array(V * 3);
+			colors = new Float32Array(V * 3);
+			for (let v of mesh.vertices) {
+				let i = v.index;
+
+				let position = geometry.positions[v];
+				positions[3 * i + 0] = position.x;
+				positions[3 * i + 1] = position.y;
+				positions[3 * i + 2] = position.z;
+
+				let normal = geometry.vertexNormalEquallyWeighted(v);
+				normals[3 * i + 0] = normal.x;
+				normals[3 * i + 1] = normal.y;
+				normals[3 * i + 2] = normal.z;
+
+				colors[3 * i + 0] = ORANGE.x;
+				colors[3 * i + 1] = ORANGE.y;
+				colors[3 * i + 2] = ORANGE.z;
+			}
+
+			// fill index buffer
+			let F = mesh.faces.length;
+			indices = new Uint32Array(F * 3);
+			for (let f of mesh.faces) {
+				let i = 0;
+				for (let v of f.adjacentVertices()) {
+					indices[3 * f.index + i++] = v.index;
+				}
+			}
+
+			// set geometry
+			threeGeometry.setIndex(new THREE.BufferAttribute(indices, 1));
+			threeGeometry.addAttribute("position", new THREE.BufferAttribute(positions, 3));
+			threeGeometry.addAttribute("normal", new THREE.BufferAttribute(normals, 3));
+			threeGeometry.addAttribute("color", new THREE.BufferAttribute(colors, 3));
+
+			// create material
+			let threeMaterial = new THREE.MeshPhongMaterial({
+				vertexColors: THREE.VertexColors,
+				polygonOffset: true,
+				polygonOffsetFactor: 1,
+				polygonOffsetUnits: 1,
+				side: THREE.DoubleSide
+			});
+
+			// create wireframe
+			wireframe = new THREE.LineSegments();
+			wireframe.geometry = new THREE.WireframeGeometry(threeGeometry);
+			wireframe.material = new THREE.LineBasicMaterial({
+				color: 0x000000,
+				linewidth: 0.75
+			});
+
+			// create mesh
+			threeMesh = new THREE.Mesh(threeGeometry, threeMaterial);
+
+			// toggle wireframe
+			toggleWireframe(showWireframe);
+		}
+
+		function setArrow(positions, index, a, b, N) {
+			positions[18 * index + 0] = a.x;
+			positions[18 * index + 1] = a.y;
+			positions[18 * index + 2] = a.z;
+			positions[18 * index + 3] = b.x;
+			positions[18 * index + 4] = b.y;
+			positions[18 * index + 5] = b.z;
+
+			let v = b.minus(a);
+			let vT = N.cross(v);
+			let segments = [
+				b, b.minus(v.times(0.2).plus(vT.times(0.1))),
+				b, b.minus(v.times(0.2).plus(vT.times(-0.1)))
+			];
+
+			let i = 5;
+			for (let p of segments) {
+				positions[18 * index + i + 1] = p.x;
+				positions[18 * index + i + 2] = p.y;
+				positions[18 * index + i + 3] = p.z;
+				i += 3;
+			}
+		}
+
+		function clampFieldLength(field, length) {
+			let norm = field.norm();
+			if (norm > length) field.scaleBy(length / norm);
+		}
+
+		function updateHodgeMeshes() {
+			// interpolate 1 forms to face fields
+			let omegaField = interpolateWhitney(omega);
+			let dAlphaField = interpolateWhitney(dAlpha);
+			let deltaBetaField = interpolateWhitney(deltaBeta);
+			let gammaField = interpolateWhitney(gamma);
+			let length = 0.3 * geometry.meanEdgeLength();
+
+			// initialize meshes
+			if (!omegaMesh && !dAlphaMesh && !deltaBetaMesh && !gammaMesh) {
+				let F = mesh.faces.length;
+
+				let omegaGeometry = new THREE.BufferGeometry();
+				omegaGeometry.addAttribute("position", new THREE.BufferAttribute(new Float32Array(F * 6 * 3), 3));
+				let omegaMaterial = new THREE.LineBasicMaterial({
+					color: 0x000000
+				});
+				omegaMesh = new THREE.LineSegments(omegaGeometry, omegaMaterial);
+
+				let dAlphaGeometry = new THREE.BufferGeometry();
+				dAlphaGeometry.addAttribute("position", new THREE.BufferAttribute(new Float32Array(F * 6 * 3), 3));
+				let dAlphaMaterial = new THREE.LineBasicMaterial({
+					color: 0x000000
+				});
+				dAlphaMesh = new THREE.LineSegments(dAlphaGeometry, dAlphaMaterial);
+
+				let deltaBetaGeometry = new THREE.BufferGeometry();
+				deltaBetaGeometry.addAttribute("position", new THREE.BufferAttribute(new Float32Array(F * 6 * 3), 3));
+				let deltaBetaMaterial = new THREE.LineBasicMaterial({
+					color: 0x000000
+				});
+				deltaBetaMesh = new THREE.LineSegments(deltaBetaGeometry, deltaBetaMaterial);
+
+				let gammaGeometry = new THREE.BufferGeometry();
+				gammaGeometry.addAttribute("position", new THREE.BufferAttribute(new Float32Array(F * 6 * 3), 3));
+				let gammaMaterial = new THREE.LineBasicMaterial({
+					color: 0x000000
+				});
+				gammaMesh = new THREE.LineSegments(gammaGeometry, gammaMaterial);
+			}
+
+			// update positions
+			let omegaPositions = omegaMesh.geometry.attributes.position.array;
+			let dAlphaPositions = dAlphaMesh.geometry.attributes.position.array;
+			let deltaBetaPositions = deltaBetaMesh.geometry.attributes.position.array;
+			let gammaPositions = gammaMesh.geometry.attributes.position.array;
+			for (let f of mesh.faces) {
+				let C = geometry.centroid(f);
+				let N = geometry.faceNormal(f);
+
+				let field = omegaField[f].times(length);
+				clampFieldLength(field, length);
+				setArrow(omegaPositions, f.index, C.minus(field), C.plus(field), N);
+
+				field = dAlphaField[f].times(length);
+				clampFieldLength(field, length);
+				setArrow(dAlphaPositions, f.index, C.minus(field), C.plus(field), N);
+
+				field = deltaBetaField[f].times(length);
+				clampFieldLength(field, length);
+				setArrow(deltaBetaPositions, f.index, C.minus(field), C.plus(field), N);
+
+				field = gammaField[f].times(length);
+				clampFieldLength(field, length);
+				setArrow(gammaPositions, f.index, C.minus(field), C.plus(field), N);
+			}
+
+			omegaMesh.geometry.attributes.position.needsUpdate = true;
+			dAlphaMesh.geometry.attributes.position.needsUpdate = true;
+			deltaBetaMesh.geometry.attributes.position.needsUpdate = true;
+			gammaMesh.geometry.attributes.position.needsUpdate = true;
+		}
+
+		function initTreeCotreeMeshes(treeCotree) {
+			// create geometry objects
+			let treeGeometry = new THREE.BufferGeometry();
+			let cotreeGeometry = new THREE.BufferGeometry();
+			let generatorGeometry = new THREE.BufferGeometry();
+
+			let treePositions = [];
+			let cotreePositions = [];
+			for (let e of mesh.edges) {
+				let h = e.halfedge;
+				let p1 = geometry.positions[h.vertex];
+				let p2 = geometry.positions[h.twin.vertex];
+
+				if (treeCotree.inPrimalSpanningTree(h)) {
+					treePositions.push(p1.x);
+					treePositions.push(p1.y);
+					treePositions.push(p1.z);
+					treePositions.push(p2.x);
+					treePositions.push(p2.y);
+					treePositions.push(p2.z);
+
+				} else if (treeCotree.inDualSpanningTree(h)) {
+					let c1 = geometry.centroid(h.face);
+					let c2 = geometry.centroid(h.twin.face);
+					let m = p1.plus(p2).over(2);
+
+					cotreePositions.push(c1.x);
+					cotreePositions.push(c1.y);
+					cotreePositions.push(c1.z);
+					cotreePositions.push(m.x);
+					cotreePositions.push(m.y);
+					cotreePositions.push(m.z);
+					cotreePositions.push(m.x);
+					cotreePositions.push(m.y);
+					cotreePositions.push(m.z);
+					cotreePositions.push(c2.x);
+					cotreePositions.push(c2.y);
+					cotreePositions.push(c2.z);
+				}
+			}
+
+			let generatorPositions = [];
+			for (let generator of mesh.generators) {
+				for (let h of generator) {
+					let c1 = geometry.centroid(h.face);
+					let c2 = geometry.centroid(h.twin.face);
+					let p1 = geometry.positions[h.vertex];
+					let p2 = geometry.positions[h.twin.vertex];
+					let m = p1.plus(p2).over(2);
+
+					generatorPositions.push(c1.x);
+					generatorPositions.push(c1.y);
+					generatorPositions.push(c1.z);
+					generatorPositions.push(m.x);
+					generatorPositions.push(m.y);
+					generatorPositions.push(m.z);
+					generatorPositions.push(m.x);
+					generatorPositions.push(m.y);
+					generatorPositions.push(m.z);
+					generatorPositions.push(c2.x);
+					generatorPositions.push(c2.y);
+					generatorPositions.push(c2.z);
+				}
+			}
+
+			// set geometry
+			treeGeometry.addAttribute("position", new THREE.BufferAttribute(new Float32Array(treePositions), 3));
+			cotreeGeometry.addAttribute("position", new THREE.BufferAttribute(new Float32Array(cotreePositions), 3));
+			generatorGeometry.addAttribute("position", new THREE.BufferAttribute(new Float32Array(generatorPositions), 3));
+
+			// create materials
+			let treeMaterial = new THREE.LineBasicMaterial({
+				color: 0x0000ff
+			});
+			let cotreeMaterial = new THREE.LineBasicMaterial({
+				color: 0x00ff00
+			});
+			let generatorMaterial = new THREE.LineBasicMaterial({
+				color: 0xff0000
+			});
+
+			// create meshes
+			treeMesh = new THREE.LineSegments(treeGeometry, treeMaterial);
+			cotreeMesh = new THREE.LineSegments(cotreeGeometry, cotreeMaterial);
+			generatorMesh = new THREE.LineSegments(generatorGeometry, generatorMaterial);
+		}
+
+		function initBasesMeshes() {
+			let length = 0.3 * geometry.meanEdgeLength();
+			for (let basis of bases) {
+				let basisField = interpolateWhitney(basis);
+				let F = mesh.faces.length;
+
+				// create geometry object
+				let basisGeometry = new THREE.BufferGeometry();
+
+				let basisPositions = new Float32Array(F * 6 * 3);
+				for (let f of mesh.faces) {
+					let C = geometry.centroid(f);
+					let N = geometry.faceNormal(f);
+
+					let field = basisField[f].times(length);
+					clampFieldLength(field, length);
+					setArrow(basisPositions, f.index, C.minus(field), C.plus(field), N);
+				}
+
+				// set geometry
+				basisGeometry.addAttribute("position", new THREE.BufferAttribute(basisPositions, 3));
+
+				// create material
+				let basisMaterial = new THREE.LineBasicMaterial({
+					color: 0x000000
+				});
+
+				// create mesh
+				let basisMesh = new THREE.LineSegments(basisGeometry, basisMaterial);
+				basesMeshes.push(basisMesh);
+			}
+		}
+
+		function initControls() {
+			controls = new THREE.TrackballControls(camera, renderer.domElement);
+			controls.rotateSpeed = 5.0;
+		}
+
+		function addEventListeners() {
+			window.addEventListener("resize", onWindowResize, false);
+		}
+
+		function onWindowResize() {
+			camera.aspect = window.innerWidth / window.innerHeight;
+			camera.updateProjectionMatrix();
+
+			renderer.setSize(window.innerWidth, window.innerHeight);
+			controls.handleResize();
+			render();
+		}
+
+		function animate() {
+			requestAnimationFrame(animate);
+			controls.update();
+			render();
+		}
+
+		function render() {
+			renderer.render(scene, camera);
+		}
+	</script>
+</body>
+
+</html>

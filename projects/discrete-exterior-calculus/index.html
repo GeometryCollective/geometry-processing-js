@@ -1,0 +1,1096 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<title>Discrete Exterior Calculus</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+	<link rel="stylesheet" href="../../style/main.css">
+	<style type="text/css">
+		#dec {
+			position: absolute;
+			bottom: 5px;
+			left: 5px;
+			opacity: 0.8;
+		}
+	</style>
+</head>
+
+<body>
+	<div id="info">
+		<input type="file" id="fileInput" style="visibility:hidden">
+	</div>
+	<div id="info">
+		<h2>Discrete Exterior Calculus</h2>
+		<div id="meta">Loading...</div>
+	</div>
+	<div id="dec">
+		<img src="../../imgs/dec1.png" width="400" height="206.74" border="0">
+	</div>
+	<div id="logo">
+		<a href="http://geometry.cs.cmu.edu" target="_blank">
+			<img src="../../imgs/logo.png" width="192" height="152" border="0">
+		</a>
+	</div>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/87/three.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.6.5/dat.gui.min.js"></script>
+	<script src="../../libs/detector.js"></script>
+	<script src="../../libs/trackball-controls.js"></script>
+	<script src="../../linear-algebra/linear-algebra-asm.js"></script>
+	<script src="../../linear-algebra/vector.js"></script>
+	<script src="../../linear-algebra/emscripten-memory-manager.js"></script>
+	<script src="../../linear-algebra/dense-matrix.js"></script>
+	<script src="../../linear-algebra/sparse-matrix.js"></script>
+	<script src="../../core/vertex.js"></script>
+	<script src="../../core/edge.js"></script>
+	<script src="../../core/face.js"></script>
+	<script src="../../core/halfedge.js"></script>
+	<script src="../../core/corner.js"></script>
+	<script src="../../core/mesh.js"></script>
+	<script src="../../core/geometry.js"></script>
+	<script src="../../core/discrete-exterior-calculus.js"></script>
+	<script src="../../input/hexagon.js"></script>
+	<script src="../../utils/meshio.js"></script>
+	<script src="../../utils/colormap.js"></script>
+	<script>
+		if (!Detector.webgl) Detector.addGetWebGLMessage();
+
+		let input = document.getElementById("fileInput");
+		let renderer = undefined;
+		let camera = undefined;
+		let controls = undefined;
+		let showWireframe = false;
+		let scene = undefined;
+		let threeMesh = undefined;
+		let threeGeometry = undefined;
+		let primal1FormMesh = undefined;
+		let wireframe = undefined;
+		let threeDualMesh = undefined;
+		let threeDualGeometry = undefined;
+		let dual1FormMesh = undefined;
+		let dualWireframe = undefined;
+		let materialSettings = {
+			vertexColors: THREE.VertexColors,
+			polygonOffset: true,
+			polygonOffsetFactor: 1,
+			polygonOffsetUnits: 1,
+			side: THREE.DoubleSide
+		};
+
+		let vertexIndex = undefined;
+		let edgeIndex = undefined;
+		let faceIndex = undefined;
+
+		let hodge0 = undefined;
+		let hodge1 = undefined;
+		let hodge2 = undefined;
+		let d0 = undefined;
+		let d1 = undefined;
+
+		let hodge0Inv = undefined;
+		let hodge1Inv = undefined;
+		let hodge2Inv = undefined;
+		let d0T = undefined;
+		let d1T = undefined;
+
+		let currentForm = undefined;
+		let currentFormName = "Primal 0 Form";
+		let formToOperator = {
+			"Primal 0 Form": {},
+			"Primal 1 Form": {},
+			"Primal 2 Form": {},
+			"Dual 0 Form": {},
+			"Dual 1 Form": {},
+			"Dual 2 Form": {}
+		};
+		let nextForm = {
+			"d Primal 0 Form": "Primal 1 Form",
+			"* Primal 0 Form": "Dual 2 Form",
+			"d Primal 1 Form": "Primal 2 Form",
+			"* Primal 1 Form": "Dual 1 Form",
+			"* Primal 2 Form": "Dual 0 Form",
+			"d Dual 0 Form": "Dual 1 Form",
+			"* Dual 0 Form": "Primal 2 Form",
+			"d Dual 1 Form": "Dual 2 Form",
+			"* Dual 1 Form": "Primal 1 Form",
+			"* Dual 2 Form": "Primal 0 Form"
+		};
+
+		let positions = undefined;
+		let indices = undefined;
+
+		let memoryManager = new EmscriptenMemoryManager();
+		let mesh = undefined;
+		let geometry = undefined;
+
+		let filename = "hexagon.obj";
+
+		const ORANGE = new Vector(1.0, 0.5, 0.0);
+		let guiFields = {
+			"Load Mesh": function() {
+				input.click();
+			},
+			"Export Mesh": function() {
+				exportFile(MeshIO.writeOBJ({
+					"v": positions,
+					"f": indices
+				}));
+			},
+			"Randomize": function() {
+				if (currentFormName === "Primal 0 Form" || currentFormName === "Dual 2 Form") {
+					currentForm = generateRandomFormOnVertices(currentFormName === "Dual 2 Form");
+
+				} else if (currentFormName === "Primal 2 Form" || currentFormName === "Dual 0 Form") {
+					currentForm = generateRandomFormOnFaces(currentFormName === "Primal 2 Form");
+
+				} else {
+					currentForm = generateRandomFormOnEdges();
+				}
+
+				// update form visualization
+				updateFormViz();
+			},
+			"d": function() {
+				let d = formToOperator[currentFormName]["d"];
+				if (d) {
+					currentForm = d.timesDense(currentForm);
+					currentFormName = nextForm["d " + currentFormName];
+
+					// update form visualization
+					updateFormViz();
+
+					// cleanup
+					memoryManager.deleteExcept([hodge0, hodge1, hodge2, d0, d1, hodge0Inv,
+						hodge1Inv, hodge2Inv, d0T, d1T, currentForm
+					]);
+				}
+			},
+			"*": function() {
+				let star = formToOperator[currentFormName]["*"];
+				currentForm = star.timesDense(currentForm);
+				currentFormName = nextForm["* " + currentFormName];
+
+				// update form visualization
+				updateFormViz();
+
+				// cleanup
+				memoryManager.deleteExcept([hodge0, hodge1, hodge2, d0, d1, hodge0Inv,
+					hodge1Inv, hodge2Inv, d0T, d1T, currentForm
+				]);
+			},
+			"Show Wireframe": showWireframe
+		};
+
+		init();
+		animate();
+
+		function init() {
+			let container = document.createElement("div");
+			document.body.appendChild(container);
+
+			initRenderer(container);
+			initGUI();
+			initCamera();
+			initScene();
+			initLights();
+			initMesh(hexagon);
+			initControls();
+			addEventListeners();
+		}
+
+		function initRenderer(container) {
+			renderer = new THREE.WebGLRenderer({
+				antialias: true
+			});
+			renderer.setPixelRatio(window.devicePixelRatio);
+			renderer.setClearColor(0xffffff, 1.0);
+			renderer.setSize(window.innerWidth, window.innerHeight);
+			container.appendChild(renderer.domElement);
+		}
+
+		function initGUI() {
+			let gui = new dat.GUI();
+
+			let io = gui.addFolder("IO");
+			io.add(guiFields, "Load Mesh");
+			io.add(guiFields, "Export Mesh");
+			io.open();
+
+			gui.add(guiFields, "Randomize");
+			gui.add(guiFields, "d");
+			gui.add(guiFields, "*");
+			gui.add(guiFields, "Show Wireframe").onChange(toggleWireframe).listen();
+		}
+
+		window.onload = function() {
+			input.addEventListener("change", function(e) {
+				let file = input.files[0];
+				filename = file.name;
+
+				if (filename.endsWith(".obj")) {
+					let reader = new FileReader();
+					reader.onload = function(e) {
+						initMesh(reader.result);
+					}
+
+					reader.onerror = function(e) {
+						alert("Unable to load OBJ file");
+					}
+
+					reader.readAsText(file);
+
+				} else {
+					alert("Please load an OBJ file");
+				}
+			});
+		}
+
+		function exportFile(text) {
+			let element = document.createElement("a");
+			element.setAttribute("href", "data:text/plain;charset=utf-8," + encodeURIComponent(text));
+			element.setAttribute("download", filename);
+
+			element.style.display = "none";
+			document.body.appendChild(element);
+
+			element.click();
+
+			document.body.removeChild(element);
+		}
+
+		function gaussian(x, a, b) {
+			return a * Math.exp(-(x * x) / (b * b));
+		}
+
+		function minMaxFormValue(form) {
+			let minForm = Infinity;
+			let maxForm = -Infinity;
+
+			if (currentFormName === "Primal 0 Form" || currentFormName === "Dual 2 Form") {
+				for (let v of mesh.vertices) {
+					if (!v.onBoundary()) {
+						let value = form.get(vertexIndex[v], 0);
+						if (currentFormName === "Dual 2 Form") {
+							let A = geometry.barycentricDualArea(v);
+							value /= A;
+						}
+
+						minForm = Math.min(value, minForm);
+						maxForm = Math.max(value, maxForm);
+					}
+				}
+
+			} else if (currentFormName === "Primal 2 Form" || currentFormName === "Dual 0 Form") {
+				for (let f of mesh.faces) {
+					let hasBoundaryVertex = false;
+					for (let v of f.adjacentVertices()) {
+						if (v.onBoundary()) {
+							hasBoundaryVertex = true;
+							break;
+						}
+					}
+
+					if (!hasBoundaryVertex) {
+						let value = form.get(faceIndex[f], 0);
+						if (currentFormName === "Primal 2 Form") {
+							let A = geometry.area(f);
+							value /= A;
+						}
+
+						minForm = Math.min(value, minForm);
+						maxForm = Math.max(value, maxForm);
+					}
+				}
+
+			} else {
+				for (let i = 0; i < form.nRows(); i++) {
+					let value = form.get(i, 0);
+
+					minForm = Math.min(value, minForm);
+					maxForm = Math.max(value, maxForm);
+				}
+			}
+
+			if (Math.abs(minForm) < 1e-3) minForm = 0;
+			if (Math.abs(maxForm) < 1e-3) maxForm = 1e-3;
+			if (minForm === 0 && maxForm === 1e-3) {
+				for (let i = 0; i < form.nRows(); i++) {
+					form.set(0, i, 0); // get rid of any small residual values
+				}
+			}
+
+			return [minForm, maxForm];
+		}
+
+		function updateColorsPrimalForm(form, is0Form) {
+			let [minForm, maxForm] = minMaxFormValue(form);
+			let colors = threeGeometry.attributes.color.array;
+
+			if (currentFormName.includes("1 Form")) {
+				if (maxForm === 1e-3) color = colormap(0, minForm, maxForm, coolwarm);
+				else colors.fill(1);
+
+			} else {
+				for (let f of mesh.faces) {
+					let i = 0;
+					let A = geometry.area(f);
+					let color;
+					if (!is0Form) {
+						color = colormap(form.get(faceIndex[f], 0) / A, minForm, maxForm, coolwarm);
+					}
+
+					for (let v of f.adjacentVertices()) {
+						let j = 9 * f.index + 3 * i;
+
+						if (is0Form) color = colormap(form.get(vertexIndex[v], 0), minForm, maxForm, coolwarm);
+						colors[j + 0] = color.x;
+						colors[j + 1] = color.y;
+						colors[j + 2] = color.z;
+
+						i++;
+					}
+				}
+			}
+
+			threeGeometry.attributes.color.needsUpdate = true;
+		}
+
+		function updateColorsDualForm(form, is2Form) {
+			let [minForm, maxForm] = minMaxFormValue(form);
+			let colors = threeDualGeometry.attributes.color.array;
+
+			if (currentFormName.includes("1 Form")) {
+				if (maxForm === 1e-3) color = colormap(0, minForm, maxForm, coolwarm);
+				else colors.fill(1);
+
+			} else {
+				let k = 0;
+				for (let c of mesh.corners) {
+					let v = c.vertex;
+					let f = c.face;
+					let color;
+					let avg1RingFormValue = 0;
+					if (is2Form) {
+						let A = geometry.barycentricDualArea(v);
+						color = colormap(form.get(vertexIndex[v], 0) / A, minForm, maxForm, coolwarm);
+
+					} else {
+						let n = 0;
+						for (let f of v.adjacentFaces()) {
+							avg1RingFormValue += form.get(faceIndex[f], 0);
+							n++;
+						}
+						avg1RingFormValue /= n;
+					}
+
+					let h = c.halfedge.next.twin;
+					if (h.onBoundary) {
+						// p, f1, m12, p, m13, f2
+						for (let i = 0; i < 6; i++) {
+							if (!is2Form) {
+								let formValue = form.get(faceIndex[f], 0);
+								if (i === 0 || i === 3) formValue = avg1RingFormValue;
+								else if (i === 4) formValue = form.get(faceIndex[h.prev.twin.face], 0);
+								else if (i === 5) formValue = form.get(faceIndex[h.prev.twin.face], 0);
+
+								color = colormap(formValue, minForm, maxForm, coolwarm);
+							}
+
+							colors[k + 0] = color.x;
+							colors[k + 1] = color.y;
+							colors[k + 2] = color.z;
+							k += 3;
+						}
+
+					} else {
+						// p, f1, f2
+						for (let i = 0; i < 3; i++) {
+							if (!is2Form) {
+								let formValue = form.get(faceIndex[f], 0);
+								if (i === 0) formValue = avg1RingFormValue;
+								else if (i === 2) formValue = form.get(faceIndex[h.face], 0);
+
+								color = colormap(formValue, minForm, maxForm, coolwarm);
+							}
+
+							colors[k + 0] = color.x;
+							colors[k + 1] = color.y;
+							colors[k + 2] = color.z;
+							k += 3;
+						}
+					}
+				}
+			}
+
+			threeDualGeometry.attributes.color.needsUpdate = true;
+		}
+
+		function generateRandomFormOnVertices(scaleByArea = false) {
+			let c = [];
+			let V = mesh.vertices.length;
+			let peaks = Math.max(2, Math.trunc(Math.random() * 10));
+			for (let i = 0; i < peaks; i++) {
+				let v = mesh.vertices[Math.trunc(Math.random() * V)];
+				let p = geometry.positions[v];
+
+				c.push(p);
+			}
+
+			let form = DenseMatrix.zeros(V, 1);
+			for (let v of mesh.vertices) {
+				let i = vertexIndex[v];
+				let p = geometry.positions[v];
+
+				let sum = 0;
+				for (let i = 0; i < peaks; i++) {
+					sum += gaussian(c[i].minus(p).norm(), 1.0, 0.5);
+				}
+
+				if (scaleByArea) sum *= geometry.barycentricDualArea(v);
+				form.set(sum, i, 0);
+			}
+
+			return form;
+		}
+
+		function generateRandomFormOnFaces(scaleByArea = false) {
+			let c = [];
+			let F = mesh.faces.length;
+			let peaks = Math.max(2, Math.trunc(Math.random() * 10));
+			for (let i = 0; i < peaks; i++) {
+				let f = mesh.faces[Math.trunc(Math.random() * F)];
+				let p = geometry.circumcenter(f);
+
+				c.push(p);
+			}
+
+			let form = DenseMatrix.zeros(F, 1);
+			for (let f of mesh.faces) {
+				let i = faceIndex[f];
+				let p = geometry.circumcenter(f);
+
+				let sum = 0;
+				for (let i = 0; i < peaks; i++) {
+					sum += gaussian(c[i].minus(p).norm(), 1.0, 0.5);
+				}
+
+				if (scaleByArea) sum *= geometry.area(f);
+				form.set(sum, i, 0);
+			}
+
+			return form;
+		}
+
+		function generateRandomFormOnEdges() {
+			let scalarPotential = generateRandomFormOnVertices();
+			let vectorPotential = generateRandomFormOnVertices();
+
+			let field = {};
+			for (let f of mesh.faces) {
+				field[f] = new Vector();
+				let A = geometry.area(f);
+				let N = geometry.faceNormal(f);
+				let C = geometry.circumcenter(f);
+
+				// add exact and coexact components (i.e., ∇s and ∇ x v)
+				for (let h of f.adjacentHalfedges()) {
+					let i = vertexIndex[h.prev.vertex];
+					let e = geometry.vector(h);
+					let eT = N.cross(e);
+
+					field[f].incrementBy(eT.times(scalarPotential.get(i, 0) / (2 * A)));
+					field[f].incrementBy(e.times(vectorPotential.get(i, 0) / (2 * A)));
+				}
+
+				// add harmonic component
+				let u = new Vector(-C.y, 0.0, C.x);
+				u.decrementBy(N.times(u.dot(N)));
+				field[f].incrementBy(u);
+			}
+
+			// set ω values
+			let form = DenseMatrix.zeros(mesh.edges.length, 1);
+			for (let e of mesh.edges) {
+				let i = edgeIndex[e];
+				let h = e.halfedge;
+				let f1 = h.onBoundary ? new Vector() : field[h.face];
+				let f2 = h.twin.onBoundary ? new Vector() : field[h.twin.face];
+
+				form.set(f1.plus(f2).dot(geometry.vector(h)) / 2, i, 0);
+			}
+
+			return form;
+		}
+
+		function interpolateWhitney(oneForm) {
+			let field = {};
+			for (let f of mesh.faces) {
+				let h = f.halfedge;
+
+				let pi = geometry.positions[h.vertex];
+				let pj = geometry.positions[h.next.vertex];
+				let pk = geometry.positions[h.prev.vertex];
+				let eij = pj.minus(pi);
+				let ejk = pk.minus(pj);
+				let eki = pi.minus(pk);
+
+				let cij = oneForm.get(edgeIndex[h.edge], 0);
+				let cjk = oneForm.get(edgeIndex[h.next.edge], 0);
+				let cki = oneForm.get(edgeIndex[h.prev.edge], 0);
+				if (h.edge.halfedge !== h) cij *= -1;
+				if (h.next.edge.halfedge !== h.next) cjk *= -1;
+				if (h.prev.edge.halfedge !== h.prev) cki *= -1;
+
+				let A = geometry.area(f);
+				let N = geometry.faceNormal(f);
+				let a = eki.minus(ejk).times(cij);
+				let b = eij.minus(eki).times(cjk);
+				let c = ejk.minus(eij).times(cki);
+				field[f] = N.cross(a.plus(b).plus(c)).over(6 * A);
+			}
+
+			return field;
+		}
+
+		function interpolateWachspressWhitney(oneForm) {
+			let pointToSegmentDistance = function(p, a, u) {
+				let l2 = u.norm2();
+				let t = Math.max(0, Math.min(1, p.minus(a).dot(u) / l2));
+				let v = a.plus(u.times(t));
+
+				return p.minus(v).norm();
+			}
+
+			let field = {};
+			for (let v of mesh.vertices) {
+				let p = geometry.positions[v];
+				field[v] = new Vector();
+
+				let C = [];
+				let w = [];
+				for (let c of v.adjacentCorners()) {
+					let f1 = geometry.circumcenter(c.face);
+					let h = c.halfedge.next.twin;
+
+					if (h.onBoundary) {
+						let f2 = geometry.circumcenter(h.prev.twin.face);
+						let m12 = geometry.midpoint(h.edge);
+						let m13 = geometry.midpoint(h.prev.edge);
+
+						let u = m12.minus(f1);
+						let height1 = pointToSegmentDistance(p, f1, u);
+						let normal1 = new Vector(u.y, -u.x);
+
+						let v = f2.minus(m13);
+						let height2 = pointToSegmentDistance(p, m13, v);
+						let normal2 = new Vector(v.y, -v.x);
+
+						C.push(normal1.over(height1));
+						C.push(new Vector());
+						C.push(normal2.over(height2));
+
+						let wij = oneForm.get(edgeIndex[h.edge], 0);
+						let wjk = oneForm.get(edgeIndex[h.prev.edge], 0);
+						if (h.edge.halfedge !== h) wij *= -1;
+						if (h.prev.edge.halfedge !== h.prev) wjk *= -1;
+
+						w.push(wij);
+						w.push(0);
+						w.push(wjk);
+
+					} else {
+						let f2 = geometry.circumcenter(h.face);
+
+						let u = f2.minus(f1);
+						let height = pointToSegmentDistance(p, f1, u);
+						let normal = new Vector(u.y, -u.x);
+
+						C.push(normal.over(height));
+
+						let wij = oneForm.get(edgeIndex[h.edge], 0);
+						if (h.edge.halfedge !== h) wij *= -1;
+
+						w.push(wij);
+					}
+				}
+
+				let n = C.length;
+				for (let j = 0; j < n; j++) {
+					let i = j === 0 ? n - 1 : j - 1;
+					let k = (j + 1) % n;
+
+					field[v].incrementBy(C[k].minus(C[i]).times(w[j]));
+				}
+			}
+
+			return field;
+		}
+
+		function updateDECImage() {
+			let img = document.getElementById("dec").getElementsByTagName("img")[0];
+
+			if (currentFormName === "Primal 0 Form") img.src = "../../imgs/dec1.png";
+			else if (currentFormName === "Primal 1 Form") img.src = "../../imgs/dec2.png";
+			else if (currentFormName === "Primal 2 Form") img.src = "../../imgs/dec3.png";
+			else if (currentFormName === "Dual 0 Form") img.src = "../../imgs/dec4.png";
+			else if (currentFormName === "Dual 1 Form") img.src = "../../imgs/dec5.png";
+			else if (currentFormName === "Dual 2 Form") img.src = "../../imgs/dec6.png";
+		}
+
+		function updateFormViz() {
+			if (currentFormName.includes("Primal")) {
+				if (currentFormName.includes("1 Form")) {
+					updateColorsPrimalForm(currentForm, false);
+
+					// add primal 1 form mesh to the scene
+					updatePrimal1FormMesh();
+					scene.add(primal1FormMesh);
+
+				} else {
+					if (currentFormName.includes("0 Form")) {
+						updateColorsPrimalForm(currentForm, true);
+
+					} else {
+						updateColorsPrimalForm(currentForm, false);
+					}
+
+					scene.remove(primal1FormMesh);
+				}
+
+				// add primal mesh and remove dual mesh from scene
+				if (!scene.children.includes(threeMesh)) scene.add(threeMesh);
+				scene.remove(threeDualMesh);
+				scene.remove(dual1FormMesh);
+
+			} else {
+				if (currentFormName.includes("1 Form")) {
+					updateColorsDualForm(currentForm, false);
+
+					// add dual 1 form mesh to the scene
+					updateDual1FormMesh();
+					scene.add(dual1FormMesh);
+
+				} else {
+					if (currentFormName.includes("0 Form")) {
+						updateColorsDualForm(currentForm, false);
+
+					} else {
+						updateColorsDualForm(currentForm, true);
+					}
+
+					scene.remove(dual1FormMesh);
+				}
+
+				// add dual mesh and remove primal mesh from scene
+				if (!scene.children.includes(threeDualMesh)) scene.add(threeDualMesh);
+				scene.remove(threeMesh);
+				scene.remove(primal1FormMesh);
+			}
+
+			updateDECImage();
+		}
+
+		function toggleWireframe(checked) {
+			showWireframe = checked;
+			if (showWireframe) {
+				threeMesh.add(wireframe);
+				threeDualMesh.add(dualWireframe);
+
+			} else {
+				threeMesh.remove(wireframe);
+				threeDualMesh.remove(dualWireframe);
+			}
+		}
+
+		function initCamera() {
+			const fov = 45.0;
+			const aspect = window.innerWidth / window.innerHeight;
+			const near = 0.1;
+			const far = 1000;
+			const eyeZ = 3.5;
+
+			camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
+			camera.position.z = eyeZ;
+		}
+
+		function initScene() {
+			scene = new THREE.Scene();
+			scene.background = new THREE.Color(0xffffff);
+		}
+
+		function initLights() {
+			let ambient = new THREE.AmbientLight(0xffffff, 0.35);
+			camera.add(ambient);
+
+			let point = new THREE.PointLight(0xffffff);
+			point.position.set(2, 20, 15);
+			camera.add(point);
+
+			scene.add(camera);
+		}
+
+		function hasPlanarPositions(positions) {
+			for (let i = 0; i < positions.length; i++) {
+				if (Math.abs(positions[i].z) > 1e-8) {
+					alert("Please load a planar mesh with zero Z component");
+					return false;
+				}
+			}
+
+			return true;
+		}
+
+		function initMesh(text) {
+			let polygonSoup = MeshIO.readOBJ(text);
+			if (hasPlanarPositions(polygonSoup["v"])) {
+				mesh = new Mesh();
+				if (mesh.build(polygonSoup)) {
+					scene.remove(threeMesh);
+					scene.remove(threeDualMesh);
+					scene.remove(primal1FormMesh);
+					scene.remove(dual1FormMesh);
+					memoryManager.deleteExcept([]);
+					threeMesh = undefined;
+					threeDualMesh = undefined;
+					primal1FormMesh = undefined;
+					dual1FormMesh = undefined;
+
+					// create geometry object
+					geometry = new Geometry(mesh, polygonSoup["v"]);
+
+					// create a THREE.js mesh (and geometry) object
+					initThreeMesh();
+					initThreeDualMesh();
+
+					// toggle wireframe
+					toggleWireframe(showWireframe);
+
+					// compute DEC operators
+					vertexIndex = indexElements(geometry.mesh.vertices);
+					edgeIndex = indexElements(geometry.mesh.edges);
+					faceIndex = indexElements(geometry.mesh.faces);
+
+					hodge0 = DEC.buildHodgeStar0Form(geometry, vertexIndex);
+					hodge1 = DEC.buildHodgeStar1Form(geometry, edgeIndex);
+					hodge2 = DEC.buildHodgeStar2Form(geometry, faceIndex);
+					d0 = DEC.buildExteriorDerivative0Form(geometry, edgeIndex, vertexIndex);
+					d1 = DEC.buildExteriorDerivative1Form(geometry, faceIndex, edgeIndex);
+
+					hodge0Inv = hodge0.invertDiagonal();
+					hodge1Inv = hodge1.invertDiagonal();
+					hodge2Inv = hodge2.invertDiagonal();
+					d0T = d0.transpose();
+					d1T = d1.transpose();
+
+					formToOperator["Primal 0 Form"]["d"] = d0;
+					formToOperator["Primal 0 Form"]["*"] = hodge0;
+					formToOperator["Primal 1 Form"]["d"] = d1;
+					formToOperator["Primal 1 Form"]["*"] = hodge1;
+					formToOperator["Primal 2 Form"]["d"] = undefined;
+					formToOperator["Primal 2 Form"]["*"] = hodge2;
+					formToOperator["Dual 0 Form"]["d"] = d1T;
+					formToOperator["Dual 0 Form"]["*"] = hodge2Inv;
+					formToOperator["Dual 1 Form"]["d"] = d0T;
+					formToOperator["Dual 1 Form"]["*"] = hodge1Inv;
+					formToOperator["Dual 2 Form"]["d"] = undefined;
+					formToOperator["Dual 2 Form"]["*"] = hodge0Inv;
+
+					// generate and display primal scalar field
+					currentFormName = "Primal 0 Form";
+					guiFields["Randomize"]();
+
+					// cleanup
+					memoryManager.deleteExcept([hodge0, hodge1, hodge2, d0, d1, hodge0Inv,
+						hodge1Inv, hodge2Inv, d0T, d1T, currentForm
+					]);
+
+					// update metadata
+					let element = document.getElementById("meta");
+					element.textContent = "";
+
+				} else {
+					alert("Unable to build halfedge mesh");
+				}
+			}
+		}
+
+		function initThreeMesh() {
+			// create geometry object
+			threeGeometry = new THREE.BufferGeometry();
+
+			// fill position and color buffers
+			let F = mesh.faces.length;
+			positions = new Float32Array(F * 3 * 3);
+			let colors = new Float32Array(F * 3 * 3);
+			for (let f of mesh.faces) {
+				let i = 0;
+				for (let v of f.adjacentVertices()) {
+					let j = 9 * f.index + 3 * i;
+
+					let position = geometry.positions[v];
+					positions[j + 0] = position.x;
+					positions[j + 1] = position.y;
+					positions[j + 2] = position.z;
+
+					colors[j + 0] = ORANGE.x;
+					colors[j + 1] = ORANGE.y;
+					colors[j + 2] = ORANGE.z;
+
+					i++;
+				}
+			}
+
+			// fill index buffer
+			let i = 0;
+			indices = new Uint32Array(F * 3);
+			for (let f of mesh.faces) {
+				for (let v of f.adjacentVertices()) {
+					indices[i] = i;
+					i++;
+				}
+			}
+
+			// set geometry
+			threeGeometry.addAttribute("position", new THREE.BufferAttribute(positions, 3));
+			threeGeometry.addAttribute("color", new THREE.BufferAttribute(colors, 3));
+
+			// create material
+			let threeMaterial = new THREE.MeshBasicMaterial(materialSettings);
+
+			// create wireframe
+			wireframe = new THREE.LineSegments();
+			wireframe.geometry = new THREE.WireframeGeometry(threeGeometry);
+			wireframe.material = new THREE.LineBasicMaterial({
+				color: 0x000000,
+				linewidth: 0.75
+			});
+
+			// create mesh
+			threeMesh = new THREE.Mesh(threeGeometry, threeMaterial);
+		}
+
+		function initThreeDualMesh() {
+			// create geometry object
+			threeDualGeometry = new THREE.BufferGeometry();
+			let threeDualWireGeometry = new THREE.BufferGeometry();
+
+			// fill position and color buffers
+			// picking region for each vertex is the barycentric dual cell
+			let positions = [];
+			let colors = [];
+			for (let c of mesh.corners) {
+				// get the vertex positions of the dual triangle
+				let p = geometry.positions[c.vertex];
+				let f1 = geometry.circumcenter(c.face);
+
+				let tris = [];
+				tris.push(p);
+				tris.push(f1);
+
+				let h = c.halfedge.next.twin;
+				if (h.onBoundary) {
+					let f2 = geometry.circumcenter(h.prev.twin.face);
+					let m12 = geometry.midpoint(h.edge);
+					let m13 = geometry.midpoint(h.prev.edge);
+
+					tris.push(m12);
+					tris.push(p);
+					tris.push(m13);
+					tris.push(f2);
+
+				} else {
+					let f2 = geometry.circumcenter(h.face);
+					tris.push(f2);
+				}
+
+				// store the positions and colors in a global list
+				for (let i = 0; i < tris.length; i++) {
+					positions.push(tris[i].x);
+					positions.push(tris[i].y);
+					positions.push(tris[i].z);
+
+					colors.push(ORANGE.x);
+					colors.push(ORANGE.y);
+					colors.push(ORANGE.z);
+				}
+			}
+
+			let edgePositions = [];
+			for (let e of mesh.edges) {
+				// get the two faces adjacent to the edge and compute their circumcenters
+				let f1 = e.halfedge.face;
+				let f2 = e.halfedge.twin.face;
+				let c1 = f1.isBoundaryLoop() ? geometry.midpoint(e) : geometry.circumcenter(f1);
+				let c2 = f2.isBoundaryLoop() ? geometry.midpoint(e) : geometry.circumcenter(f2);
+
+				// store the positions in a global list
+				edgePositions.push(c1.x);
+				edgePositions.push(c1.y);
+				edgePositions.push(c1.z);
+				edgePositions.push(c2.x);
+				edgePositions.push(c2.y);
+				edgePositions.push(c2.z);
+			}
+
+			// set geometry
+			threeDualGeometry.addAttribute("position", new THREE.BufferAttribute(new Float32Array(positions), 3));
+			threeDualGeometry.addAttribute("color", new THREE.BufferAttribute(new Float32Array(colors), 3));
+			threeDualWireGeometry.addAttribute("position", new THREE.BufferAttribute(new Float32Array(edgePositions), 3));
+
+			// create material
+			let threeDualMaterial = new THREE.MeshBasicMaterial(materialSettings);
+
+			// create wireframe
+			dualWireframe = new THREE.LineSegments();
+			dualWireframe.geometry = threeDualWireGeometry;
+			dualWireframe.material = new THREE.LineBasicMaterial({
+				color: 0x000000,
+				linewidth: 0.75
+			});
+
+			// create mesh
+			threeDualMesh = new THREE.Mesh(threeDualGeometry, threeDualMaterial);
+		}
+
+		function setArrow(positions, index, a, b, N) {
+			positions[18 * index + 0] = a.x;
+			positions[18 * index + 1] = a.y;
+			positions[18 * index + 2] = a.z;
+			positions[18 * index + 3] = b.x;
+			positions[18 * index + 4] = b.y;
+			positions[18 * index + 5] = b.z;
+
+			let v = b.minus(a);
+			let vT = N.cross(v);
+			let segments = [
+				b, b.minus(v.times(0.2).plus(vT.times(0.1))),
+				b, b.minus(v.times(0.2).plus(vT.times(-0.1)))
+			];
+
+			let i = 5;
+			for (let p of segments) {
+				positions[18 * index + i + 1] = p.x;
+				positions[18 * index + i + 2] = p.y;
+				positions[18 * index + i + 3] = p.z;
+				i += 3;
+			}
+		}
+
+		function clampFieldLength(field, length) {
+			let norm = field.norm();
+			if (norm > length) field.scaleBy(length / norm);
+		}
+
+		function updatePrimal1FormMesh() {
+			// interpolate 1 form to a face field
+			let primal1FormField = interpolateWhitney(currentForm);
+			let length = 0.3 * geometry.meanEdgeLength();
+
+			// initialize mesh
+			if (!primal1FormMesh) {
+				let F = mesh.faces.length;
+
+				let primal1FormGeometry = new THREE.BufferGeometry();
+				primal1FormGeometry.addAttribute("position", new THREE.BufferAttribute(new Float32Array(F * 6 * 3), 3));
+				let primal1FormMaterial = new THREE.LineBasicMaterial({
+					color: 0x000000
+				});
+				primal1FormMesh = new THREE.LineSegments(primal1FormGeometry, primal1FormMaterial);
+			}
+
+			// update positions
+			let positions = primal1FormMesh.geometry.attributes.position.array;
+			for (let f of mesh.faces) {
+				let C = geometry.circumcenter(f);
+				let N = geometry.faceNormal(f);
+
+				let field = primal1FormField[f].times(length);
+				clampFieldLength(field, length);
+				setArrow(positions, f.index, C.minus(field), C.plus(field), N);
+			}
+
+			primal1FormMesh.geometry.attributes.position.needsUpdate = true;
+		}
+
+		function updateDual1FormMesh() {
+			// interpolate 1 form to a face field
+			let dual1FormField = interpolateWachspressWhitney(currentForm);
+
+			let n = 0;
+			let length = 0;
+			for (let e of mesh.edges) {
+				if (!e.onBoundary()) {
+					let h = e.halfedge;
+					let f1 = geometry.circumcenter(h.face);
+					let f2 = geometry.circumcenter(h.twin.face);
+
+					length += f2.minus(f1).norm();
+					n++;
+				}
+			}
+			length /= n;
+
+			// initialize mesh
+			if (!dual1FormMesh) {
+				let V = 0;
+				for (let v of mesh.vertices) {
+					if (!v.onBoundary()) V++;
+				}
+
+				let dual1FormGeometry = new THREE.BufferGeometry();
+				dual1FormGeometry.addAttribute("position", new THREE.BufferAttribute(new Float32Array(V * 6 * 3), 3));
+				let dual1FormMaterial = new THREE.LineBasicMaterial({
+					color: 0x000000
+				});
+				dual1FormMesh = new THREE.LineSegments(dual1FormGeometry, dual1FormMaterial);
+			}
+
+			// update positions
+			let k = 0;
+			let positions = dual1FormMesh.geometry.attributes.position.array;
+			for (let v of mesh.vertices) {
+				if (!v.onBoundary()) {
+					let p = geometry.positions[v];
+					let N = geometry.vertexNormalEquallyWeighted(v);
+
+					let field = dual1FormField[v].times(2 * length);
+					clampFieldLength(field, length);
+					setArrow(positions, k, p.minus(field), p.plus(field), N);
+					k++;
+				}
+			}
+
+			dual1FormMesh.geometry.attributes.position.needsUpdate = true;
+		}
+
+		function initControls() {
+			controls = new THREE.TrackballControls(camera, renderer.domElement);
+			controls.noRotate = true;
+		}
+
+		function addEventListeners() {
+			window.addEventListener("resize", onWindowResize, false);
+		}
+
+		function onWindowResize() {
+			camera.aspect = window.innerWidth / window.innerHeight;
+			camera.updateProjectionMatrix();
+
+			renderer.setSize(window.innerWidth, window.innerHeight);
+			controls.handleResize();
+			render();
+		}
+
+		function animate() {
+			requestAnimationFrame(animate);
+			controls.update();
+			render();
+		}
+
+		function render() {
+			renderer.render(scene, camera);
+		}
+	</script>
+</body>
+
+</html>

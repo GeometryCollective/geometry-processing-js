@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width">
+	<title>geometry-processing-js Class: Corner</title>
+
+	<!--[if lt IE 9]>
+	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+	<link type="text/css" rel="stylesheet" href="styles/sunlight.default.css">
+
+	<link type="text/css" rel="stylesheet" href="styles/site.cosmo.css">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-default navbar-fixed-top navbar-inverse">
+<div class="container">
+	<div class="navbar-header">
+		<a class="navbar-brand" href="index.html">geometry-processing-js</a>
+		<button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#topNavigation">
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+        </button>
+	</div>
+	<div class="navbar-collapse collapse" id="topNavigation">
+		<ul class="nav navbar-nav">
+			
+			<li class="dropdown">
+				<a href="modules.list.html" class="dropdown-toggle" data-toggle="dropdown">Modules<b class="caret"></b></a>
+				<ul class="dropdown-menu ">
+					<li><a href="module-Core.html">Core</a></li><li><a href="module-LinearAlgebra.html">LinearAlgebra</a></li><li><a href="module-Projects.html">Projects</a></li><li><a href="module-Utils.html">Utils</a></li>
+				</ul>
+			</li>
+			
+			<li class="dropdown">
+				<a href="classes.list.html" class="dropdown-toggle" data-toggle="dropdown">Classes<b class="caret"></b></a>
+				<ul class="dropdown-menu ">
+					<li><a href="module-Core.Corner.html">Core.Corner</a></li><li><a href="module-Core.DEC.html">Core.DEC</a></li><li><a href="module-Core.Edge.html">Core.Edge</a></li><li><a href="module-Core.Face.html">Core.Face</a></li><li><a href="module-Core.Geometry.html">Core.Geometry</a></li><li><a href="module-Core.Halfedge.html">Core.Halfedge</a></li><li><a href="module-Core.Mesh.html">Core.Mesh</a></li><li><a href="module-Core.Vertex.html">Core.Vertex</a></li><li><a href="module-LinearAlgebra.ComplexDenseMatrix.html">LinearAlgebra.ComplexDenseMatrix</a></li><li><a href="module-LinearAlgebra.ComplexSparseMatrix.html">LinearAlgebra.ComplexSparseMatrix</a></li><li><a href="module-LinearAlgebra.ComplexTriplet.html">LinearAlgebra.ComplexTriplet</a></li><li><a href="module-LinearAlgebra.ComplexCholesky.html">LinearAlgebra.ComplexCholesky</a></li><li><a href="module-LinearAlgebra.ComplexLU.html">LinearAlgebra.ComplexLU</a></li><li><a href="module-LinearAlgebra.ComplexQR.html">LinearAlgebra.ComplexQR</a></li><li><a href="module-LinearAlgebra.Complex.html">LinearAlgebra.Complex</a></li><li><a href="module-LinearAlgebra.DenseMatrix.html">LinearAlgebra.DenseMatrix</a></li><li><a href="module-LinearAlgebra.EmscriptenMemoryManager.html">LinearAlgebra.EmscriptenMemoryManager</a></li><li><a href="module-LinearAlgebra.SparseMatrix.html">LinearAlgebra.SparseMatrix</a></li><li><a href="module-LinearAlgebra.Triplet.html">LinearAlgebra.Triplet</a></li><li><a href="module-LinearAlgebra.Cholesky.html">LinearAlgebra.Cholesky</a></li><li><a href="module-LinearAlgebra.LU.html">LinearAlgebra.LU</a></li><li><a href="module-LinearAlgebra.QR.html">LinearAlgebra.QR</a></li><li><a href="module-LinearAlgebra.Vector.html">LinearAlgebra.Vector</a></li><li><a href="module-Projects.TrivialConnections.html">Projects.TrivialConnections</a></li><li><a href="module-Projects.GeodesicsInHeat.html">Projects.GeodesicsInHeat</a></li><li><a href="module-Projects.MeanCurvatureFlow.html">Projects.MeanCurvatureFlow</a></li><li><a href="module-Projects.ModifiedMeanCurvatureFlow.html">Projects.ModifiedMeanCurvatureFlow</a></li><li><a href="module-Projects.BoundaryFirstFlattening.html">Projects.BoundaryFirstFlattening</a></li><li><a href="module-Projects.SpectralConformalParameterization.html">Projects.SpectralConformalParameterization</a></li><li><a href="module-Projects.ScalarPoissonProblem.html">Projects.ScalarPoissonProblem</a></li><li><a href="module-Projects.HarmonicBases.html">Projects.HarmonicBases</a></li><li><a href="module-Projects.HodgeDecomposition.html">Projects.HodgeDecomposition</a></li><li><a href="module-Projects.TreeCotree.html">Projects.TreeCotree</a></li><li><a href="module-Utils.Distortion.html">Utils.Distortion</a></li><li><a href="module-Utils.MeshIO.html">Utils.MeshIO</a></li><li><a href="module-Utils.Solvers.html">Utils.Solvers</a></li>
+				</ul>
+			</li>
+			
+			<li class="dropdown">
+				<a href="global.html" class="dropdown-toggle" data-toggle="dropdown">Global<b class="caret"></b></a>
+				<ul class="dropdown-menu ">
+					<li><a href="global.html#normalize">normalize</a></li><li><a href="global.html#indexElements">indexElements</a></li><li><a href="global.html#clamp">clamp</a></li><li><a href="global.html#colormap">colormap</a></li><li><a href="global.html#hsv">hsv</a></li>
+				</ul>
+			</li>
+			
+		</ul>
+        
+            <div class="col-sm-3 col-md-3">
+                <form class="navbar-form" role="search">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Search" name="q" id="search-input">
+                        <div class="input-group-btn">
+                            <button class="btn btn-default" id="search-submit"><i class="glyphicon glyphicon-search"></i></button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        
+	</div>
+
+</div>
+</div>
+
+
+<div class="container" id="toc-content">
+<div class="row">
+
+	
+	<div class="col-md-8">
+	
+		<div id="main">
+			
+
+	<h1 class="page-title">Class: Corner</h1>
+<section>
+
+<header>
+    
+        <h2>
+            <span class="ancestors"><a href="module-Core.html">Core</a>.</span>
+        
+        Corner
+        </h2>
+        
+    
+</header>
+
+
+<article>
+    <div class="container-overview">
+    
+        
+<hr>
+<dt>
+    <h4 class="name" id="Corner"><span class="type-signature"></span>new Corner()</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>This class represents a corner in a <a href="module-Core.Mesh.html">Mesh</a>. It is a convenience<br>wrapper around <a href="module-Core.Halfedge.html">Halfedge</a> - each corner stores the halfedge opposite to it.</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+
+    
+<dl class="details">
+    
+
+    <h5 class="subsection-title">Properties:</h5>
+
+    <dl>
+
+<table class="props table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>halfedge</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="module-Core.Halfedge.html">module:Core.Halfedge</a></span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The halfedge opposite to this corner.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+</dl>
+
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+    
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+        <h3 class="subsection-title">Members</h3>
+
+        <dl>
+            
+<hr>
+<dt class="name" id="vertex">
+    <h4 id="vertex"><span class="type-signature"></span>vertex<span class="type-signature"> :<a href="module-Core.Vertex.html">module:Core.Vertex</a></span></h4>
+
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        <p>The vertex this corner lies on.</p>
+    </div>
+    
+
+    
+        <h5>Type:</h5>
+        <ul>
+            <li>
+                
+<span class="param-type"><a href="module-Core.Vertex.html">module:Core.Vertex</a></span>
+
+
+
+            </li>
+        </ul>
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt class="name" id="face">
+    <h4 id="face"><span class="type-signature"></span>face<span class="type-signature"> :<a href="module-Core.Face.html">module:Core.Face</a></span></h4>
+
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        <p>The face this corner is contained in.</p>
+    </div>
+    
+
+    
+        <h5>Type:</h5>
+        <ul>
+            <li>
+                
+<span class="param-type"><a href="module-Core.Face.html">module:Core.Face</a></span>
+
+
+
+            </li>
+        </ul>
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt class="name" id="next">
+    <h4 id="next"><span class="type-signature"></span>next<span class="type-signature"> :<a href="module-Core.Corner.html">module:Core.Corner</a></span></h4>
+
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        <p>The next corner (in CCW order) in this corner's face.</p>
+    </div>
+    
+
+    
+        <h5>Type:</h5>
+        <ul>
+            <li>
+                
+<span class="param-type"><a href="module-Core.Corner.html">module:Core.Corner</a></span>
+
+
+
+            </li>
+        </ul>
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt class="name" id="prev">
+    <h4 id="prev"><span class="type-signature"></span>prev<span class="type-signature"> :<a href="module-Core.Corner.html">module:Core.Corner</a></span></h4>
+
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        <p>The previous corner (in CCW order) in this corner's face.</p>
+    </div>
+    
+
+    
+        <h5>Type:</h5>
+        <ul>
+            <li>
+                
+<span class="param-type"><a href="module-Core.Corner.html">module:Core.Corner</a></span>
+
+
+
+            </li>
+        </ul>
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+</dd>
+
+        </dl>
+    
+
+    
+
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+		</div>
+	</div>
+
+	<div class="clearfix"></div>
+
+	
+		<div class="col-md-3">
+			<div id="toc" class="col-md-3 hidden-xs hidden-sm hidden-md"></div>
+		</div>
+	
+
+</div>
+</div>
+
+
+    <div class="modal fade" id="searchResults">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title">Search results</h4>
+          </div>
+          <div class="modal-body"></div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          </div>
+        </div><!-- /.modal-content -->
+      </div><!-- /.modal-dialog -->
+    </div>
+
+
+<footer>
+
+
+<span class="jsdoc-message">
+	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.4</a>
+	
+		on Fri Sep 8th 2017
+	
+	using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
+</span>
+</footer>
+
+<script src="scripts/docstrap.lib.js"></script>
+<script src="scripts/toc.js"></script>
+
+    <script type="text/javascript" src="scripts/fulltext-search-ui.js"></script>
+
+
+<script>
+$( function () {
+	$( "[id*='$']" ).each( function () {
+		var $this = $( this );
+
+		$this.attr( "id", $this.attr( "id" ).replace( "$", "__" ) );
+	} );
+
+	$( ".tutorial-section pre, .readme-section pre, pre.prettyprint.source" ).each( function () {
+		var $this = $( this );
+
+		var example = $this.find( "code" );
+		exampleText = example.html();
+		var lang = /{@lang (.*?)}/.exec( exampleText );
+		if ( lang && lang[1] ) {
+			exampleText = exampleText.replace( lang[0], "" );
+			example.html( exampleText );
+			lang = lang[1];
+		} else {
+			var langClassMatch = example.parent()[0].className.match(/lang\-(\S+)/);
+			lang = langClassMatch ? langClassMatch[1] : "javascript";
+		}
+
+		if ( lang ) {
+
+			$this
+			.addClass( "sunlight-highlight-" + lang )
+			.addClass( "linenums" )
+			.html( example.html() );
+
+		}
+	} );
+
+	Sunlight.highlightAll( {
+		lineNumbers : true,
+		showMenu : true,
+		enableDoclinks : true
+	} );
+
+	$.catchAnchorLinks( {
+        navbarOffset: 10
+	} );
+	$( "#toc" ).toc( {
+		anchorName  : function ( i, heading, prefix ) {
+			return $( heading ).attr( "id" ) || ( prefix + i );
+		},
+		selectors   : "#toc-content h1,#toc-content h2,#toc-content h3,#toc-content h4",
+		showAndHide : false,
+		smoothScrolling: true
+	} );
+
+	$( "#main span[id^='toc']" ).addClass( "toc-shim" );
+	$( '.dropdown-toggle' ).dropdown();
+
+    $( "table" ).each( function () {
+      var $this = $( this );
+      $this.addClass('table');
+    } );
+
+} );
+</script>
+
+
+
+<!--Navigation and Symbol Display-->
+
+
+<!--Google Analytics-->
+
+
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+            SearcherDisplay.init();
+        });
+    </script>
+
+
+</body>
+</html>

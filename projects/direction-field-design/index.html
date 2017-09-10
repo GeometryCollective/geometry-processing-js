@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<title>Direction Field Design</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+	<link rel="stylesheet" href="../../style/main.css">
+</head>
+
+<body>
+	<div id="info">
+		<input type="file" id="fileInput" style="visibility:hidden">
+	</div>
+	<div id="info">
+		<h2>Direction Field Design</h2>
+		<div id="meta">Loading...</div>
+	</div>
+	<div id="logo">
+		<a href="http://geometry.cs.cmu.edu" target="_blank">
+			<img src="../../imgs/logo.png" width="192" height="152" border="0">
+		</a>
+	</div>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/87/three.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.6.5/dat.gui.min.js"></script>
+	<script src="../../libs/detector.js"></script>
+	<script src="../../libs/trackball-controls.js"></script>
+	<script src="../../linear-algebra/linear-algebra-asm.js"></script>
+	<script src="../../linear-algebra/vector.js"></script>
+	<script src="../../linear-algebra/emscripten-memory-manager.js"></script>
+	<script src="../../linear-algebra/dense-matrix.js"></script>
+	<script src="../../linear-algebra/sparse-matrix.js"></script>
+	<script src="../../core/vertex.js"></script>
+	<script src="../../core/edge.js"></script>
+	<script src="../../core/face.js"></script>
+	<script src="../../core/halfedge.js"></script>
+	<script src="../../core/corner.js"></script>
+	<script src="../../core/mesh.js"></script>
+	<script src="../../core/geometry.js"></script>
+	<script src="../../core/discrete-exterior-calculus.js"></script>
+	<script src="../../input/bunny.js"></script>
+	<script src="../../utils/meshio.js"></script>
+	<script src="../vector-field-decomposition/hodge-decomposition.js"></script>
+	<script src="../vector-field-decomposition/tree-cotree.js"></script>
+	<script src="../vector-field-decomposition/harmonic-bases.js"></script>
+	<script src="trivial-connections.js"></script>
+	<script>
+		if (!Detector.webgl) Detector.addGetWebGLMessage();
+
+		let input = document.getElementById("fileInput");
+		let renderer = undefined;
+		let camera = undefined;
+		let controls = undefined;
+		let showWireframe = false;
+		let shiftClick = false;
+		let scene = undefined;
+		let threeMesh = undefined;
+		let threeGeometry = undefined;
+		let directionFieldMesh = undefined;
+		let wireframe = undefined;
+		let pickRenderer = undefined;
+		let pickScene = undefined;
+		let threePickMesh = undefined;
+		let threeSphereMap = new Map();
+		let selectedVertex = undefined;
+
+		let positions = undefined;
+		let uvs = undefined;
+		let normals = undefined;
+		let colors = undefined;
+		let indices = undefined;
+
+		let memoryManager = new EmscriptenMemoryManager();
+		let mesh = undefined;
+		let geometry = undefined;
+		let trivialConnections = undefined;
+		let singularity = undefined;
+
+		let filename = "bunny.obj";
+
+		const ORANGE = new Vector(1.0, 0.5, 0.0);
+		let guiFields = {
+			"Load Mesh": function() {
+				input.click();
+			},
+			"Export Mesh": function() {
+				exportFile(MeshIO.writeOBJ({
+					"v": positions,
+					"vt": uvs,
+					"vn": normals,
+					"f": indices
+				}));
+			},
+			"Singularity": "1.00",
+			"Compute φ": function() {
+				if (mesh.boundaries.length === 0) {
+					// compute connections φ
+					let phi = trivialConnections.computeConnections(singularity);
+
+					// draw direction field
+					if (phi) {
+						let directionField = buildDirectionField(phi);
+						updateDirectionFieldMesh(directionField);
+					}
+
+					// cleanup
+					let exceptList = [trivialConnections.P, trivialConnections.A,
+						trivialConnections.hodge1, trivialConnections.d0
+					];
+					exceptList = exceptList.concat(trivialConnections.bases);
+					memoryManager.deleteExcept(exceptList);
+				}
+			},
+			"Reset": function() {
+				// clear spheres
+				for (let threeSphereMesh of threeSphereMap.values()) scene.remove(threeSphereMesh);
+				threeSphereMap = new Map();
+
+				// clear singularities
+				singularity = {};
+				for (let v of geometry.mesh.vertices) {
+					singularity[v] = 0.0;
+				}
+
+				selectedVertex = undefined;
+				scene.remove(directionFieldMesh);
+			},
+			"Show Wireframe": showWireframe
+		};
+
+		init();
+		animate();
+
+		function init() {
+			let container = document.createElement("div");
+			document.body.appendChild(container);
+
+			initRenderer(container);
+			initGUI();
+			initCamera();
+			initScene();
+			initLights();
+			initMesh(bunny);
+			initControls();
+			addEventListeners();
+		}
+
+		function initRenderer(container) {
+			renderer = new THREE.WebGLRenderer({
+				antialias: true
+			});
+			renderer.setPixelRatio(window.devicePixelRatio);
+			renderer.setClearColor(0xffffff, 1.0);
+			renderer.setSize(window.innerWidth, window.innerHeight);
+			container.appendChild(renderer.domElement);
+
+			pickRenderer = new THREE.WebGLRenderer({
+				antialias: false // turn antialiasing off for color based picking
+			});
+			pickRenderer.setPixelRatio(window.devicePixelRatio);
+			pickRenderer.setClearColor(0xffffff, 1.0);
+			pickRenderer.setSize(window.innerWidth, window.innerHeight);
+			container.appendChild(pickRenderer.domElement);
+		}
+
+		function initGUI() {
+			let gui = new dat.GUI();
+
+			let io = gui.addFolder("IO");
+			io.add(guiFields, "Load Mesh");
+			io.add(guiFields, "Export Mesh");
+			io.open();
+
+			gui.add(guiFields, "Singularity").onFinishChange(updateSingularity).listen();
+			gui.add(guiFields, "Compute φ");
+			gui.add(guiFields, "Reset");
+			gui.add(guiFields, "Show Wireframe").onChange(toggleWireframe).listen();
+		}
+
+		window.onload = function() {
+			input.addEventListener("change", function(e) {
+				let file = input.files[0];
+				filename = file.name;
+
+				if (filename.endsWith(".obj")) {
+					let reader = new FileReader();
+					reader.onload = function(e) {
+						initMesh(reader.result);
+					}
+
+					reader.onerror = function(e) {
+						alert("Unable to load OBJ file");
+					}
+
+					reader.readAsText(file);
+
+				} else {
+					alert("Please load an OBJ file");
+				}
+			});
+		}
+
+		function exportFile(text) {
+			let element = document.createElement("a");
+			element.setAttribute("href", "data:text/plain;charset=utf-8," + encodeURIComponent(text));
+			element.setAttribute("download", filename);
+
+			element.style.display = "none";
+			document.body.appendChild(element);
+
+			element.click();
+
+			document.body.removeChild(element);
+		}
+
+		function updateDisplayText() {
+			let element = document.getElementById("meta");
+			element.textContent = "Click on vertices of the mesh to add singularities";
+			element.textContent += "\nShift click on vertices to remove singularities";
+			element.textContent += "\nEuler Characteristic: " + mesh.eulerCharacteristic();
+
+			let sum = 0;
+			for (let v of mesh.vertices) sum += singularity[v];
+			element.textContent += "\n∑singularity = " + sum;
+		}
+
+		function addSingularity(v) {
+			selectedVertex = v;
+			if (initThreeSphereMesh(v)) {
+				singularity[v] = 1.0;
+				guiFields["Singularity"] = "1.00";
+
+			} else {
+				guiFields["Singularity"] = singularity[v].toFixed(2);
+			}
+
+			updateDisplayText();
+		}
+
+		function updateSingularity(value) {
+			if (selectedVertex) {
+				let floatValue = parseFloat(value);
+				if (!isNaN(floatValue)) {
+					singularity[selectedVertex] = floatValue;
+
+				} else {
+					alert("Singularity must be a number");
+				}
+
+				guiFields["Singularity"] = singularity[selectedVertex].toFixed(2);
+			}
+
+			updateDisplayText();
+		}
+
+		function removeSingularity(v) {
+			if (deleteThreeSphereMesh(v)) {
+				singularity[v] = 0.0;
+				if (selectedVertex === v) selectedVertex = undefined;
+			}
+
+			updateDisplayText();
+		}
+
+		function toggleWireframe(checked) {
+			showWireframe = checked;
+			if (showWireframe) threeMesh.add(wireframe);
+			else threeMesh.remove(wireframe);
+		}
+
+		function initCamera() {
+			const fov = 45.0;
+			const aspect = window.innerWidth / window.innerHeight;
+			const near = 0.1;
+			const far = 1000;
+			const eyeZ = 3.5;
+
+			camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
+			camera.position.z = eyeZ;
+		}
+
+		function initScene() {
+			scene = new THREE.Scene();
+			scene.background = new THREE.Color(0xffffff);
+
+			pickScene = new THREE.Scene();
+			pickScene.background = new THREE.Color(0xffffff);
+		}
+
+		function initLights() {
+			let ambient = new THREE.AmbientLight(0xffffff, 0.35);
+			camera.add(ambient);
+
+			let point = new THREE.PointLight(0xffffff);
+			point.position.set(2, 20, 15);
+			camera.add(point);
+
+			scene.add(camera);
+		}
+
+		function initMesh(text) {
+			let polygonSoup = MeshIO.readOBJ(text);
+			mesh = new Mesh();
+			if (mesh.build(polygonSoup)) {
+				// remove any previously loaded mesh from scene
+				scene.remove(threeMesh);
+				pickScene.remove(threePickMesh);
+				memoryManager.deleteExcept([]);
+
+				// create geometry object
+				geometry = new Geometry(mesh, polygonSoup["v"]);
+
+				// create a THREE.js mesh (and geometry) object
+				initThreeMesh();
+				scene.add(threeMesh);
+
+				initThreePickMesh();
+				pickScene.add(threePickMesh);
+
+				guiFields["Reset"]();
+				directionFieldMesh = undefined;
+
+				if (mesh.boundaries.length === 0) {
+					// initialize trivial connections
+					trivialConnections = new TrivialConnections(geometry);
+
+				} else {
+					alert("Mesh must be boundaryless");
+				}
+
+				// update metadata
+				updateDisplayText();
+
+			} else {
+				alert("Unable to build halfedge mesh");
+			}
+		}
+
+		function initThreeMesh() {
+			// create geometry object
+			threeGeometry = new THREE.BufferGeometry();
+
+			// fill position, normal and color buffers
+			let V = mesh.vertices.length;
+			positions = new Float32Array(V * 3);
+			normals = new Float32Array(V * 3);
+			colors = new Float32Array(V * 3);
+			for (let v of mesh.vertices) {
+				let i = v.index;
+
+				let position = geometry.positions[v];
+				positions[3 * i + 0] = position.x;
+				positions[3 * i + 1] = position.y;
+				positions[3 * i + 2] = position.z;
+
+				let normal = geometry.vertexNormalEquallyWeighted(v);
+				normals[3 * i + 0] = normal.x;
+				normals[3 * i + 1] = normal.y;
+				normals[3 * i + 2] = normal.z;
+
+				colors[3 * i + 0] = ORANGE.x;
+				colors[3 * i + 1] = ORANGE.y;
+				colors[3 * i + 2] = ORANGE.z;
+			}
+
+			// fill index buffer
+			let F = mesh.faces.length;
+			indices = new Uint32Array(F * 3);
+			for (let f of mesh.faces) {
+				let i = 0;
+				for (let v of f.adjacentVertices()) {
+					indices[3 * f.index + i++] = v.index;
+				}
+			}
+
+			// set geometry
+			threeGeometry.setIndex(new THREE.BufferAttribute(indices, 1));
+			threeGeometry.addAttribute("position", new THREE.BufferAttribute(positions, 3));
+			threeGeometry.addAttribute("normal", new THREE.BufferAttribute(normals, 3));
+			threeGeometry.addAttribute("color", new THREE.BufferAttribute(colors, 3));
+
+			// create material
+			let threeMaterial = new THREE.MeshPhongMaterial({
+				vertexColors: THREE.VertexColors,
+				polygonOffset: true,
+				polygonOffsetFactor: 1,
+				polygonOffsetUnits: 1,
+				side: THREE.DoubleSide
+			});
+
+			// create wireframe
+			wireframe = new THREE.LineSegments();
+			wireframe.geometry = new THREE.WireframeGeometry(threeGeometry);
+			wireframe.material = new THREE.LineBasicMaterial({
+				color: 0x000000,
+				linewidth: 0.75
+			});
+
+			// create mesh
+			threeMesh = new THREE.Mesh(threeGeometry, threeMaterial);
+
+			// toggle wireframe
+			toggleWireframe(showWireframe);
+		}
+
+		function initThreePickMesh() {
+			// create geometry object
+			let threePickGeometry = new THREE.BufferGeometry();
+
+			// fill position and color buffers
+			// picking region for each vertex is the barycentric dual cell
+			let C = mesh.corners.length;
+			let pickPositions = new Float32Array(C * 6 * 3);
+			let pickColors = new Float32Array(C * 6 * 3);
+			let elementColor = function(pickId) {
+				return new Vector(
+					((pickId & 0x000000ff) >> 0) / 255.0,
+					((pickId & 0x0000ff00) >> 8) / 255.0,
+					((pickId & 0x00ff0000) >> 16) / 255.0);
+			}
+
+			for (let c of mesh.corners) {
+				let i = 6 * 3 * c.index;
+				let v = c.vertex;
+				let pickColor = elementColor(v.index + 1); // Hack! dat gui interferes with picking
+				// by returning a pickId of 0 on mouse click, shifting indices by 1 seems to avoid this
+
+				// get the three vertex positions in the triangle
+				let p1 = geometry.positions[v];
+				let p2 = geometry.positions[c.next.vertex];
+				let p3 = geometry.positions[c.prev.vertex];
+
+				// get the edge and triangle midpoints
+				let m12 = p1.plus(p2).over(2);
+				let m13 = p1.plus(p3).over(2);
+				let m123 = p1.plus(p2).plus(p3).over(3);
+
+				// give all the triangles the same pick color at this corner
+				let tris = [p1, m12, m123, p1, m123, m13];
+				for (let j = 0; j < 6; j++) {
+					let k = i + 3 * j;
+
+					pickPositions[k + 0] = tris[j].x;
+					pickPositions[k + 1] = tris[j].y;
+					pickPositions[k + 2] = tris[j].z;
+
+					pickColors[k + 0] = pickColor.x;
+					pickColors[k + 1] = pickColor.y;
+					pickColors[k + 2] = pickColor.z;
+				}
+			}
+
+			// set geometry
+			threePickGeometry.addAttribute("position", new THREE.BufferAttribute(pickPositions, 3));
+			threePickGeometry.addAttribute("color", new THREE.BufferAttribute(pickColors, 3));
+
+			// create material
+			let threePickMaterial = new THREE.MeshBasicMaterial({
+				vertexColors: THREE.VertexColors
+			});
+
+			// create mesh
+			threePickMesh = new THREE.Mesh(threePickGeometry, threePickMaterial);
+		}
+
+		function initThreeSphereMesh(v) {
+			let createdSphere = false;
+			if (!threeSphereMap.has(v.index)) {
+				let threeSphereMesh = new THREE.Mesh(new THREE.SphereGeometry(0.015));
+
+				let center = geometry.positions[v];
+				threeSphereMesh.position.set(center.x, center.y, center.z);
+				scene.add(threeSphereMesh);
+				threeSphereMap.set(v.index, threeSphereMesh);
+
+				createdSphere = true;
+			}
+
+			for (let [index, threeSphereMesh] of threeSphereMap) {
+				if (index === v.index) threeSphereMesh.material.color.setHex(0xff5500);
+				else threeSphereMesh.material.color.setHex(0xffff00);
+			}
+
+			return createdSphere;
+		}
+
+		function deleteThreeSphereMesh(v) {
+			let deletedSphere = false;
+			if (threeSphereMap.has(v.index)) {
+				let threeSphereMesh = threeSphereMap.get(v.index);
+
+				scene.remove(threeSphereMesh);
+				threeSphereMap.delete(v.index);
+
+				deletedSphere = true;
+			}
+
+			return deletedSphere;
+		}
+
+		function buildDirectionField(phi) {
+			// mark each face as its own parent
+			let faceParent = {};
+			for (let f of mesh.faces) {
+				faceParent[f] = f;
+			}
+
+			// build dual spanning tree
+			let alpha = {};
+			let root = mesh.faces[0];
+			alpha[root] = 0;
+			let queue = [root];
+			while (queue.length !== 0) {
+				let f = queue.shift();
+
+				for (let h of f.adjacentHalfedges()) {
+					let g = h.twin.face;
+
+					if (faceParent[g] === g && g !== root) {
+						let i = trivialConnections.edgeIndex[h.edge];
+						let sign = h.edge.halfedge === h ? 1 : -1;
+
+						faceParent[g] = f;
+						let connection = sign * phi.get(i, 0);
+						alpha[g] = trivialConnections.transportNoRotation(h, alpha[f]) - connection;
+						queue.push(g);
+					}
+				}
+			}
+
+			let field = {};
+			for (let f of mesh.faces) {
+				let u = new Vector(Math.cos(alpha[f]), Math.sin(alpha[f]));
+				let [e1, e2] = geometry.orthonormalBases(f);
+				field[f] = e1.times(u.x).plus(e2.times(u.y));
+			}
+
+			return field;
+		}
+
+		function setArrow(positions, index, a, b, N) {
+			positions[18 * index + 0] = a.x;
+			positions[18 * index + 1] = a.y;
+			positions[18 * index + 2] = a.z;
+			positions[18 * index + 3] = b.x;
+			positions[18 * index + 4] = b.y;
+			positions[18 * index + 5] = b.z;
+
+			let v = b.minus(a);
+			let vT = N.cross(v);
+			let segments = [
+				b, b.minus(v.times(0.2).plus(vT.times(0.1))),
+				b, b.minus(v.times(0.2).plus(vT.times(-0.1)))
+			];
+
+			let i = 5;
+			for (let p of segments) {
+				positions[18 * index + i + 1] = p.x;
+				positions[18 * index + i + 2] = p.y;
+				positions[18 * index + i + 3] = p.z;
+				i += 3;
+			}
+		}
+
+		function updateDirectionFieldMesh(directionField) {
+			// initialize mesh
+			if (!directionFieldMesh) {
+				let F = mesh.faces.length;
+
+				let directionFieldGeometry = new THREE.BufferGeometry();
+				directionFieldGeometry.addAttribute("position", new THREE.BufferAttribute(new Float32Array(F * 6 * 3), 3));
+				let directionFieldMaterial = new THREE.LineBasicMaterial({
+					color: 0x000000
+				});
+
+				directionFieldMesh = new THREE.LineSegments(directionFieldGeometry, directionFieldMaterial);
+			}
+
+			// update positions
+			let length = 0.3 * geometry.meanEdgeLength();
+			let directionFieldPositions = directionFieldMesh.geometry.attributes.position.array;
+			for (let f of mesh.faces) {
+				let C = geometry.centroid(f);
+				let N = geometry.faceNormal(f);
+
+				let field = directionField[f].times(length);
+				setArrow(directionFieldPositions, f.index, C.minus(field), C.plus(field), N);
+			}
+
+			directionFieldMesh.geometry.attributes.position.needsUpdate = true;
+			if (!scene.children.includes(directionFieldMesh)) scene.add(directionFieldMesh);
+		}
+
+		function initControls() {
+			controls = new THREE.TrackballControls(camera, renderer.domElement);
+			controls.rotateSpeed = 5.0;
+		}
+
+		function addEventListeners() {
+			window.addEventListener("click", onMouseClick, false);
+			window.addEventListener("resize", onWindowResize, false);
+		}
+
+		function onMouseClick(event) {
+			if (event.clientX >= 0 && event.clientX <= window.innerWidth &&
+				event.clientY >= 0 && event.clientY <= window.innerHeight) {
+				shiftClick = event.shiftKey;
+				pick(event.clientX, event.clientY);
+			}
+		}
+
+		function onWindowResize() {
+			camera.aspect = window.innerWidth / window.innerHeight;
+			camera.updateProjectionMatrix();
+
+			renderer.setSize(window.innerWidth, window.innerHeight);
+			controls.handleResize();
+			render();
+		}
+
+		function pick(clickX, clickY) {
+			// draw
+			let pickTexture = new THREE.WebGLRenderTarget(window.innerWidth, window.innerHeight);
+			pickTexture.texture.generateMipmaps = false;
+			pickRenderer.render(pickScene, camera, pickTexture);
+
+			// read color
+			let pixelBuffer = new Uint8Array(4);
+			pickRenderer.readRenderTargetPixels(pickTexture, clickX, pickTexture.height - clickY, 1, 1, pixelBuffer);
+
+			// convert color to id
+			let pickId = pixelBuffer[0] + pixelBuffer[1] * 256 + pixelBuffer[2] * 256 * 256;
+			if (pickId !== 0 && pickId !== 0x00ffffff) {
+				let v = mesh.vertices[pickId - 1];
+				if (!shiftClick) addSingularity(v);
+				else removeSingularity(v);
+			}
+		}
+
+		function animate() {
+			requestAnimationFrame(animate);
+			controls.update();
+			render();
+		}
+
+		function render() {
+			renderer.render(scene, camera);
+		}
+	</script>
+</body>
+
+</html>

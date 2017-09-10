@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<title>Discrete Curvatures and Normals</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+	<link rel="stylesheet" href="../../style/main.css">
+</head>
+
+<body>
+	<div id="info">
+		<input type="file" id="fileInput" style="visibility:hidden">
+	</div>
+	<div id="info">
+		<h2>Discrete Curvatures and Normals</h2>
+		<div id="meta">Loading...</div>
+	</div>
+	<div id="logo">
+		<a href="http://geometry.cs.cmu.edu" target="_blank">
+			<img src="../../imgs/logo.png" width="192" height="152" border="0">
+		</a>
+	</div>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/87/three.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.6.5/dat.gui.min.js"></script>
+	<script src="../../libs/detector.js"></script>
+	<script src="../../libs/trackball-controls.js"></script>
+	<script src="../../linear-algebra/vector.js"></script>
+	<script src="../../core/vertex.js"></script>
+	<script src="../../core/edge.js"></script>
+	<script src="../../core/face.js"></script>
+	<script src="../../core/halfedge.js"></script>
+	<script src="../../core/corner.js"></script>
+	<script src="../../core/mesh.js"></script>
+	<script src="../../core/geometry.js"></script>
+	<script src="../../input/bunny.js"></script>
+	<script src="../../utils/meshio.js"></script>
+	<script src="../../utils/colormap.js"></script>
+	<script>
+		if (!Detector.webgl) Detector.addGetWebGLMessage();
+
+		let input = document.getElementById("fileInput");
+		let renderer = undefined;
+		let camera = undefined;
+		let controls = undefined;
+		let showNormals = false;
+		let useBasicMaterial = false;
+		let showWireframe = false;
+		let scene = undefined;
+		let threeMesh = undefined;
+		let threeGeometry = undefined;
+		let normalsHelper = undefined;
+		let wireframe = undefined;
+		let materialSettings = {
+			vertexColors: THREE.VertexColors,
+			polygonOffset: true,
+			polygonOffsetFactor: 1,
+			polygonOffsetUnits: 1,
+			side: THREE.DoubleSide
+		};
+
+		let positions = undefined;
+		let uvs = undefined;
+		let normals = undefined;
+		let colors = undefined;
+		let indices = undefined;
+
+		let mesh = undefined;
+		let geometry = undefined;
+
+		let filename = "bunny.obj";
+
+		const ORANGE = new Vector(1.0, 0.5, 0.0);
+		let guiFields = {
+			"Load Mesh": function() {
+				input.click();
+			},
+			"Export Mesh": function() {
+				exportFile(MeshIO.writeOBJ({
+					"v": positions,
+					"vt": uvs,
+					"vn": normals,
+					"f": indices
+				}));
+			},
+			"Plot": "Shaded",
+			"Normals": "Equally Weighted",
+			"Show Normals": showNormals,
+			"Show Wireframe": showWireframe
+		};
+
+		init();
+		animate();
+
+		function init() {
+			let container = document.createElement("div");
+			document.body.appendChild(container);
+
+			initRenderer(container);
+			initGUI();
+			initCamera();
+			initScene();
+			initLights();
+			initMesh(bunny);
+			initControls();
+			addEventListeners();
+		}
+
+		function initRenderer(container) {
+			renderer = new THREE.WebGLRenderer({
+				antialias: true
+			});
+			renderer.setPixelRatio(window.devicePixelRatio);
+			renderer.setSize(window.innerWidth, window.innerHeight);
+			container.appendChild(renderer.domElement);
+		}
+
+		function initGUI() {
+			let gui = new dat.GUI();
+
+			let io = gui.addFolder("IO");
+			io.add(guiFields, "Load Mesh");
+			io.add(guiFields, "Export Mesh");
+			io.open();
+
+			gui.add(guiFields, "Normals", ["Equally Weighted", "Tip Angle Weighted", "Sphere Inscribed",
+				"Area Weighted (AN)", "Mean Curvature (HN)", "Gauss Curvature (KN)"
+			]).onChange(updateNormals).listen();
+			gui.add(guiFields, "Plot", ["Shaded", "A", "H", "K", "κ max", "κ min"]).onChange(updatePlot).listen();
+			gui.add(guiFields, "Show Normals").onChange(toggleNormals).listen();
+			gui.add(guiFields, "Show Wireframe").onChange(toggleWireframe).listen();
+		}
+
+		window.onload = function() {
+			input.addEventListener("change", function(e) {
+				let file = input.files[0];
+				filename = file.name;
+
+				if (filename.endsWith(".obj")) {
+					let reader = new FileReader();
+					reader.onload = function(e) {
+						initMesh(reader.result);
+					}
+
+					reader.onerror = function(e) {
+						alert("Unable to load OBJ file");
+					}
+
+					reader.readAsText(file);
+
+				} else {
+					alert("Please load an OBJ file");
+				}
+			});
+		}
+
+		function exportFile(text) {
+			let element = document.createElement("a");
+			element.setAttribute("href", "data:text/plain;charset=utf-8," + encodeURIComponent(text));
+			element.setAttribute("download", filename);
+
+			element.style.display = "none";
+			document.body.appendChild(element);
+
+			element.click();
+
+			document.body.removeChild(element);
+		}
+
+		function updateNormals(value) {
+			for (let v of mesh.vertices) {
+				let i = v.index;
+
+				let normal;
+				if (value === "Equally Weighted") normal = geometry.vertexNormalEquallyWeighted(v);
+				else if (value === "Tip Angle Weighted") normal = geometry.vertexNormalAngleWeighted(v);
+				else if (value === "Sphere Inscribed") normal = geometry.vertexNormalSphereInscribed(v);
+				else if (value === "Area Weighted (AN)") normal = geometry.vertexNormalAreaWeighted(v);
+				else if (value === "Mean Curvature (HN)") normal = geometry.vertexNormalMeanCurvature(v);
+				else if (value === "Gauss Curvature (KN)") normal = geometry.vertexNormalGaussCurvature(v);
+
+				normals[3 * i + 0] = normal.x;
+				normals[3 * i + 1] = normal.y;
+				normals[3 * i + 2] = normal.z;
+			}
+
+			threeGeometry.attributes.normal.needsUpdate = true;
+			normalsHelper.update();
+		}
+
+		function toggleNormals(checked) {
+			showNormals = checked;
+			if (showNormals) scene.add(normalsHelper);
+			else scene.remove(normalsHelper);
+		}
+
+		function updatePlot(value) {
+			let max = 0;
+			let vertexQuantity = {};
+			if (value !== "Shaded") {
+				useBasicMaterial = true;
+				for (let v of mesh.vertices) {
+					if (value === "A") {
+						vertexQuantity[v] = geometry.circumcentricDualArea(v);
+
+					} else if (value === "K") {
+						vertexQuantity[v] = geometry.scalarGaussCurvature(v);
+
+					} else if (value === "H") {
+						vertexQuantity[v] = geometry.scalarMeanCurvature(v);
+
+					} else {
+						let area = geometry.barycentricDualArea(v);
+						let [k1, k2] = geometry.principalCurvatures(v);
+						if (value === "κ min") vertexQuantity[v] = k1 * area;
+						else vertexQuantity[v] = k2 * area;
+					}
+
+					max = Math.max(Math.abs(vertexQuantity[v]), max);
+				}
+
+			} else {
+				useBasicMaterial = false;
+			}
+
+			max = Math.min(Math.PI / 8, max);
+
+			for (let v of mesh.vertices) {
+				let i = v.index;
+
+				let color = value === "Shaded" ? ORANGE : colormap(vertexQuantity[v], -max, max, seismic);
+				colors[3 * i + 0] = color.x;
+				colors[3 * i + 1] = color.y;
+				colors[3 * i + 2] = color.z;
+			}
+
+			if (useBasicMaterial) threeMesh.material = new THREE.MeshBasicMaterial(materialSettings);
+			else threeMesh.material = new THREE.MeshPhongMaterial(materialSettings);
+			threeGeometry.attributes.color.needsUpdate = true;
+		}
+
+		function toggleWireframe(checked) {
+			showWireframe = checked;
+			if (showWireframe) threeMesh.add(wireframe);
+			else threeMesh.remove(wireframe);
+		}
+
+		function initCamera() {
+			const fov = 45.0;
+			const aspect = window.innerWidth / window.innerHeight;
+			const near = 0.1;
+			const far = 1000;
+			const eyeZ = 3.5;
+
+			camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
+			camera.position.z = eyeZ;
+		}
+
+		function initScene() {
+			scene = new THREE.Scene();
+			scene.background = new THREE.Color(0xffffff);
+		}
+
+		function initLights() {
+			let ambient = new THREE.AmbientLight(0xffffff, 0.35);
+			camera.add(ambient);
+
+			let point = new THREE.PointLight(0xffffff);
+			point.position.set(2, 20, 15);
+			camera.add(point);
+
+			scene.add(camera);
+		}
+
+		function initMesh(text) {
+			let polygonSoup = MeshIO.readOBJ(text);
+			mesh = new Mesh();
+			if (mesh.build(polygonSoup)) {
+				// remove any previously loaded mesh from scene
+				scene.remove(threeMesh);
+				scene.remove(normalsHelper);
+
+				// create geometry object
+				geometry = new Geometry(mesh, polygonSoup["v"]);
+
+				// create a THREE.js mesh (and geometry) object
+				initThreeMesh();
+				scene.add(threeMesh);
+
+				updateNormals(guiFields["Normals"]);
+
+				// update metadata
+				let element = document.getElementById("meta");
+				element.textContent = "Total Angle Defect: " + (geometry.totalAngleDefect() / Math.PI).toFixed(2) + "π";
+				element.textContent += "\nEuler Characteristic: " + mesh.eulerCharacteristic();
+
+			} else {
+				alert("Unable to build halfedge mesh");
+			}
+		}
+
+		function initThreeMesh() {
+			// create geometry object
+			threeGeometry = new THREE.BufferGeometry();
+
+			// fill position, normal and color buffers
+			let V = mesh.vertices.length;
+			positions = new Float32Array(V * 3);
+			normals = new Float32Array(V * 3);
+			colors = new Float32Array(V * 3);
+			for (let v of mesh.vertices) {
+				let i = v.index;
+
+				let position = geometry.positions[v];
+				positions[3 * i + 0] = position.x;
+				positions[3 * i + 1] = position.y;
+				positions[3 * i + 2] = position.z;
+
+				let normal = geometry.vertexNormalEquallyWeighted(v);
+				normals[3 * i + 0] = normal.x;
+				normals[3 * i + 1] = normal.y;
+				normals[3 * i + 2] = normal.z;
+
+				colors[3 * i + 0] = ORANGE.x;
+				colors[3 * i + 1] = ORANGE.y;
+				colors[3 * i + 2] = ORANGE.z;
+			}
+
+			// fill index buffer
+			let F = mesh.faces.length;
+			indices = new Uint32Array(F * 3);
+			for (let f of mesh.faces) {
+				let i = 0;
+				for (let v of f.adjacentVertices()) {
+					indices[3 * f.index + i++] = v.index;
+				}
+			}
+
+			// set geometry
+			threeGeometry.setIndex(new THREE.BufferAttribute(indices, 1));
+			threeGeometry.addAttribute("position", new THREE.BufferAttribute(positions, 3));
+			threeGeometry.addAttribute("normal", new THREE.BufferAttribute(normals, 3));
+			threeGeometry.addAttribute("color", new THREE.BufferAttribute(colors, 3));
+
+			// create material
+			let threeMaterial = new THREE.MeshPhongMaterial(materialSettings);
+
+			// create wireframe
+			wireframe = new THREE.LineSegments();
+			wireframe.geometry = new THREE.WireframeGeometry(threeGeometry);
+			wireframe.material = new THREE.LineBasicMaterial({
+				color: 0x000000,
+				linewidth: 0.75
+			});
+
+			// create mesh
+			threeMesh = new THREE.Mesh(threeGeometry, threeMaterial);
+
+			// create normals helper
+			normalsHelper = new THREE.VertexNormalsHelper(threeMesh, 0.02, 0x0000ff, 0.75);
+
+			// toggle normals, curvature and wireframe
+			toggleNormals(showNormals);
+			updatePlot(guiFields["Plot"]);
+			toggleWireframe(showWireframe);
+		}
+
+		function initControls() {
+			controls = new THREE.TrackballControls(camera, renderer.domElement);
+			controls.rotateSpeed = 5.0;
+		}
+
+		function addEventListeners() {
+			window.addEventListener("resize", onWindowResize, false);
+		}
+
+		function onWindowResize() {
+			camera.aspect = window.innerWidth / window.innerHeight;
+			camera.updateProjectionMatrix();
+
+			renderer.setSize(window.innerWidth, window.innerHeight);
+			controls.handleResize();
+			render();
+		}
+
+		function animate() {
+			requestAnimationFrame(animate);
+			controls.update();
+			render();
+		}
+
+		function render() {
+			renderer.render(scene, camera);
+		}
+	</script>
+</body>
+
+</html>
