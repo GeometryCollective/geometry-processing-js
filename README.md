@@ -34,7 +34,7 @@ The implementation of geometry-processing-js attempts to minimize the use of obs
 
 Email: rohansawhney@cs.cmu.edu
 
-Design inspiration: (Nick Sharp)[http://nmwsharp.com], [Keenan Crane](http://www.cs.cmu.edu/~kmcrane/)
+Design inspiration: [Nick Sharp](http://nmwsharp.com), [Keenan Crane](http://www.cs.cmu.edu/~kmcrane/)
 
 ## License
 
