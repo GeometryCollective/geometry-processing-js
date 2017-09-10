@@ -30,11 +30,11 @@ The implementation of geometry-processing-js attempts to minimize the use of obs
 
 ## Author
 
-Rohan Sawhney
+[Rohan Sawhney](http://rohansawhney.io)
 
 Email: rohansawhney@cs.cmu.edu
 
-Design inspiration: Nick Sharp, Keenan Crane
+Design inspiration: (Nick Sharp)[http://nmwsharp.com], [Keenan Crane](http://www.cs.cmu.edu/~kmcrane/)
 
 ## License
 
