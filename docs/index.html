@@ -100,27 +100,28 @@
 
 
     <section class="readme-section">
-        <article><h1>geometry-processing-js</h1><p>geometry-processing-js is a framework for interactive geometry processing in the web!<br>It is designed to be fast and easy to work with, which makes it suitable for coursework<br>and for releasing demos.</p>
-<p>At a high level, the framework is divided into three parts - an implementation of<br>a halfedge mesh data structure, an optimized linear algebra package and skeleton<br>code for various geometry processing algorithms. Each algorithm comes with its own<br>viewer for rendering.</p>
-<p>Detailed documentation and unit tests for each of these parts can be found in the docs<br>and tests directories of this <a href="https://github.com/rohan-sawhney/geometry-processing-js">repository</a>.</p>
+        <article><h1>geometry-processing-js</h1><p>geometry-processing-js is a fast and flexible framework for 3D geometry processing on the web! Easy integration with HTML/WebGL makes it particularly suitable for things like mobile apps, online demos, and course content. For many tasks, performance comes within striking distance of native (C++) code. It is developed by and maintained by the <a href="http://geometry.cs.cmu.edu">Geometry Collective</a> at <a href="http://www.cs.cmu.edu/">Carnegie Mellon University</a>.</p>
+<p>At a high level, the framework is divided into three parts - a flexible a halfedge mesh data structure, an optimized linear algebra package (based on <a href="https://eigen.tuxfamily.org">Eigen</a>), and code for various geometry processing algorithms. Each algorithm comes with its own viewer for rendering.</p>
+<p>Detailed documentation and unit tests for each of these parts can be found in the docs and tests directories of this <a href="https://github.com/geometrycollective/geometry-processing-js">repository</a>.</p>
 <h2>Getting started</h2><ol>
 <li><p>Clone the repository and change into the projects directory</p>
-<pre class="prettyprint source"><code>git clone https://github.com/rohan-sawhney/geometry-processing-js.git
+<pre class="prettyprint source"><code>git clone https://github.com/geometrycollective/geometry-processing-js.git
 cd geometry-processing-js/projects</code></pre></li>
-<li><p>Open the index.html file in any of the sub directories in a browser of your choice<br>(Chrome and Firefox usually provide better rendering performance than Safari).</p>
+<li><p>Open the index.html file in any of the sub directories in a browser of your choice (Chrome and Firefox usually provide better rendering performance than Safari).</p>
 </li>
 </ol>
 <h2>Dependencies (all included)</h2><ol>
-<li><p>Linear Algebra - A wrapper around the C++ library <a href="https://eigen.tuxfamily.org">Eigen</a> compiled<br>to <a href="http://asmjs.org">asm.js</a> with <a href="http://emscripten.org">emscripten</a>. Future updates will compile<br>the more optimized sparse matrix library <a href="http://faculty.cse.tamu.edu/davis/suitesparse.html">Suitesparse</a> to asm.js.</p>
+<li><p>Linear Algebra - A wrapper around the C++ library <a href="https://eigen.tuxfamily.org">Eigen</a> compiled to <a href="http://asmjs.org">asm.js</a> with <a href="http://emscripten.org">emscripten</a>. Future updates will compile the more optimized sparse matrix library <a href="http://faculty.cse.tamu.edu/davis/suitesparse.html">Suitesparse</a> to asm.js. (Note that this wrapper can also be used for other, non-geometric projects which seek to use Eigen on the web)</p>
 </li>
 <li><p>Rendering - <a href="https://threejs.org">three.js</a></p>
 </li>
 <li><p>Unit Tests - <a href="http://mochajs.org">Mocha</a> and <a href="http://chaijs.com">Chai</a></p>
 </li>
 </ol>
-<h2>About Javascript</h2><p>The implementation of geometry-processing-js attempts to minimize the use of obscure<br>Javascript language features. It should not be too difficult for anyone with experience<br>in a dynamic language like Python or familiar with the principles of Object Oriented Programming<br>to get a handle on Javascript syntax by reading through some of the code in this framework.<br>The documentation contains examples specific to this framework which will also be of help.<br>For a more formal introduction to Javascript, checkout this really nice <a href="https://javascript.info">tutorial</a>.</p>
+<h2>About Javascript</h2><p>The implementation of geometry-processing-js attempts to minimize the use of obscure Javascript language features. It should not be too difficult for anyone with experience in a dynamic language like Python or familiar with the principles of Object Oriented Programming to get a handle on Javascript syntax by reading through some of the code in this framework. The documentation contains examples specific to this framework which will also be of help. For a more formal introduction to Javascript, checkout this really nice <a href="https://javascript.info">tutorial</a>.</p>
 <h2>Author</h2><p>Rohan Sawhney</p>
 <p>Email: rohansawhney@cs.cmu.edu</p>
+<p>Design inspiration: Nick Sharp, Keenan Crane</p>
 <h2>License</h2><p><a href="https://opensource.org/licenses/MIT">MIT</a></p></article>
     </section>
 
@@ -167,7 +168,7 @@ cd geometry-processing-js/projects</code></pre></li>
 <span class="jsdoc-message">
 	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.4</a>
 	
-		on Fri Sep 8th 2017
+		on Sun Sep 10th 2017
 	
 	using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
 </span>
