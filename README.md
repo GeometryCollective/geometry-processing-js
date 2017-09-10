@@ -2,7 +2,7 @@
 
 geometry-processing-js is a fast and flexible framework for 3D geometry processing on the web! Easy integration with HTML/WebGL makes it particularly suitable for things like mobile apps, online demos, and course content. For many tasks, performance comes within striking distance of native (C++) code. It is developed by and maintained by the [Geometry Collective](http://geometry.cs.cmu.edu) at [Carnegie Mellon University](http://www.cs.cmu.edu/).
 
-At a high level, the framework is divided into three parts - a flexible a halfedge mesh data structure, an optimized linear algebra package (based on [Eigen](https://eigen.tuxfamily.org)), and skeleton code for various geometry processing algorithms. Each algorithm comes with its own viewer for rendering.
+At a high level, the framework is divided into three parts - a flexible a halfedge mesh data structure, an optimized linear algebra package (based on [Eigen](https://eigen.tuxfamily.org)), and code for various geometry processing algorithms. Each algorithm comes with its own viewer for rendering.
 
 Detailed documentation and unit tests for each of these parts can be found in the docs and tests directories of this [repository](https://github.com/geometrycollective/geometry-processing-js).
 
@@ -18,9 +18,7 @@ cd geometry-processing-js/projects
 
 ## Dependencies (all included)
 
-1. Linear Algebra - A wrapper around the C++ library [Eigen](https://eigen.tuxfamily.org) compiled
-to [asm.js](http://asmjs.org) with [emscripten](http://emscripten.org). Future updates will compile
-the more optimized sparse matrix library [Suitesparse](http://faculty.cse.tamu.edu/davis/suitesparse.html) to asm.js. (Note that this wrapper can also be used for other, non-geometric projects which seek to use Eigen on the web)
+1. Linear Algebra - A wrapper around the C++ library [Eigen](https://eigen.tuxfamily.org) compiled to [asm.js](http://asmjs.org) with [emscripten](http://emscripten.org). Future updates will compile the more optimized sparse matrix library [Suitesparse](http://faculty.cse.tamu.edu/davis/suitesparse.html) to asm.js. (Note that this wrapper can also be used for other, non-geometric projects which seek to use Eigen on the web)
 
 2. Rendering - [three.js](https://threejs.org)
 
