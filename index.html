@@ -49,10 +49,12 @@
 
             <p class="view"><a href="https://github.com/geometrycollective/geometry-processing-js">View the Project on GitHub <small></small></a></p>
 
-            <p><center>
-               <img src="imgs/geometry-processing-js_iphone.jpg" width="220" height="186"><br>
-               <em><tt>geometry-processing-js</tt> demo running on iPhone 6</em>
-            </center></p>
+            <p>
+                <center>
+                    <img src="imgs/geometry-processing-js_iphone.jpg" width="220" height="186"><br>
+                    <em><tt>geometry-processing-js</tt> demo running on iPhone 6</em>
+                </center>
+            </p>
 
 
 
@@ -96,9 +98,7 @@
             <h2 id="getting-started">Code Snippet</h2> Since <tt>geometry-processing-js</tt> already implements many of the fundamental operations needed for geometry processing, it's easy to get up and running very quickly. Here's a short snippet showing how to solve a Poisson equation on a
             mesh loaded by the GUI, which uses built-in routines for constructing the Laplace and mass matrices:
 
-Since <tt>geometry-processing-js</tt> already implements many of the fundamental operations needed for geometry processing, it's easy to get up and running very quickly.  Here's a short snippet showing how to solve a Poisson equation on a mesh loaded by the GUI, which uses built-in routines for constructing the Laplace and mass matrices:
-
-<div class="highlighter-rouge"><pre class="highlight"><code class="language-javascript" data-lang="javascript">// assign an index to each vertex of the mesh
+            <div class="highlighter-rouge"><pre class="highlight"><code class="language-javascript" data-lang="javascript">// assign an index to each vertex of the mesh
 let vertexIndex = indexElements(geometry.mesh.vertices);
 
 // build cotan-Laplace and mass matrices
@@ -134,7 +134,7 @@ cd geometry-processing-js/projects
                 <li>
                     <p>Linear Algebra - A wrapper around the C++ library <a href="https://eigen.tuxfamily.org">Eigen</a> compiled to <a href="http://asmjs.org">asm.js</a> with <a href="http://emscripten.org">emscripten</a>. Future updates will compile the
                         more optimized sparse matrix library <a href="http://faculty.cse.tamu.edu/davis/suitesparse.html">Suitesparse</a> to asm.js. (Note that this wrapper can also be used for other, non-geometric projects which seek to use Eigen on
-                        the web; stay tuned for a separate release!)</p>
+                        the web; you can find the standalone release <a href="https://rohan-sawhney.github.io/linear-algebra-js/">here</a>)</p>
                 </li>
                 <li>
                     <p>Rendering - <a href="https://threejs.org">three.js</a></p>
