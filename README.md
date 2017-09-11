@@ -38,7 +38,7 @@ cd geometry-processing-js/projects
 
 ## Dependencies (all included)
 
-1. Linear Algebra - A wrapper around the C++ library [Eigen](https://eigen.tuxfamily.org) compiled to [asm.js](http://asmjs.org) with [emscripten](http://emscripten.org). Future updates will compile the more optimized sparse matrix library [Suitesparse](http://faculty.cse.tamu.edu/davis/suitesparse.html) to asm.js. (Note that this wrapper can also be used for other, non-geometric projects which seek to use Eigen on the web)
+1. Linear Algebra - A wrapper around the C++ library [Eigen](https://eigen.tuxfamily.org) compiled to [asm.js](http://asmjs.org) with [emscripten](http://emscripten.org). Future updates will compile the more optimized sparse matrix library [Suitesparse](http://faculty.cse.tamu.edu/davis/suitesparse.html) to asm.js. (Note that this wrapper can also be used for other, non-geometric projects which seek to use Eigen on the web; you can find the standalone release [here](https://rohan-sawhney.github.io/linear-algebra-js/))
 
 2. Rendering - [three.js](https://threejs.org)
 
