@@ -406,7 +406,7 @@ class ComplexQR {
 	 * let qr = A.qr();
 	 * let x = qr.solve(b);
 	 *
-	 * b.scaleBy(5);
+	 * b.scaleBy(new Complex(5, 0));
 	 * x = qr.solve(b); // factorization is reused
 	 */
 	constructor(data) {
