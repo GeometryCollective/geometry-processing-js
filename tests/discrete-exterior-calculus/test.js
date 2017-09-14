@@ -136,7 +136,8 @@ describe("DEC", function() {
 			let d0 = DEC.buildExteriorDerivative0Form(geometry, edgeIndex, vertexIndex);
 			let dPhi = d0.timesDense(phi);
 
-			chai.assert.strictEqual(dPhi.minus(dPhi_sol).norm() < 1e-6, true);
+			chai.assert.strictEqual(dPhi.minus(dPhi_sol).norm() < 1e-6 ||
+				dPhi.minus(dPhi_sol.negated()).norm() < 1e-6, true);
 			memoryManager.deleteExcept([]);
 		});
 	});
@@ -175,7 +176,8 @@ describe("DEC", function() {
 			let d1 = DEC.buildExteriorDerivative1Form(geometry, faceIndex, edgeIndex);
 			let dOmega = d1.timesDense(omega);
 
-			chai.assert.strictEqual(dOmega.minus(dOmega_sol).norm() < 1e-6, true);
+			chai.assert.strictEqual(dOmega.minus(dOmega_sol).norm() < 1e-6 ||
+				dOmega.minus(dOmega_sol.negated()).norm() < 1e-6, true);
 			memoryManager.deleteExcept([]);
 		});
 	});
