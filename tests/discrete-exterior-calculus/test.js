@@ -11,6 +11,7 @@ describe("DEC", function() {
 	let vertexIndex = indexElements(geometry.mesh.vertices);
 	let edgeIndex = indexElements(geometry.mesh.edges);
 	let faceIndex = indexElements(geometry.mesh.faces);
+	let d0, d1;
 
 	describe("buildHodgeStar0Form", function() {
 		it("builds the Hodge operator on 0-forms", function() {
@@ -133,17 +134,17 @@ describe("DEC", function() {
 			let phi = forms[0];
 			let dPhi_sol = forms[1];
 
-			let d0 = DEC.buildExteriorDerivative0Form(geometry, edgeIndex, vertexIndex);
+			d0 = DEC.buildExteriorDerivative0Form(geometry, edgeIndex, vertexIndex);
 			let dPhi = d0.timesDense(phi);
 
 			chai.assert.strictEqual(dPhi.minus(dPhi_sol).norm() < 1e-6 ||
 				dPhi.minus(dPhi_sol.negated()).norm() < 1e-6, true);
-			memoryManager.deleteExcept([]);
+			memoryManager.deleteExcept([d0]);
 		});
 	});
 
 	describe("buildExteriorDerivative1Form", function() {
-		it("builds the exterior derivative on 1-forms", function() {
+		it("builds the exterior derivative on 1-forms - Assumes all edges have the same orientation as their halfedge or halfedge's twin", function() {
 			let loadForms = function() {
 				let omega = DenseMatrix.zeros(E, 1);
 				let dOmega = DenseMatrix.zeros(F, 1);
@@ -173,11 +174,20 @@ describe("DEC", function() {
 			let omega = forms[0];
 			let dOmega_sol = forms[1];
 
-			let d1 = DEC.buildExteriorDerivative1Form(geometry, faceIndex, edgeIndex);
+			d1 = DEC.buildExteriorDerivative1Form(geometry, faceIndex, edgeIndex);
 			let dOmega = d1.timesDense(omega);
 
 			chai.assert.strictEqual(dOmega.minus(dOmega_sol).norm() < 1e-6 ||
 				dOmega.minus(dOmega_sol.negated()).norm() < 1e-6, true);
+			memoryManager.deleteExcept([d0, d1]);
+		});
+	});
+
+	describe("d1.d0 = 0", function() {
+		it("The discrete exterior applied twice equals 0", function() {
+			let d0d1 = d1.timesSparse(d0);
+
+			chai.assert.strictEqual(d0d1.frobeniusNorm() < 1e-6, true);
 			memoryManager.deleteExcept([]);
 		});
 	});
