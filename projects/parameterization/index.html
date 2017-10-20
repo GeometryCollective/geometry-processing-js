@@ -108,8 +108,8 @@
 			},
 			"Method": "BFF",
 			"Plot": "Shaded",
-			"Curvature": "90.0",
-			"Target Boundary": "Isometric Lengths",
+			"Angle": "90.0",
+			"Target Boundary": "Automatic",
 			"Flatten": function() {
 				// flatten
 				flatten();
@@ -189,8 +189,8 @@
 			gui.add(guiFields, "Plot", ["Shaded", "Conformal Error", "Area Scaling"]).onChange(updateUvColors).listen();
 
 			let options = gui.addFolder("BFF Options");
-			options.add(guiFields, "Target Boundary", ["Isometric Lengths", "Specified Curvatures", "Disk"]).onChange(toggleCurvatureEditing).listen();
-			options.add(guiFields, "Curvature").onFinishChange(updateCurvatureValue).listen();
+			options.add(guiFields, "Target Boundary", ["Automatic", "Set Boundary Angles", "Disk"]).onChange(toggleCurvatureEditing).listen();
+			options.add(guiFields, "Angle").onFinishChange(updateCurvatureValue).listen();
 			options.add(guiFields, "Reset");
 			options.close();
 
@@ -236,19 +236,19 @@
 
 		function flatten() {
 			if (guiFields["Method"] === "BFF" && boundaryFirstFlattening) {
-				if (guiFields["Target Boundary"] === "Isometric Lengths") {
+				if (guiFields["Target Boundary"] === "Automatic") {
 					let targetScaleFactors = DenseMatrix.zeros(boundaryFirstFlattening.nB, 1);
 					flattening = boundaryFirstFlattening.flatten(targetScaleFactors, true);
 
-				} else if (guiFields["Target Boundary"] === "Specified Curvatures") {
+				} else if (guiFields["Target Boundary"] === "Set Boundary Angles") {
 					if (Math.abs(2 * Math.PI - targetCurvatures.sum()) < 1e-8) {
 						flattening = boundaryFirstFlattening.flatten(targetCurvatures, false);
 
 					} else if (!flattening) {
-						alert("Flatten mesh to specify curvature values");
+						alert("Flatten mesh to set boundary angles");
 
 					} else {
-						alert("Target curvatures do not satisfy Gauss Bonnet - they must sum to 2π");
+						alert("Target boundary angles do not satisfy Gauss Bonnet - they must sum to 2π");
 					}
 
 				} else if (guiFields["Target Boundary"] === "Disk") {
@@ -265,10 +265,10 @@
 
 		function updateDisplayText() {
 			let element = document.getElementById("meta");
-			if (guiFields["Method"] === "BFF" && boundaryFirstFlattening && guiFields["Target Boundary"] === "Specified Curvatures") {
-				element.textContent = "Click on boundary vertices of the flattening to specify curvatures";
-				element.textContent += "\nShift click on boundary vertices to remove curvature values";
-				element.textContent += "\n∑curvature = " + (targetCurvatures.sum() / Math.PI).toFixed(2) + "π";
+			if (guiFields["Method"] === "BFF" && boundaryFirstFlattening && guiFields["Target Boundary"] === "Set Boundary Angles") {
+				element.textContent = "Click on boundary vertices of the flattened mesh to set angles";
+				element.textContent += "\nShift click on boundary vertices to clear angle values";
+				element.textContent += "\n∑angle = " + (targetCurvatures.sum() / Math.PI).toFixed(2) + "π";
 
 			} else {
 				element.textContent = "";
@@ -278,7 +278,7 @@
 		function toggleCurvatureEditing() {
 			if (guiFields["Method"] === "SCP" || (guiFields["Method"] === "BFF" &&
 					boundaryFirstFlattening &&
-					guiFields["Target Boundary"] !== "Specified Curvatures")) {
+					guiFields["Target Boundary"] !== "Set Boundary Angles")) {
 				guiFields["Reset"]();
 			}
 
@@ -290,10 +290,10 @@
 			let i = boundaryFirstFlattening.bVertexIndex[v];
 			if (initThreeSphereMesh(v)) {
 				targetCurvatures.set(Math.PI / 2, i, 0);
-				guiFields["Curvature"] = "90.00";
+				guiFields["Angle"] = "90.00";
 
 			} else {
-				guiFields["Curvature"] = (targetCurvatures.get(i, 0) * 180 / Math.PI).toFixed(2);
+				guiFields["Angle"] = (targetCurvatures.get(i, 0) * 180 / Math.PI).toFixed(2);
 			}
 
 			updateDisplayText();
@@ -307,10 +307,10 @@
 					targetCurvatures.set(floatValue * Math.PI / 180, i, 0);
 
 				} else {
-					alert("Curvature value must be a number");
+					alert("Angle value must be a number");
 				}
 
-				guiFields["Curvature"] = (targetCurvatures.get(i, 0) * 180 / Math.PI).toFixed(2);
+				guiFields["Angle"] = (targetCurvatures.get(i, 0) * 180 / Math.PI).toFixed(2);
 			}
 
 			updateDisplayText();
@@ -659,7 +659,7 @@
 
 		function onMouseClick(event) {
 			if (guiFields["Method"] === "BFF" && boundaryFirstFlattening &&
-				guiFields["Target Boundary"] === "Specified Curvatures" && flattening) {
+				guiFields["Target Boundary"] === "Set Boundary Angles" && flattening) {
 				if (event.clientX >= Math.floor(window.innerWidth * 0.5) &&
 					event.clientX <= window.innerWidth &&
 					event.clientY >= 0 && event.clientY <= window.innerHeight) {
