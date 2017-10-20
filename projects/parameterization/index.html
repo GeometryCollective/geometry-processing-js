@@ -280,6 +280,7 @@
 					boundaryFirstFlattening &&
 					guiFields["Target Boundary"] !== "Set Boundary Angles")) {
 				guiFields["Reset"]();
+				guiFields["Flatten"]();
 			}
 
 			updateDisplayText();
@@ -488,6 +489,7 @@
 					if (mesh.boundaries.length === 1) {
 						boundaryFirstFlattening = new BoundaryFirstFlattening(geometry);
 						targetCurvatures = DenseMatrix.zeros(boundaryFirstFlattening.nB, 1);
+						guiFields["Flatten"]();
 
 					} else {
 						boundaryFirstFlattening = undefined;
