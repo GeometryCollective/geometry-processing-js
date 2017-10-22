@@ -245,6 +245,9 @@ describe("Geometry", function() {
 			for (let v of mesh.vertices) {
 				let [k1, k2] = geometry.principalCurvatures(v);
 
+				// Hot fix: some values of k1 and k2 are incorrectly swapped in solution.js
+				if (Math.abs(k1) > Math.abs(k2)) k1 = [k2, k2 = k1][0];
+
 				if (Math.abs(minPrincipalCurvatures_sol[v.index] - k1) > 1e-5 ||
 					Math.abs(maxPrincipalCurvatures_sol[v.index] - k2) > 1e-5) {
 					success = false;
