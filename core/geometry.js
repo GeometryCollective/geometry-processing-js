@@ -454,6 +454,10 @@ class Geometry {
 		let k1 = H - discriminant;
 		let k2 = H + discriminant;
 
+                if( Math.abs(k1) > Math.abs(k2) )
+                {
+                   return [k2, k1];
+                }
 		return [k1, k2];
 	}
 
