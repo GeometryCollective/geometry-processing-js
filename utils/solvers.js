@@ -20,7 +20,7 @@ class Solvers {
 		let xHx = xH.timesDense(x).get(0, 0);
 		let lambda = xHAx.overComplex(xHx);
 
-		return Ax.minus(x.timesComplex(lambda)).get(0, 0).norm(2);
+		return Ax.minus(x.timesComplex(lambda)).get(0, 0).norm(2) / x.norm(2);
 	}
 
 	/**
@@ -39,7 +39,7 @@ class Solvers {
 		let ones = ComplexDenseMatrix.ones(N, 1);
 		let x = ComplexDenseMatrix.random(N, 1);
 
-		while (Solvers.residual(A, x) > 1e-10) {
+		do {
 			x = llt.solvePositiveDefinite(x);
 
 			// subtract mean
@@ -48,7 +48,8 @@ class Solvers {
 
 			// normalize
 			x.scaleBy(new Complex(1.0 / x.norm(2)));
-		}
+
+		} while (Solvers.residual(A, x) > 1e-10);
 
 		return x;
 	}
