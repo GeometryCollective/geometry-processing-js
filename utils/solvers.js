@@ -20,7 +20,7 @@ class Solvers {
 		let xHx = xH.timesDense(x).get(0, 0);
 		let lambda = xHAx.overComplex(xHx);
 
-		return Ax.minus(x.timesComplex(lambda)).get(0, 0).norm(2) / x.norm(2);
+		return Ax.minus(x.timesComplex(lambda)).get(0, 0).norm(2);
 	}
 
 	/**
@@ -56,7 +56,7 @@ class Solvers {
 	/**
 	 * Inverts a 2x2 matrix.
 	 * @param {module:LinearAlgebra.DenseMatrix} m The matrix to be inverted.
-	 * @returns {module:LinearAlgebra.DenseMatrix} 
+	 * @returns {module:LinearAlgebra.DenseMatrix}
 	 */
 	static invert2x2(m) {
 		let m00 = m.get(0, 0);
