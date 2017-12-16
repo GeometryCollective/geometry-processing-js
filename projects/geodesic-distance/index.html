@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-	<title>Geodesic Distances</title>
+	<title>Geodesic Distance</title>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 	<link rel="stylesheet" href="../../style/main.css">
@@ -13,7 +13,7 @@
 		<input type="file" id="fileInput" style="visibility:hidden">
 	</div>
 	<div id="info">
-		<h2>Geodesic Distances</h2>
+		<h2>Geodesic Distance</h2>
 		<div id="meta">Loading...</div>
 	</div>
 	<div id="logo">
@@ -40,7 +40,7 @@
 	<script src="../../input/bunny.js"></script>
 	<script src="../../utils/meshio.js"></script>
 	<script src="../../utils/colormap.js"></script>
-	<script src="geodesics-in-heat.js"></script>
+	<script src="heat-method.js"></script>
 	<script>
 		if (!Detector.webgl) Detector.addGetWebGLMessage();
 
@@ -71,7 +71,7 @@
 		let memoryManager = new EmscriptenMemoryManager();
 		let mesh = undefined;
 		let geometry = undefined;
-		let geodesicsInHeat = undefined;
+		let heatMethod = undefined;
 		let delta = undefined;
 
 		let filename = "bunny.obj";
@@ -195,7 +195,7 @@
 		function computeDistance(v) {
 			// update delta
 			let compute = false;
-			let i = geodesicsInHeat.vertexIndex[v];
+			let i = heatMethod.vertexIndex[v];
 			if (!shiftClick) {
 				selectedVertex = v;
 				if (initThreeSphereMesh(v)) {
@@ -213,7 +213,7 @@
 
 			if (compute) {
 				// compute distance
-				let phi = delta.sum() > 0 ? geodesicsInHeat.compute(delta) : undefined;
+				let phi = delta.sum() > 0 ? heatMethod.compute(delta) : undefined;
 
 				// update colors
 				updateColors(phi);
@@ -226,7 +226,7 @@
 				}
 
 				// cleanup
-				memoryManager.deleteExcept([delta, geodesicsInHeat.A, geodesicsInHeat.F]);
+				memoryManager.deleteExcept([delta, heatMethod.A, heatMethod.F]);
 			}
 		}
 
@@ -319,7 +319,7 @@
 				// initialize geodesics in heat
 				let V = mesh.vertices.length;
 				delta = DenseMatrix.zeros(V, 1);
-				geodesicsInHeat = new GeodesicsInHeat(geometry);
+				heatMethod = new HeatMethod(geometry);
 
 				// update metadata
 				let element = document.getElementById("meta");
@@ -514,8 +514,8 @@
 				for (let h of f.adjacentHalfedges()) {
 					let v1 = h.vertex;
 					let v2 = h.twin.vertex;
-					let i = geodesicsInHeat.vertexIndex[v1];
-					let j = geodesicsInHeat.vertexIndex[v2];
+					let i = heatMethod.vertexIndex[v1];
+					let j = heatMethod.vertexIndex[v2];
 					let region1 = Math.floor(phi.get(i, 0) / distBetweenLines);
 					let region2 = Math.floor(phi.get(j, 0) / distBetweenLines);
 

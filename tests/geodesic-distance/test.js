@@ -1,17 +1,17 @@
 "use strict";
 
-describe("GeodesicsInHeat", function() {
+describe("HeatMethod", function() {
 	let polygonSoup = MeshIO.readOBJ(solution);
 	let mesh = new Mesh();
 	mesh.build(polygonSoup);
 	let V = polygonSoup["v"].length;
 	let geometry = new Geometry(mesh, polygonSoup["v"], false);
-	let geodesicsInHeat, delta, X, div;
+	let heatMethod, delta, X;
 
 	describe("computeVectorField", function() {
 		it("computes the vector field", function() {
 			let loadSourcesAndField = function() {
-				let delta = DenseMatrix.zeros(V, 1);
+				delta = DenseMatrix.zeros(V, 1);
 				let X = {};
 
 				let v = 0;
@@ -32,14 +32,14 @@ describe("GeodesicsInHeat", function() {
 					}
 				}
 
-				return [delta, X];
+				return X;
 			}
 
-			let [delta, X_sol] = loadSourcesAndField();
-			geodesicsInHeat = new GeodesicsInHeat(geometry);
-			let llt = geodesicsInHeat.F.chol();
+			let X_sol = loadSourcesAndField();
+			heatMethod = new HeatMethod(geometry);
+			let llt = heatMethod.F.chol();
 			let u = llt.solvePositiveDefinite(delta);
-			X = geodesicsInHeat.computeVectorField(u);
+			X = heatMethod.computeVectorField(u);
 
 			let success = true;
 			for (let f of mesh.faces) {
@@ -50,14 +50,14 @@ describe("GeodesicsInHeat", function() {
 			}
 
 			chai.assert.strictEqual(success, true);
-			memoryManager.deleteExcept([geodesicsInHeat.A]);
+			memoryManager.deleteExcept([heatMethod.A, heatMethod.F, delta]);
 		});
 	});
 
 	describe("computeDivergence", function() {
 		it("computes the integrated divergence", function() {
 			let loadDivergence = function() {
-				div = DenseMatrix.zeros(V, 1);
+				let div = DenseMatrix.zeros(V, 1);
 
 				let v = 0;
 				let lines = solution.split("\n");
@@ -67,7 +67,8 @@ describe("GeodesicsInHeat", function() {
 					let identifier = tokens[0].trim();
 
 					if (identifier === "div") {
-						div.set(parseFloat(tokens[1]), v, 0);
+						// solution file has a sign error
+						div.set(-parseFloat(tokens[1]), v, 0);
 						v++
 					}
 				}
@@ -76,16 +77,16 @@ describe("GeodesicsInHeat", function() {
 			}
 
 			let div_sol = loadDivergence();
-			div = geodesicsInHeat.computeDivergence(X);
+			let div = heatMethod.computeDivergence(X);
 
 			chai.assert.strictEqual(div.minus(div_sol).norm() < 1e-5, true);
-			memoryManager.deleteExcept([geodesicsInHeat.A, div]);
+			memoryManager.deleteExcept([heatMethod.A, heatMethod.F, delta]);
 		});
 	});
 
 	describe("compute", function() {
-		it("computes geodesic distances using the heat method", function() {
-			let loadGeodesicDistances = function() {
+		it("computes geodesic distance using the heat method", function() {
+			let loadGeodesicDistance = function() {
 				let phi = DenseMatrix.zeros(V, 1);
 
 				let v = 0;
@@ -104,10 +105,8 @@ describe("GeodesicsInHeat", function() {
 				return phi;
 			}
 
-			let phi_sol = loadGeodesicDistances();
-			let llt = geodesicsInHeat.A.chol();
-			let phi = llt.solvePositiveDefinite(div);
-			geodesicsInHeat.subtractMinimumDistance(phi);
+			let phi_sol = loadGeodesicDistance();
+			let phi = heatMethod.compute(delta);
 
 			chai.assert.strictEqual(phi.minus(phi_sol).norm() < 1e-5, true);
 			memoryManager.deleteExcept([]);
