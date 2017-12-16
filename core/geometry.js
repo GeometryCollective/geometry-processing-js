@@ -10,7 +10,7 @@ class Geometry {
 	 * @param {module:LinearAlgebra.Vector[]} positions An array containing the position of each vertex in a mesh.
 	 * @param {boolean} normalizePositions flag to indicate whether positions should be normalized. Default value is true.
 	 * @property {module:Core.Mesh} mesh The mesh this class describes the geometry of.
-	 * @property {module:LinearAlgebra.Vector[]} positions A dictionary mapping each vertex to a normalized position.
+	 * @property {Object} positions A dictionary mapping each vertex to a normalized position.
 	 */
 	constructor(mesh, positions, normalizePositions = true) {
 		this.mesh = mesh;
