@@ -1,5 +1,5 @@
-<a href="http://geometry.cs.cmu.edu/js" align="right">
-<img src="imgs/logo.png" height="64" width="64">
+<a href="http://geometry.cs.cmu.edu/js">
+<img src="imgs/logo.png" height="64" width="64" align="right" />
 </a>
 
 # geometry-processing-js
@@ -11,28 +11,6 @@ At a high level, the framework is divided into three parts - a flexible a halfed
 Detailed documentation and unit tests for each of these parts can be found in the docs and tests directories of this [repository](https://github.com/geometrycollective/geometry-processing-js).
 
 *We're just getting rolling here, so stay tuned for more! :-)*
-
-## Demos
-
-Click on the images below to try out some demos now! Since the algorithms are implemented in native JavaScript, they can be edited in-browser using developer tools like the <a href="https://developers.google.com/web/tools/chrome-devtools/console/">Console</a> in Google Chrome. (Note that the GUIs for these demos are just simple examples; any GUI can be used on top of the core geometry library.)
-
-<table>
-    <tr>
-        <td><a href="projects/geometric-flow/index.html"><img width="120" height="120" src="imgs/demos/geometric-flow-icon.jpg"></a></td>
-        <td><a href="projects/discrete-curvatures-and-normals/index.html"><img width="120" height="120" src="imgs/demos/curvature-icon.jpg"></a></td>
-        <td><a href="projects/geodesic-distance/index.html"><img width="120" height="120" src="imgs/demos/geodesic_distance-icon.jpg"></a></td>
-    </tr>
-    <tr>
-        <td><a href="projects/parameterization/index.html"><img width="120" height="120" src="imgs/demos/parameterization-icon.jpg"></a></td>
-        <td><a href="projects/vector-field-decomposition/index.html"><img width="120" height="120" src="imgs/demos/vector-field-decomposition-icon.jpg"></a></td>
-        <td><a href="projects/poisson-problem/index.html"><img width="120" height="120" src="imgs/demos/poisson-problem-icon.jpg"></a></td>
-    </tr>
-    <tr>
-        <td><a href="projects/discrete-exterior-calculus/index.html"><img width="120" height="120" src="imgs/demos/discrete-exterior-calculus-icon.jpg"></a></td>
-        <td><a href="projects/direction-field-design/index.html"><img width="120" height="120" src="imgs/demos/direction-field-design-icon.jpg"></a></td>
-    </tr>
-    </tr>
-</table>
 
 ## Code Snippet
 
@@ -51,10 +29,6 @@ let rhs = M.timesDense(rho);
 let llt = A.chol();
 let phi = llt.solvePositiveDefinite(rhs);
 ```
-
-## Documentation
-
-Read the online docs <a href="docs/index.html">here</a> to get a sense of how <tt>geometry-processing-js</tt> works. (A list of modules and classes can be found in the menu at top). The quickest way to start playing around is to modify one of the existing examples (in the <tt>projects</tt> subdirectory); small usage examples for individual classes can be found throughout the documentation.
 
 ## Getting started
 
