@@ -1,5 +1,3 @@
-"use strict";
-
 class TreeCotree {
 	/**
 	 * This class computes the {@link https://www.cs.cmu.edu/~kmcrane/Projects/DDG/paper.pdf tree cotree} decomposition of a surface mesh
@@ -170,3 +168,5 @@ class TreeCotree {
 		}
 	}
 }
+
+module.exports = TreeCotree
