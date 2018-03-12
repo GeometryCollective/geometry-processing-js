@@ -24,6 +24,7 @@ class Face {
 	 * Convenience function to iterate over the vertices in this face.
 	 * Iterates over the vertices of a boundary loop if this face is a boundary loop.
 	 * @method module:Core.Face#adjacentVertices
+	 * @param {boolean} ccw A flag indicating whether iteration should be in CCW or CW order.
 	 * @returns {module:Core.Vertex}
 	 * @example
 	 * let f = mesh.faces[0]; // or let b = mesh.boundaries[0]
@@ -31,14 +32,15 @@ class Face {
 	 *     // Do something with v
 	 * }
 	 */
-	adjacentVertices() {
-		return new FaceVertexIterator(this.halfedge);
+	adjacentVertices(ccw = true) {
+		return new FaceVertexIterator(this.halfedge, ccw);
 	}
 
 	/**
 	 * Convenience function to iterate over the edges in this face.
 	 * Iterates over the edges of a boundary loop if this face is a boundary loop.
 	 * @method module:Core.Face#adjacentEdges
+	 * @param {boolean} ccw A flag indicating whether iteration should be in CCW or CW order.
 	 * @returns {module:Core.Edge}
 	 * @example
 	 * let f = mesh.faces[0]; // or let b = mesh.boundaries[0]
@@ -46,13 +48,14 @@ class Face {
 	 *     // Do something with e
 	 * }
 	 */
-	adjacentEdges() {
-		return new FaceEdgeIterator(this.halfedge);
+	adjacentEdges(ccw = true) {
+		return new FaceEdgeIterator(this.halfedge, ccw);
 	}
 
 	/**
 	 * Convenience function to iterate over the faces neighboring this face.
 	 * @method module:Core.Face#adjacentFaces
+	 * @param {boolean} ccw A flag indicating whether iteration should be in CCW or CW order.
 	 * @returns {module:Core.Face}
 	 * @example
 	 * let f = mesh.faces[0]; // or let b = mesh.boundaries[0]
@@ -60,14 +63,15 @@ class Face {
 	 *     // Do something with g
 	 * }
 	 */
-	adjacentFaces() {
-		return new FaceFaceIterator(this.halfedge);
+	adjacentFaces(ccw = true) {
+		return new FaceFaceIterator(this.halfedge, ccw);
 	}
 
 	/**
 	 * Convenience function to iterate over the halfedges in this face.
 	 * Iterates over the halfedges of a boundary loop if this face is a boundary loop.
 	 * @method module:Core.Face#adjacentHalfedges
+	 * @param {boolean} ccw A flag indicating whether iteration should be in CCW or CW order.
 	 * @returns {module:Core.Halfedge}
 	 * @example
 	 * let f = mesh.faces[0]; // or let b = mesh.boundaries[0]
@@ -75,14 +79,15 @@ class Face {
 	 *     // Do something with h
 	 * }
 	 */
-	adjacentHalfedges() {
-		return new FaceHalfedgeIterator(this.halfedge);
+	adjacentHalfedges(ccw = true) {
+		return new FaceHalfedgeIterator(this.halfedge, ccw);
 	}
 
 	/**
 	 * Convenience function to iterate over the corners in this face. Not valid if this face
 	 * is a boundary loop.
 	 * @method module:Core.Face#adjacentCorners
+	 * @param {boolean} ccw A flag indicating whether iteration should be in CCW or CW order.
 	 * @returns {module:Core.Corner}
 	 * @example
 	 * let f = mesh.faces[0];
@@ -90,8 +95,8 @@ class Face {
 	 *     // Do something with c
 	 * }
 	 */
-	adjacentCorners() {
-		return new FaceCornerIterator(this.halfedge);
+	adjacentCorners(ccw = true) {
+		return new FaceCornerIterator(this.halfedge, ccw);
 	}
 
 	/**
@@ -112,14 +117,16 @@ class Face {
  */
 class FaceVertexIterator {
 	// constructor
-	constructor(halfedge) {
+	constructor(halfedge, ccw) {
 		this._halfedge = halfedge;
+		this._ccw = ccw;
 	}
 
 	[Symbol.iterator]() {
 		return {
 			current: this._halfedge,
 			end: this._halfedge,
+			ccw: this._ccw,
 			justStarted: true,
 			next() {
 				if (!this.justStarted && this.current === this.end) {
@@ -130,7 +137,7 @@ class FaceVertexIterator {
 				} else {
 					this.justStarted = false;
 					let vertex = this.current.vertex;
-					this.current = this.current.next;
+					this.current = this.ccw ? this.current.next : this.current.prev;
 					return {
 						done: false,
 						value: vertex
@@ -148,14 +155,16 @@ class FaceVertexIterator {
  */
 class FaceEdgeIterator {
 	// constructor
-	constructor(halfedge) {
+	constructor(halfedge, ccw) {
 		this._halfedge = halfedge;
+		this._ccw = ccw;
 	}
 
 	[Symbol.iterator]() {
 		return {
 			current: this._halfedge,
 			end: this._halfedge,
+			ccw: this._ccw,
 			justStarted: true,
 			next() {
 				if (!this.justStarted && this.current === this.end) {
@@ -166,7 +175,7 @@ class FaceEdgeIterator {
 				} else {
 					this.justStarted = false;
 					let edge = this.current.edge;
-					this.current = this.current.next;
+					this.current = this.ccw ? this.current.next : this.current.prev;
 					return {
 						done: false,
 						value: edge
@@ -184,21 +193,23 @@ class FaceEdgeIterator {
  */
 class FaceFaceIterator {
 	// constructor
-	constructor(halfedge) {
+	constructor(halfedge, ccw) {
 		while (halfedge.twin.onBoundary) {
 			halfedge = halfedge.next;
 		} // twin halfedge must not be on the boundary
 		this._halfedge = halfedge;
+		this._ccw = ccw;
 	}
 
 	[Symbol.iterator]() {
 		return {
 			current: this._halfedge,
 			end: this._halfedge,
+			ccw: this._ccw,
 			justStarted: true,
 			next() {
 				while (this.current.twin.onBoundary) {
-					this.current = this.current.next;
+					this.current = this.ccw ? this.current.next : this.current.prev;
 				} // twin halfedge must not be on the boundary
 				if (!this.justStarted && this.current === this.end) {
 					return {
@@ -208,7 +219,7 @@ class FaceFaceIterator {
 				} else {
 					this.justStarted = false;
 					let face = this.current.twin.face;
-					this.current = this.current.next;
+					this.current = this.ccw ? this.current.next : this.current.prev;
 					return {
 						done: false,
 						value: face
@@ -226,14 +237,16 @@ class FaceFaceIterator {
  */
 class FaceHalfedgeIterator {
 	// constructor
-	constructor(halfedge) {
+	constructor(halfedge, ccw) {
 		this._halfedge = halfedge;
+		this._ccw = ccw;
 	}
 
 	[Symbol.iterator]() {
 		return {
 			current: this._halfedge,
 			end: this._halfedge,
+			ccw: this._ccw,
 			justStarted: true,
 			next() {
 				if (!this.justStarted && this.current === this.end) {
@@ -244,7 +257,7 @@ class FaceHalfedgeIterator {
 				} else {
 					this.justStarted = false;
 					let halfedge = this.current;
-					this.current = this.current.next;
+					this.current = this.ccw ? this.current.next : this.current.prev;
 					return {
 						done: false,
 						value: halfedge
@@ -262,14 +275,16 @@ class FaceHalfedgeIterator {
  */
 class FaceCornerIterator {
 	// constructor
-	constructor(halfedge) {
+	constructor(halfedge, ccw) {
 		this._halfedge = halfedge;
+		this._ccw = ccw;
 	}
 
 	[Symbol.iterator]() {
 		return {
 			current: this._halfedge,
 			end: this._halfedge,
+			ccw: this._ccw,
 			justStarted: true,
 			next() {
 				if (!this.justStarted && this.current === this.end) {
@@ -279,7 +294,7 @@ class FaceCornerIterator {
 
 				} else {
 					this.justStarted = false;
-					this.current = this.current.next;
+					this.current = this.ccw ? this.current.next : this.current.prev;
 					let corner = this.current.corner; // corner will be undefined if this face is a boundary loop
 					return {
 						done: false,

@@ -33,6 +33,15 @@ describe("Mesh", function() {
 				h = h.twin.next;
 			}
 
+			h = v.halfedge;
+			for (let vv of v.adjacentVertices(false)) {
+				if (h.twin.vertex !== vv) {
+					success = false;
+					break vertexOuter;
+				}
+				h = h.prev.twin;
+			}
+
 			// vertex edge iterator
 			h = v.halfedge;
 			for (let e of v.adjacentEdges()) {
@@ -41,6 +50,15 @@ describe("Mesh", function() {
 					break vertexOuter;
 				}
 				h = h.twin.next;
+			}
+
+			h = v.halfedge;
+			for (let e of v.adjacentEdges(false)) {
+				if (h.edge !== e) {
+					success = false;
+					break vertexOuter;
+				}
+				h = h.prev.twin;
 			}
 
 			// vertex face iterator
@@ -56,6 +74,18 @@ describe("Mesh", function() {
 				h = h.twin.next;
 			}
 
+			h = v.halfedge;
+			for (let f of v.adjacentFaces(false)) {
+				while (h.onBoundary) {
+					h = h.prev.twin;
+				}
+				if (h.face !== f) {
+					success = false;
+					break vertexOuter;
+				}
+				h = h.prev.twin;
+			}
+
 			// vertex halfegde iterator
 			h = v.halfedge;
 			for (let hh of v.adjacentHalfedges()) {
@@ -64,6 +94,15 @@ describe("Mesh", function() {
 					break vertexOuter;
 				}
 				h = h.twin.next;
+			}
+
+			h = v.halfedge;
+			for (let hh of v.adjacentHalfedges(false)) {
+				if (h !== hh) {
+					success = false;
+					break vertexOuter;
+				}
+				h = h.prev.twin;
 			}
 
 			// vertex corner iterator
@@ -77,6 +116,18 @@ describe("Mesh", function() {
 					break vertexOuter;
 				}
 				h = h.twin.next;
+			}
+
+			h = v.halfedge;
+			for (let c of v.adjacentCorners(false)) {
+				while (h.onBoundary) {
+					h = h.prev.twin;
+				}
+				if (h.next.corner !== c) {
+					success = false;
+					break vertexOuter;
+				}
+				h = h.prev.twin;
 			}
 		}
 
@@ -115,6 +166,22 @@ describe("Mesh", function() {
 				break faceOuter;
 			}
 
+			h = f.halfedge;
+			p = f.halfedge;
+			for (let v of f.adjacentVertices(false)) {
+				if (p.vertex !== v) {
+					success = false;
+					break faceOuter;
+				}
+				h = h.next;
+				p = p.prev;
+			}
+
+			if (p !== h) {
+				success = false;
+				break faceOuter;
+			}
+
 			// face edge iterator
 			h = f.halfedge;
 			for (let e of f.adjacentEdges()) {
@@ -123,6 +190,15 @@ describe("Mesh", function() {
 					break faceOuter;
 				}
 				h = h.next;
+			}
+
+			h = f.halfedge;
+			for (let e of f.adjacentEdges(false)) {
+				if (h.edge !== e) {
+					success = false;
+					break faceOuter;
+				}
+				h = h.prev;
 			}
 
 			// face face iterator
@@ -138,6 +214,18 @@ describe("Mesh", function() {
 				h = h.next;
 			}
 
+			h = f.halfedge;
+			for (let ff of f.adjacentFaces(false)) {
+				while (h.twin.onBoundary) {
+					h = h.prev;
+				}
+				if (h.twin.face !== ff) {
+					success = false;
+					break faceOuter;
+				}
+				h = h.prev;
+			}
+
 			// face halfegde iterator
 			h = f.halfedge;
 			for (let hh of f.adjacentHalfedges()) {
@@ -148,6 +236,15 @@ describe("Mesh", function() {
 				h = h.next;
 			}
 
+			h = f.halfedge;
+			for (let hh of f.adjacentHalfedges(false)) {
+				if (h !== hh) {
+					success = false;
+					break faceOuter;
+				}
+				h = h.prev;
+			}
+
 			// face corner iterator
 			h = f.halfedge;
 			for (let c of f.adjacentCorners()) {
@@ -156,6 +253,15 @@ describe("Mesh", function() {
 					break faceOuter;
 				}
 				h = h.next;
+			}
+
+			h = f.halfedge;
+			for (let c of f.adjacentCorners(false)) {
+				if (h.next.corner !== c) {
+					success = false;
+					break faceOuter;
+				}
+				h = h.prev;
 			}
 		}
 
@@ -181,6 +287,22 @@ describe("Mesh", function() {
 			let p = b.halfedge;
 			for (let hh of b.adjacentHalfedges()) {
 				if (h !== hh) {
+					success = false;
+					break boundaryOuter;
+				}
+				h = h.next;
+				p = p.prev;
+			}
+
+			if (p !== h) {
+				success = false;
+				break boundaryOuter;
+			}
+
+			h = b.halfedge;
+			p = b.halfedge;
+			for (let hh of b.adjacentHalfedges(false)) {
+				if (p !== hh) {
 					success = false;
 					break boundaryOuter;
 				}
