@@ -100,7 +100,7 @@
 
 
     <section class="readme-section">
-        <article><p><a href="http://geometry.cs.cmu.edu/js"><br><img src="imgs/logo.png" height="64" width="64" align="right" /><br></a></p>
+        <article><p><a href="http://geometry.cs.cmu.edu/js"><br><img src="../imgs/logo.png" height="64" width="64" align="right" /><br></a></p>
 <h1>geometry-processing-js</h1><p>geometry-processing-js is a fast and flexible framework for 3D geometry processing on the web! Easy integration with HTML/WebGL makes it particularly suitable for things like mobile apps, online demos, and course content. For many tasks, performance comes within striking distance of native (C++) code. Plus, since the framework is pure JavaScript, no <strong>compilation or installation</strong> is necessary: just copy the files and run from any web browser, on any platform (including mobile). Moreover, geometry processing algorithms can be <strong>edited in the browser</strong> (using for instance the <a href="https://developers.google.com/web/tools/chrome-devtools/console/">JavaScript Console</a> in Chrome). So open up one of the demos and start editing! geometry-processing-js is developed by and maintained by the <a href="http://geometry.cs.cmu.edu">Geometry Collective</a> at <a href="http://www.cs.cmu.edu/">Carnegie Mellon University</a>.</p>
 <p>At a high level, the framework is divided into three parts - a flexible a halfedge mesh data structure, an optimized linear algebra package (based on <a href="https://eigen.tuxfamily.org">Eigen</a>), and code for various geometry processing algorithms. Each algorithm comes with its own viewer for rendering.</p>
 <p>Detailed documentation and unit tests for each of these parts can be found in the docs and tests directories of this <a href="https://github.com/geometrycollective/geometry-processing-js">repository</a>.</p>
@@ -132,11 +132,14 @@ cd geometry-processing-js/projects</code></pre></li>
 </li>
 </ol>
 <h2>About Javascript</h2><p>The implementation of geometry-processing-js attempts to minimize the use of obscure Javascript language features. It should not be too difficult for anyone with experience in a dynamic language like Python or familiar with the principles of Object Oriented Programming to get a handle on Javascript syntax by reading through some of the code in this framework. The documentation contains examples specific to this framework which will also be of help. For a more formal introduction to Javascript, checkout this really nice <a href="https://javascript.info">tutorial</a>.</p>
-<h2>Author</h2><p><a href="http://rohansawhney.io">Rohan Sawhney</a></p>
+<h2>Building the Documentation</h2><p>This documentation was generated using <a href="http://usejsdoc.org/">jsdoc</a> and <a href="https://www.npmjs.com/package/ink-docstrap">ink-docstrap</a>. We used a modified version of the <a href="http://docstrap.github.io/docstrap/themes/cosmo/">cosmo</a> theme. After installing jsdoc and ink-docstrap, you can build the documentation by running</p>
+<pre class="prettyprint source"><code>jsdoc -c node_modules/ink-docstrap/template/jsdoc.conf.json -t node_modules/ink-docstrap/template/ -R geometry-processing-js/README.md -r -d geometry-processing-js/docs</code></pre><h2>Authors</h2><p><a href="http://rohansawhney.io">Rohan Sawhney</a></p>
 <p>Email: <a href="mailto:rohansawhney@cs.cmu.edu">rohansawhney@cs.cmu.edu</a></p>
+<p><a href="http://markjgillespie.com">Mark Gillespie</a></p>
+<p>Email: <a href="mailto:mgillesp@cs.cmu.edu">mgillesp@cs.cmu.edu</a></p>
 <p>Design inspiration: <a href="http://nmwsharp.com">Nick Sharp</a>, <a href="http://www.cs.cmu.edu/~kmcrane/">Keenan Crane</a></p>
 <h2>License</h2><p><a href="https://opensource.org/licenses/MIT">MIT</a></p>
-<p align="center"><br><a href="http://geometry.cs.cmu.edu"><br>  <img src="imgs/geometry-collective-production.png" width="250" height="227.92"><br></a><br></p></article>
+<p align="center"><br><a href="http://geometry.cs.cmu.edu"><br>  <img src="../imgs/geometry-collective-production.png" width="250" height="227.92"><br></a><br></p></article>
     </section>
 
 
