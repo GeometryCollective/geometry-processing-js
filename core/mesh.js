@@ -207,7 +207,7 @@ class Mesh {
 		}
 
 		// index elements
-		this.indexElements();
+                this.indexElements();
 
 		return true;
 	}

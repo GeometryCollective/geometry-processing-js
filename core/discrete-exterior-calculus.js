@@ -1,7 +1,7 @@
 "use strict";
 
 /**
- * This class contains methods to build common {@link https://www.cs.cmu.edu/~kmcrane/Projects/DDG/paper.pdf discrete exterior calculus} operators.
+ * This class contains methods to build common {@link https://cs.cmu.edu/~kmcrane/Projects/DDG/paper.pdf discrete exterior calculus} operators.
  * @memberof module:Core
  */
 class DEC {

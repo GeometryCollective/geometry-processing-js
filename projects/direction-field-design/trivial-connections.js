@@ -2,7 +2,7 @@
 
 class TrivialConnections {
 	/**
-	 * This class implements the {@link https://www.cs.cmu.edu/~kmcrane/Projects/DDG/paper.pdf trivial connections} algorithm to compute a smooth
+	 * This class implements the {@link https://cs.cmu.edu/~kmcrane/Projects/TrivialConnections trivial connections} algorithm to compute a smooth
 	 * 1-form vector fields on a surface mesh.
 	 * @constructor module:Projects.TrivialConnections
 	 * @param {module:Core.Geometry} geometry The input geometry of the mesh this class acts on.

@@ -245,7 +245,7 @@ class Geometry {
 
 	/**
 	 * Computes the circumcentric dual area of a vertex.
-	 * @see {@link http://www.cs.cmu.edu/~kmcrane/Projects/Other/TriangleAreasCheatSheet.pdf}
+	 * @see {@link http://cs.cmu.edu/~kmcrane/Projects/Other/TriangleAreasCheatSheet.pdf}
 	 * @method module:Core.Geometry#circumcentricDualArea
 	 * @param {module:Core.Vertex} v The vertex whose circumcentric dual area needs to be computed.
 	 * @returns {number}

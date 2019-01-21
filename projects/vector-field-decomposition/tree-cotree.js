@@ -2,7 +2,7 @@
 
 class TreeCotree {
 	/**
-	 * This class computes the {@link https://www.cs.cmu.edu/~kmcrane/Projects/DDG/paper.pdf tree cotree} decomposition of a surface mesh
+	 * This class computes the {@link https://cs.cmu.edu/~kmcrane/Projects/DDG/paper.pdf tree cotree} decomposition of a surface mesh
 	 * to build its {@link https://en.wikipedia.org/wiki/Homology_(mathematics)#Surfaces homology generators}.
 	 * @constructor module:Projects.TreeCotree
 	 * @param {module:Core.Mesh} mesh The input mesh this class acts on.

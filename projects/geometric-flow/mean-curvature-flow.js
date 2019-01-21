@@ -2,7 +2,7 @@
 
 class MeanCurvatureFlow {
 	/**
-	 * This class performs {@link https://www.cs.cmu.edu/~kmcrane/Projects/DDG/paper.pdf mean curvature flow} on a surface mesh.
+	 * This class performs {@link https://cs.cmu.edu/~kmcrane/Projects/DDG/paper.pdf mean curvature flow} on a surface mesh.
 	 * @constructor module:Projects.MeanCurvatureFlow
 	 * @param {module:Core.Geometry} geometry The input geometry of the mesh this class acts on.
 	 * @property {module:Core.Geometry} geometry The input geometry of the mesh this class acts on.

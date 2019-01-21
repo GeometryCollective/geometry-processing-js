@@ -2,7 +2,7 @@
 
 class SpectralConformalParameterization {
 	/**
-	 * This class implements the {@link https://www.cs.cmu.edu/~kmcrane/Projects/DDG/paper.pdf spectral conformal parameterization} algorithm to flatten
+	 * This class implements the {@link https://cs.cmu.edu/~kmcrane/Projects/DDG/paper.pdf spectral conformal parameterization} algorithm to flatten
 	 * surface meshes with boundaries conformally.
 	 * @constructor module:Projects.SpectralConformalParameterization
 	 * @param {module:Core.Geometry} geometry The input geometry of the mesh this class acts on.

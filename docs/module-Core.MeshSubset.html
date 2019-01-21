@@ -4,7 +4,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width">
-	<title>geometry-processing-js Class: SparseMatrix</title>
+	<title>geometry-processing-js Class: MeshSubset</title>
 
 	<!--[if lt IE 9]>
 	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -79,15 +79,15 @@
 		<div id="main">
 			
 
-	<h1 class="page-title">Class: SparseMatrix</h1>
+	<h1 class="page-title">Class: MeshSubset</h1>
 <section>
 
 <header>
     
         <h2>
-            <span class="ancestors"><a href="module-LinearAlgebra.html">LinearAlgebra</a>.</span>
+            <span class="ancestors"><a href="module-Core.html">Core</a>.</span>
         
-        SparseMatrix
+        MeshSubset
         </h2>
         
     
@@ -100,7 +100,7 @@
         
 <hr>
 <dt>
-    <h4 class="name" id="SparseMatrix"><span class="type-signature"></span>new SparseMatrix()</h4>
+    <h4 class="name" id="MeshSubset"><span class="type-signature"></span>new MeshSubset(vertices, edges, faces)</h4>
     
     
 </dt>
@@ -108,7 +108,7 @@
 
     
     <div class="description">
-        <p>This class represents a m by n real matrix where only nonzero entries<br>are stored explicitly. Do not create a SparseMatrix from its constructor,<br>instead use static factory methods such as fromTriplet, identity and diag.</p>
+        <p>This class represents a subset of a <a href="module-Core.Mesh.html">Mesh</a></p>
     </div>
     
 
@@ -118,9 +118,208 @@
 
     
     
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>vertices</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Set.&lt;number></span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>A set of the indices of the vertices which this subset should contain. Default value is the empty set.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>edges</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Set.&lt;number></span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>A set of the indices of the edges which this subset should contain. Default value is the empty set.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>faces</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Set.&lt;number></span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>A set of the indices of the faces which this subset should contain. Default value is the empty set.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
 
     
 <dl class="details">
+    
+
+    <h5 class="subsection-title">Properties:</h5>
+
+    <dl>
+
+<table class="props table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>vertices</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Set.&lt;number></span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The set of the indices of the vertices which this subset contains.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>edges</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Set.&lt;number></span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The set of the indices of the edges which this subset contains.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>faces</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Set.&lt;number></span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The set of the indices of the faces which this subset contains.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+</dl>
+
     
 
 	
@@ -170,20 +369,6 @@
     
 
     
-
-    
-        <h5>Example</h5>
-        
-    <pre class="sunlight-highlight-javascript">let T = new Triplet(100, 100);
-T.addEntry(3.4, 11, 43);
-T.addEntry(6.4, 99, 99);
-let A = SparseMatrix.fromTriplet(T);
-
-let B = SparseMatrix.identity(10, 10);
-
-let d = DenseMatrix.ones(100, 1);
-let C = SparseMatrix.diag(d);</pre>
-
 
     
 </dd>
@@ -210,7 +395,7 @@ let C = SparseMatrix.diag(d);</pre>
             
 <hr>
 <dt>
-    <h4 class="name" id=".fromTriplet"><span class="type-signature">&lt;static> </span>fromTriplet(T)</h4>
+    <h4 class="name" id=".deepCopy"><span class="type-signature">&lt;static> </span>deepCopy(subset)</h4>
     
     
 </dt>
@@ -218,7 +403,7 @@ let C = SparseMatrix.diag(d);</pre>
 
     
     <div class="description">
-        <p>Initializes a sparse matrix from a <a href="module-LinearAlgebra.Triplet.html">Triplet</a> object.</p>
+        <p>Makes a copy of a moduel:Core.MeshSubset</p>
     </div>
     
 
@@ -253,13 +438,13 @@ let C = SparseMatrix.diag(d);</pre>
 
         <tr>
             
-                <td class="name"><code>T</code></td>
+                <td class="name"><code>subset</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type"><a href="module-LinearAlgebra.Triplet.html">module:LinearAlgebra.Triplet</a></span>
+<span class="param-type"><a href="module-Core.MeshSubset.html">module:Core.MeshSubset</a></span>
 
 
 
@@ -270,7 +455,7 @@ let C = SparseMatrix.diag(d);</pre>
 
             
 
-            <td class="description last"><p>A triplet object containing only the nonzero entries that<br>need to be stored in this sparse matrix.</p></td>
+            <td class="description last"><p>The subset to copy.</p></td>
         </tr>
 
     
@@ -333,6 +518,10 @@ let C = SparseMatrix.diag(d);</pre>
     <h5>Returns:</h5>
     
             
+<div class="param-desc">
+    <p>A copy of the given subset.</p>
+</div>
+
 
 
 <dl>
@@ -341,7 +530,7 @@ let C = SparseMatrix.diag(d);</pre>
     </dt>
     <dd>
         
-<span class="param-type"><a href="module-LinearAlgebra.SparseMatrix.html">module:LinearAlgebra.SparseMatrix</a></span>
+<span class="param-type"><a href="module-Core.MeshSubset.html">module:Core.MeshSubset</a></span>
 
 
 
@@ -358,7 +547,7 @@ let C = SparseMatrix.diag(d);</pre>
             
 <hr>
 <dt>
-    <h4 class="name" id=".identity"><span class="type-signature">&lt;static> </span>identity(m, n)</h4>
+    <h4 class="name" id="addVertex"><span class="type-signature"></span>addVertex(vertex)</h4>
     
     
 </dt>
@@ -366,7 +555,7 @@ let C = SparseMatrix.diag(d);</pre>
 
     
     <div class="description">
-        <p>Initializes a m by n sparse identity matrix.</p>
+        <p>Adds a vertex to this subset</p>
     </div>
     
 
@@ -401,7 +590,7 @@ let C = SparseMatrix.diag(d);</pre>
 
         <tr>
             
-                <td class="name"><code>m</code></td>
+                <td class="name"><code>vertex</code></td>
             
 
             <td class="type">
@@ -418,1527 +607,7 @@ let C = SparseMatrix.diag(d);</pre>
 
             
 
-            <td class="description last"><p>The number of rows in this sparse matrix.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>n</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">number</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The number of columns in this sparse matrix.</p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <h5>Returns:</h5>
-    
-            
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type"><a href="module-LinearAlgebra.SparseMatrix.html">module:LinearAlgebra.SparseMatrix</a></span>
-
-
-
-    </dd>
-</dl>
-
-
-        
-
-    
-</dd>
-
-        
-            
-<hr>
-<dt>
-    <h4 class="name" id=".diag"><span class="type-signature">&lt;static> </span>diag(d)</h4>
-    
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        <p>Initializes a sparse diagonal matrix.</p>
-    </div>
-    
-
-    
-
-    
-
-    
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params table table-striped">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>d</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><a href="module-LinearAlgebra.DenseMatrix.html">module:LinearAlgebra.DenseMatrix</a></span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The dense vector (d.nCols() == 1) used to initialize<br>this sparse diagonal matrix.</p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <h5>Returns:</h5>
-    
-            
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type"><a href="module-LinearAlgebra.SparseMatrix.html">module:LinearAlgebra.SparseMatrix</a></span>
-
-
-
-    </dd>
-</dl>
-
-
-        
-
-    
-</dd>
-
-        
-            
-<hr>
-<dt>
-    <h4 class="name" id="transpose"><span class="type-signature"></span>transpose()</h4>
-    
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        <p>Returns the transpose of this sparse matrix.</p>
-    </div>
-    
-
-    
-
-    
-
-    
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <h5>Returns:</h5>
-    
-            
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type"><a href="module-LinearAlgebra.SparseMatrix.html">module:LinearAlgebra.SparseMatrix</a></span>
-
-
-
-    </dd>
-</dl>
-
-
-        
-
-    
-</dd>
-
-        
-            
-<hr>
-<dt>
-    <h4 class="name" id="invertDiagonal"><span class="type-signature"></span>invertDiagonal()</h4>
-    
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        <p>Returns the inverse of this diagonal sparse matrix.</p>
-    </div>
-    
-
-    
-
-    
-
-    
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <h5>Returns:</h5>
-    
-            
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type"><a href="module-LinearAlgebra.SparseMatrix.html">module:LinearAlgebra.SparseMatrix</a></span>
-
-
-
-    </dd>
-</dl>
-
-
-        
-
-    
-</dd>
-
-        
-            
-<hr>
-<dt>
-    <h4 class="name" id="nRows"><span class="type-signature"></span>nRows()</h4>
-    
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        <p>Returns the number of rows in this sparse matrix.</p>
-    </div>
-    
-
-    
-
-    
-
-    
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <h5>Returns:</h5>
-    
-            
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">number</span>
-
-
-
-    </dd>
-</dl>
-
-
-        
-
-    
-</dd>
-
-        
-            
-<hr>
-<dt>
-    <h4 class="name" id="nCols"><span class="type-signature"></span>nCols()</h4>
-    
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        <p>Returns the number of columns in this sparse matrix.</p>
-    </div>
-    
-
-    
-
-    
-
-    
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <h5>Returns:</h5>
-    
-            
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">number</span>
-
-
-
-    </dd>
-</dl>
-
-
-        
-
-    
-</dd>
-
-        
-            
-<hr>
-<dt>
-    <h4 class="name" id="nnz"><span class="type-signature"></span>nnz()</h4>
-    
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        <p>Returns the number of nonzero entries in this sparse matrix.</p>
-    </div>
-    
-
-    
-
-    
-
-    
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <h5>Returns:</h5>
-    
-            
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">number</span>
-
-
-
-    </dd>
-</dl>
-
-
-        
-
-    
-</dd>
-
-        
-            
-<hr>
-<dt>
-    <h4 class="name" id="frobeniusNorm"><span class="type-signature"></span>frobeniusNorm()</h4>
-    
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        <p>Computes the frobenius norm of this sparse matrix.</p>
-    </div>
-    
-
-    
-
-    
-
-    
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <h5>Returns:</h5>
-    
-            
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">number</span>
-
-
-
-    </dd>
-</dl>
-
-
-        
-
-    
-</dd>
-
-        
-            
-<hr>
-<dt>
-    <h4 class="name" id="subMatrix"><span class="type-signature"></span>subMatrix(r0, r1, c0, c1)</h4>
-    
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        <p>Extracts a sparse sub-matrix in the range [r0, r1) x [c0, c1), i.e., a matrix<br>of size (r1 - r0) x (c1 - c0) starting at indices (r0, c0).</p>
-    </div>
-    
-
-    
-
-    
-
-    
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params table table-striped">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>r0</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">number</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The start row index.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>r1</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">number</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The end row index (not included).</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>c0</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">number</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The start column index.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>c1</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">number</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The end column index (not included).</p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <h5>Returns:</h5>
-    
-            
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type"><a href="module-LinearAlgebra.SparseMatrix.html">module:LinearAlgebra.SparseMatrix</a></span>
-
-
-
-    </dd>
-</dl>
-
-
-        
-
-    
-</dd>
-
-        
-            
-<hr>
-<dt>
-    <h4 class="name" id="chol"><span class="type-signature"></span>chol()</h4>
-    
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        <p>Returns a sparse <a href="module-LinearAlgebra.Cholesky.html">Cholesky</a> factorization of this sparse matrix.</p>
-    </div>
-    
-
-    
-
-    
-
-    
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <h5>Returns:</h5>
-    
-            
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type"><a href="module-LinearAlgebra.Cholesky.html">module:LinearAlgebra.Cholesky</a></span>
-
-
-
-    </dd>
-</dl>
-
-
-        
-
-    
-</dd>
-
-        
-            
-<hr>
-<dt>
-    <h4 class="name" id="lu"><span class="type-signature"></span>lu()</h4>
-    
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        <p>Returns a sparse <a href="module-LinearAlgebra.LU.html">LU</a> factorization of this sparse matrix.</p>
-    </div>
-    
-
-    
-
-    
-
-    
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <h5>Returns:</h5>
-    
-            
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type"><a href="module-LinearAlgebra.LU.html">module:LinearAlgebra.LU</a></span>
-
-
-
-    </dd>
-</dl>
-
-
-        
-
-    
-</dd>
-
-        
-            
-<hr>
-<dt>
-    <h4 class="name" id="qr"><span class="type-signature"></span>qr()</h4>
-    
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        <p>Returns a sparse <a href="module-LinearAlgebra.QR.html">QR</a> factorization of this sparse matrix.</p>
-    </div>
-    
-
-    
-
-    
-
-    
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <h5>Returns:</h5>
-    
-            
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type"><a href="module-LinearAlgebra.QR.html">module:LinearAlgebra.QR</a></span>
-
-
-
-    </dd>
-</dl>
-
-
-        
-
-    
-</dd>
-
-        
-            
-<hr>
-<dt>
-    <h4 class="name" id="toDense"><span class="type-signature"></span>toDense()</h4>
-    
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        <p>Returns a dense copy of this sparse matrix.</p>
-    </div>
-    
-
-    
-
-    
-
-    
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <h5>Returns:</h5>
-    
-            
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type"><a href="module-LinearAlgebra.DenseMatrix.html">module:LinearAlgebra.DenseMatrix</a></span>
-
-
-
-    </dd>
-</dl>
-
-
-        
-
-    
-</dd>
-
-        
-            
-<hr>
-<dt>
-    <h4 class="name" id="incrementBy"><span class="type-signature"></span>incrementBy(B)</h4>
-    
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        <p>A += B</p>
-    </div>
-    
-
-    
-
-    
-
-    
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params table table-striped">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>B</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><a href="module-LinearAlgebra.SparseMatrix.html">module:LinearAlgebra.SparseMatrix</a></span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The sparse matrix added to this sparse matrix.</p></td>
+            <td class="description last"><p>The index of the vertex to add.</p></td>
         </tr>
 
     
@@ -2006,7 +675,7 @@ let C = SparseMatrix.diag(d);</pre>
             
 <hr>
 <dt>
-    <h4 class="name" id="decrementBy"><span class="type-signature"></span>decrementBy(B)</h4>
+    <h4 class="name" id="addVertices"><span class="type-signature"></span>addVertices(vertices)</h4>
     
     
 </dt>
@@ -2014,7 +683,7 @@ let C = SparseMatrix.diag(d);</pre>
 
     
     <div class="description">
-        <p>A -= B</p>
+        <p>Adds set of vertices to this subset</p>
     </div>
     
 
@@ -2049,13 +718,13 @@ let C = SparseMatrix.diag(d);</pre>
 
         <tr>
             
-                <td class="name"><code>B</code></td>
+                <td class="name"><code>vertices</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type"><a href="module-LinearAlgebra.SparseMatrix.html">module:LinearAlgebra.SparseMatrix</a></span>
+<span class="param-type">Set.&lt;number></span>
 
 
 
@@ -2066,7 +735,7 @@ let C = SparseMatrix.diag(d);</pre>
 
             
 
-            <td class="description last"><p>The sparse matrix subtracted from this sparse matrix.</p></td>
+            <td class="description last"><p>The set of indices of vertices to add.</p></td>
         </tr>
 
     
@@ -2134,7 +803,7 @@ let C = SparseMatrix.diag(d);</pre>
             
 <hr>
 <dt>
-    <h4 class="name" id="scaleBy"><span class="type-signature"></span>scaleBy(s)</h4>
+    <h4 class="name" id="deleteVertex"><span class="type-signature"></span>deleteVertex(vertex)</h4>
     
     
 </dt>
@@ -2142,7 +811,7 @@ let C = SparseMatrix.diag(d);</pre>
 
     
     <div class="description">
-        <p>A *= s</p>
+        <p>Removes a vertex from this subset.</p>
     </div>
     
 
@@ -2177,7 +846,7 @@ let C = SparseMatrix.diag(d);</pre>
 
         <tr>
             
-                <td class="name"><code>s</code></td>
+                <td class="name"><code>vertex</code></td>
             
 
             <td class="type">
@@ -2194,7 +863,7 @@ let C = SparseMatrix.diag(d);</pre>
 
             
 
-            <td class="description last"><p>The number this sparse matrix is scaled by.</p></td>
+            <td class="description last"><p>The index of the vertex to remove.</p></td>
         </tr>
 
     
@@ -2262,7 +931,7 @@ let C = SparseMatrix.diag(d);</pre>
             
 <hr>
 <dt>
-    <h4 class="name" id="plus"><span class="type-signature"></span>plus(B)</h4>
+    <h4 class="name" id="deleteVertices"><span class="type-signature"></span>deleteVertices(vertices)</h4>
     
     
 </dt>
@@ -2270,7 +939,7 @@ let C = SparseMatrix.diag(d);</pre>
 
     
     <div class="description">
-        <p>Returns A + B</p>
+        <p>Removes a set of vertices from this subset.</p>
     </div>
     
 
@@ -2305,13 +974,13 @@ let C = SparseMatrix.diag(d);</pre>
 
         <tr>
             
-                <td class="name"><code>B</code></td>
+                <td class="name"><code>vertices</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type"><a href="module-LinearAlgebra.SparseMatrix.html">module:LinearAlgebra.SparseMatrix</a></span>
+<span class="param-type">Set.&lt;number></span>
 
 
 
@@ -2322,7 +991,7 @@ let C = SparseMatrix.diag(d);</pre>
 
             
 
-            <td class="description last"><p>The sparse matrix added to this sparse matrix.</p></td>
+            <td class="description last"><p>The indices of vertices to remove.</p></td>
         </tr>
 
     
@@ -2382,26 +1051,6 @@ let C = SparseMatrix.diag(d);</pre>
     
 
     
-    <h5>Returns:</h5>
-    
-            
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type"><a href="module-LinearAlgebra.SparseMatrix.html">module:LinearAlgebra.SparseMatrix</a></span>
-
-
-
-    </dd>
-</dl>
-
-
-        
 
     
 </dd>
@@ -2410,7 +1059,7 @@ let C = SparseMatrix.diag(d);</pre>
             
 <hr>
 <dt>
-    <h4 class="name" id="minus"><span class="type-signature"></span>minus(B)</h4>
+    <h4 class="name" id="addEdge"><span class="type-signature"></span>addEdge(edge)</h4>
     
     
 </dt>
@@ -2418,7 +1067,7 @@ let C = SparseMatrix.diag(d);</pre>
 
     
     <div class="description">
-        <p>Returns A - B</p>
+        <p>Adds an edge to this subset</p>
     </div>
     
 
@@ -2453,155 +1102,7 @@ let C = SparseMatrix.diag(d);</pre>
 
         <tr>
             
-                <td class="name"><code>B</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><a href="module-LinearAlgebra.SparseMatrix.html">module:LinearAlgebra.SparseMatrix</a></span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The sparse matrix subtracted from this sparse matrix.</p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <h5>Returns:</h5>
-    
-            
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type"><a href="module-LinearAlgebra.SparseMatrix.html">module:LinearAlgebra.SparseMatrix</a></span>
-
-
-
-    </dd>
-</dl>
-
-
-        
-
-    
-</dd>
-
-        
-            
-<hr>
-<dt>
-    <h4 class="name" id="timesReal"><span class="type-signature"></span>timesReal(s)</h4>
-    
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        <p>Returns A * s</p>
-    </div>
-    
-
-    
-
-    
-
-    
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params table table-striped">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>s</code></td>
+                <td class="name"><code>edge</code></td>
             
 
             <td class="type">
@@ -2618,7 +1119,7 @@ let C = SparseMatrix.diag(d);</pre>
 
             
 
-            <td class="description last"><p>The number this sparse matrix is multiplied by.</p></td>
+            <td class="description last"><p>The index of the edge to add.</p></td>
         </tr>
 
     
@@ -2678,26 +1179,6 @@ let C = SparseMatrix.diag(d);</pre>
     
 
     
-    <h5>Returns:</h5>
-    
-            
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type"><a href="module-LinearAlgebra.SparseMatrix.html">module:LinearAlgebra.SparseMatrix</a></span>
-
-
-
-    </dd>
-</dl>
-
-
-        
 
     
 </dd>
@@ -2706,7 +1187,7 @@ let C = SparseMatrix.diag(d);</pre>
             
 <hr>
 <dt>
-    <h4 class="name" id="timesDense"><span class="type-signature"></span>timesDense(X)</h4>
+    <h4 class="name" id="addEdges"><span class="type-signature"></span>addEdges(edges)</h4>
     
     
 </dt>
@@ -2714,7 +1195,7 @@ let C = SparseMatrix.diag(d);</pre>
 
     
     <div class="description">
-        <p>Returns A * X</p>
+        <p>Adds set of edges to this subset</p>
     </div>
     
 
@@ -2749,13 +1230,13 @@ let C = SparseMatrix.diag(d);</pre>
 
         <tr>
             
-                <td class="name"><code>X</code></td>
+                <td class="name"><code>edges</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type"><a href="module-LinearAlgebra.DenseMatrix.html">module:LinearAlgebra.DenseMatrix</a></span>
+<span class="param-type">number</span>
 
 
 
@@ -2766,7 +1247,7 @@ let C = SparseMatrix.diag(d);</pre>
 
             
 
-            <td class="description last"><p>The dense matrix this sparse matrix is multiplied by.</p></td>
+            <td class="description last"><p>The set of indices of edges to add.</p></td>
         </tr>
 
     
@@ -2826,26 +1307,6 @@ let C = SparseMatrix.diag(d);</pre>
     
 
     
-    <h5>Returns:</h5>
-    
-            
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type"><a href="module-LinearAlgebra.DenseMatrix.html">module:LinearAlgebra.DenseMatrix</a></span>
-
-
-
-    </dd>
-</dl>
-
-
-        
 
     
 </dd>
@@ -2854,7 +1315,7 @@ let C = SparseMatrix.diag(d);</pre>
             
 <hr>
 <dt>
-    <h4 class="name" id="timesSparse"><span class="type-signature"></span>timesSparse(B)</h4>
+    <h4 class="name" id="deleteEdge"><span class="type-signature"></span>deleteEdge(edge)</h4>
     
     
 </dt>
@@ -2862,7 +1323,7 @@ let C = SparseMatrix.diag(d);</pre>
 
     
     <div class="description">
-        <p>Returns A * B</p>
+        <p>Removes an edge from this subset.</p>
     </div>
     
 
@@ -2897,13 +1358,13 @@ let C = SparseMatrix.diag(d);</pre>
 
         <tr>
             
-                <td class="name"><code>B</code></td>
+                <td class="name"><code>edge</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type"><a href="module-LinearAlgebra.SparseMatrix.html">module:LinearAlgebra.SparseMatrix</a></span>
+<span class="param-type">number</span>
 
 
 
@@ -2914,7 +1375,7 @@ let C = SparseMatrix.diag(d);</pre>
 
             
 
-            <td class="description last"><p>The sparse matrix this sparse matrix is multiplied by.</p></td>
+            <td class="description last"><p>The index of the edge to remove.</p></td>
         </tr>
 
     
@@ -2974,26 +1435,1030 @@ let C = SparseMatrix.diag(d);</pre>
     
 
     
-    <h5>Returns:</h5>
+
     
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="deleteEdges"><span class="type-signature"></span>deleteEdges(edges)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Removes a set of edges from this subset.</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>edges</code></td>
             
 
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type"><a href="module-LinearAlgebra.SparseMatrix.html">module:LinearAlgebra.SparseMatrix</a></span>
+            <td class="type">
+            
+                
+<span class="param-type">Set.&lt;number></span>
 
 
 
-    </dd>
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The indices of the edges to remove.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
 </dl>
 
 
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
         
+            
+<hr>
+<dt>
+    <h4 class="name" id="addFace"><span class="type-signature"></span>addFace(face)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Adds a face to this subset</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>face</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The index of the face to add.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="addFaces"><span class="type-signature"></span>addFaces(faces)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Adds set of faces to this subset</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>faces</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The set of indices of faces to add.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="deleteFace"><span class="type-signature"></span>deleteFace(face)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Removes a face from this subset.</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>face</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The index of the face to remove.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="deleteFaces"><span class="type-signature"></span>deleteFaces(faces)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Removes a set of faces from this subset.</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>faces</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Set.&lt;number></span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The indices of the faces to remove.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="addSubset"><span class="type-signature"></span>addSubset(subset)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Adds a subset's vertices, edges, and faces to this subset.</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>subset</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="module-Core.MeshSubset.html">module:Core.MeshSubset</a></span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The subset to add in.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="deleteSubset"><span class="type-signature"></span>deleteSubset(subset)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Removes a subset's vertices, edges, and faces from this subset.</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>subset</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="module-Core.MeshSubset.html">module:Core.MeshSubset</a></span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The subset to remove.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="equals"><span class="type-signature"></span>equals(subset)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Returns true if the input subset contains the same vertices, edges, and faces as<br>this subset and false otherwise.</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>subset</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="module-Core.MeshSubset.html">module:Core.MeshSubset</a></span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The subset to compare to.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
 
     
 </dd>

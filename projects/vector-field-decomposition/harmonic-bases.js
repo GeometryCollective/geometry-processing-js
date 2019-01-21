@@ -2,7 +2,7 @@
 
 class HarmonicBases {
 	/**
-	 * This class computes the {@link https://www.cs.cmu.edu/~kmcrane/Projects/DDG/paper.pdf harmonic bases} of a surface mesh.
+	 * This class computes the {@link https://cs.cmu.edu/~kmcrane/Projects/DDG/paper.pdf harmonic bases} of a surface mesh.
 	 * @constructor module:Projects.HarmonicBases
 	 * @param {module:Core.Geometry} geometry The input geometry of the mesh this class acts on.
 	 */

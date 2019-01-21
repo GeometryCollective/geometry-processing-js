@@ -2,7 +2,7 @@
 
 class HeatMethod {
 	/**
-	 * This class implements the {@link http://www.cs.cmu.edu/~kmcrane/Projects/HeatMethod/ heat method} to compute geodesic distance
+	 * This class implements the {@link http://cs.cmu.edu/~kmcrane/Projects/HeatMethod/ heat method} to compute geodesic distance
 	 * on a surface mesh.
 	 * @constructor module:Projects.HeatMethod
 	 * @param {module:Core.Geometry} geometry The input geometry of the mesh this class acts on.

@@ -4,7 +4,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width">
-	<title>geometry-processing-js Class: SparseMatrix</title>
+	<title>geometry-processing-js Class: SimplicialComplexOperators</title>
 
 	<!--[if lt IE 9]>
 	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -79,15 +79,15 @@
 		<div id="main">
 			
 
-	<h1 class="page-title">Class: SparseMatrix</h1>
+	<h1 class="page-title">Class: SimplicialComplexOperators</h1>
 <section>
 
 <header>
     
         <h2>
-            <span class="ancestors"><a href="module-LinearAlgebra.html">LinearAlgebra</a>.</span>
+            <span class="ancestors"><a href="module-Projects.html">Projects</a>.</span>
         
-        SparseMatrix
+        SimplicialComplexOperators
         </h2>
         
     
@@ -100,7 +100,7 @@
         
 <hr>
 <dt>
-    <h4 class="name" id="SparseMatrix"><span class="type-signature"></span>new SparseMatrix()</h4>
+    <h4 class="name" id="SimplicialComplexOperators"><span class="type-signature"></span>new SimplicialComplexOperators(mesh)</h4>
     
     
 </dt>
@@ -108,7 +108,7 @@
 
     
     <div class="description">
-        <p>This class represents a m by n real matrix where only nonzero entries<br>are stored explicitly. Do not create a SparseMatrix from its constructor,<br>instead use static factory methods such as fromTriplet, identity and diag.</p>
+        <p>This class implements various operators (e.g. boundary, star, link) on a mesh.</p>
     </div>
     
 
@@ -118,9 +118,160 @@
 
     
     
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>mesh</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="module-Core.Mesh.html">module:Core.Mesh</a></span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The input mesh this class acts on.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
 
     
 <dl class="details">
+    
+
+    <h5 class="subsection-title">Properties:</h5>
+
+    <dl>
+
+<table class="props table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>mesh</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="module-Core.Mesh.html">module:Core.Mesh</a></span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The input mesh this class acts on.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>A0</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="module-LinearAlgebra.SparseMatrix.html">module:LinearAlgebra.SparseMatrix</a></span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The vertex-edge adjacency matrix of <code>mesh</code>.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>A1</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="module-LinearAlgebra.SparseMatrix.html">module:LinearAlgebra.SparseMatrix</a></span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The edge-face adjacency matrix of <code>mesh</code>.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+</dl>
+
     
 
 	
@@ -170,20 +321,6 @@
     
 
     
-
-    
-        <h5>Example</h5>
-        
-    <pre class="sunlight-highlight-javascript">let T = new Triplet(100, 100);
-T.addEntry(3.4, 11, 43);
-T.addEntry(6.4, 99, 99);
-let A = SparseMatrix.fromTriplet(T);
-
-let B = SparseMatrix.identity(10, 10);
-
-let d = DenseMatrix.ones(100, 1);
-let C = SparseMatrix.diag(d);</pre>
-
 
     
 </dd>
@@ -210,7 +347,7 @@ let C = SparseMatrix.diag(d);</pre>
             
 <hr>
 <dt>
-    <h4 class="name" id=".fromTriplet"><span class="type-signature">&lt;static> </span>fromTriplet(T)</h4>
+    <h4 class="name" id="assignElementIndices"><span class="type-signature"></span>assignElementIndices(mesh)</h4>
     
     
 </dt>
@@ -218,7 +355,7 @@ let C = SparseMatrix.diag(d);</pre>
 
     
     <div class="description">
-        <p>Initializes a sparse matrix from a <a href="module-LinearAlgebra.Triplet.html">Triplet</a> object.</p>
+        <p>Assigns indices to the input mesh's vertices, edges, and faces</p>
     </div>
     
 
@@ -253,13 +390,13 @@ let C = SparseMatrix.diag(d);</pre>
 
         <tr>
             
-                <td class="name"><code>T</code></td>
+                <td class="name"><code>mesh</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type"><a href="module-LinearAlgebra.Triplet.html">module:LinearAlgebra.Triplet</a></span>
+<span class="param-type"><a href="module-Core.Mesh.html">module:Core.Mesh</a></span>
 
 
 
@@ -270,7 +407,135 @@ let C = SparseMatrix.diag(d);</pre>
 
             
 
-            <td class="description last"><p>A triplet object containing only the nonzero entries that<br>need to be stored in this sparse matrix.</p></td>
+            <td class="description last"><p>The input mesh which we index.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="isHomogeneous"><span class="type-signature"></span>isHomogeneous(subset)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Returns true if the given subset is homogeneous and false otherwise.</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>subset</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="module-Core.MeshSubset.html">module:Core.MeshSubset</a></span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>A subset of our mesh.</p></td>
         </tr>
 
     
@@ -333,6 +598,10 @@ let C = SparseMatrix.diag(d);</pre>
     <h5>Returns:</h5>
     
             
+<div class="param-desc">
+    <p>True if the given subset is homogeneous and false otherwise.</p>
+</div>
+
 
 
 <dl>
@@ -341,7 +610,7 @@ let C = SparseMatrix.diag(d);</pre>
     </dt>
     <dd>
         
-<span class="param-type"><a href="module-LinearAlgebra.SparseMatrix.html">module:LinearAlgebra.SparseMatrix</a></span>
+<span class="param-type">boolean</span>
 
 
 
@@ -358,7 +627,7 @@ let C = SparseMatrix.diag(d);</pre>
             
 <hr>
 <dt>
-    <h4 class="name" id=".identity"><span class="type-signature">&lt;static> </span>identity(m, n)</h4>
+    <h4 class="name" id="buildVertexVector"><span class="type-signature"></span>buildVertexVector(subset)</h4>
     
     
 </dt>
@@ -366,7 +635,7 @@ let C = SparseMatrix.diag(d);</pre>
 
     
     <div class="description">
-        <p>Initializes a m by n sparse identity matrix.</p>
+        <p>Returns a column vector representing the vertices of the<br>given subset.</p>
     </div>
     
 
@@ -401,13 +670,13 @@ let C = SparseMatrix.diag(d);</pre>
 
         <tr>
             
-                <td class="name"><code>m</code></td>
+                <td class="name"><code>subset</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">number</span>
+<span class="param-type"><a href="module-Core.MeshSubset.html">module:Core.MeshSubset</a></span>
 
 
 
@@ -418,31 +687,7 @@ let C = SparseMatrix.diag(d);</pre>
 
             
 
-            <td class="description last"><p>The number of rows in this sparse matrix.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>n</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">number</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The number of columns in this sparse matrix.</p></td>
+            <td class="description last"><p>A subset of our mesh.</p></td>
         </tr>
 
     
@@ -505,1354 +750,10 @@ let C = SparseMatrix.diag(d);</pre>
     <h5>Returns:</h5>
     
             
+<div class="param-desc">
+    <p>A column vector with |V| entries. The ith entry is 1 if<br> vertex i is in the given subset and 0 otherwise</p>
+</div>
 
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type"><a href="module-LinearAlgebra.SparseMatrix.html">module:LinearAlgebra.SparseMatrix</a></span>
-
-
-
-    </dd>
-</dl>
-
-
-        
-
-    
-</dd>
-
-        
-            
-<hr>
-<dt>
-    <h4 class="name" id=".diag"><span class="type-signature">&lt;static> </span>diag(d)</h4>
-    
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        <p>Initializes a sparse diagonal matrix.</p>
-    </div>
-    
-
-    
-
-    
-
-    
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params table table-striped">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>d</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><a href="module-LinearAlgebra.DenseMatrix.html">module:LinearAlgebra.DenseMatrix</a></span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The dense vector (d.nCols() == 1) used to initialize<br>this sparse diagonal matrix.</p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <h5>Returns:</h5>
-    
-            
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type"><a href="module-LinearAlgebra.SparseMatrix.html">module:LinearAlgebra.SparseMatrix</a></span>
-
-
-
-    </dd>
-</dl>
-
-
-        
-
-    
-</dd>
-
-        
-            
-<hr>
-<dt>
-    <h4 class="name" id="transpose"><span class="type-signature"></span>transpose()</h4>
-    
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        <p>Returns the transpose of this sparse matrix.</p>
-    </div>
-    
-
-    
-
-    
-
-    
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <h5>Returns:</h5>
-    
-            
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type"><a href="module-LinearAlgebra.SparseMatrix.html">module:LinearAlgebra.SparseMatrix</a></span>
-
-
-
-    </dd>
-</dl>
-
-
-        
-
-    
-</dd>
-
-        
-            
-<hr>
-<dt>
-    <h4 class="name" id="invertDiagonal"><span class="type-signature"></span>invertDiagonal()</h4>
-    
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        <p>Returns the inverse of this diagonal sparse matrix.</p>
-    </div>
-    
-
-    
-
-    
-
-    
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <h5>Returns:</h5>
-    
-            
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type"><a href="module-LinearAlgebra.SparseMatrix.html">module:LinearAlgebra.SparseMatrix</a></span>
-
-
-
-    </dd>
-</dl>
-
-
-        
-
-    
-</dd>
-
-        
-            
-<hr>
-<dt>
-    <h4 class="name" id="nRows"><span class="type-signature"></span>nRows()</h4>
-    
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        <p>Returns the number of rows in this sparse matrix.</p>
-    </div>
-    
-
-    
-
-    
-
-    
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <h5>Returns:</h5>
-    
-            
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">number</span>
-
-
-
-    </dd>
-</dl>
-
-
-        
-
-    
-</dd>
-
-        
-            
-<hr>
-<dt>
-    <h4 class="name" id="nCols"><span class="type-signature"></span>nCols()</h4>
-    
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        <p>Returns the number of columns in this sparse matrix.</p>
-    </div>
-    
-
-    
-
-    
-
-    
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <h5>Returns:</h5>
-    
-            
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">number</span>
-
-
-
-    </dd>
-</dl>
-
-
-        
-
-    
-</dd>
-
-        
-            
-<hr>
-<dt>
-    <h4 class="name" id="nnz"><span class="type-signature"></span>nnz()</h4>
-    
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        <p>Returns the number of nonzero entries in this sparse matrix.</p>
-    </div>
-    
-
-    
-
-    
-
-    
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <h5>Returns:</h5>
-    
-            
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">number</span>
-
-
-
-    </dd>
-</dl>
-
-
-        
-
-    
-</dd>
-
-        
-            
-<hr>
-<dt>
-    <h4 class="name" id="frobeniusNorm"><span class="type-signature"></span>frobeniusNorm()</h4>
-    
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        <p>Computes the frobenius norm of this sparse matrix.</p>
-    </div>
-    
-
-    
-
-    
-
-    
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <h5>Returns:</h5>
-    
-            
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">number</span>
-
-
-
-    </dd>
-</dl>
-
-
-        
-
-    
-</dd>
-
-        
-            
-<hr>
-<dt>
-    <h4 class="name" id="subMatrix"><span class="type-signature"></span>subMatrix(r0, r1, c0, c1)</h4>
-    
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        <p>Extracts a sparse sub-matrix in the range [r0, r1) x [c0, c1), i.e., a matrix<br>of size (r1 - r0) x (c1 - c0) starting at indices (r0, c0).</p>
-    </div>
-    
-
-    
-
-    
-
-    
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params table table-striped">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>r0</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">number</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The start row index.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>r1</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">number</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The end row index (not included).</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>c0</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">number</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The start column index.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>c1</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">number</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The end column index (not included).</p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <h5>Returns:</h5>
-    
-            
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type"><a href="module-LinearAlgebra.SparseMatrix.html">module:LinearAlgebra.SparseMatrix</a></span>
-
-
-
-    </dd>
-</dl>
-
-
-        
-
-    
-</dd>
-
-        
-            
-<hr>
-<dt>
-    <h4 class="name" id="chol"><span class="type-signature"></span>chol()</h4>
-    
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        <p>Returns a sparse <a href="module-LinearAlgebra.Cholesky.html">Cholesky</a> factorization of this sparse matrix.</p>
-    </div>
-    
-
-    
-
-    
-
-    
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <h5>Returns:</h5>
-    
-            
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type"><a href="module-LinearAlgebra.Cholesky.html">module:LinearAlgebra.Cholesky</a></span>
-
-
-
-    </dd>
-</dl>
-
-
-        
-
-    
-</dd>
-
-        
-            
-<hr>
-<dt>
-    <h4 class="name" id="lu"><span class="type-signature"></span>lu()</h4>
-    
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        <p>Returns a sparse <a href="module-LinearAlgebra.LU.html">LU</a> factorization of this sparse matrix.</p>
-    </div>
-    
-
-    
-
-    
-
-    
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <h5>Returns:</h5>
-    
-            
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type"><a href="module-LinearAlgebra.LU.html">module:LinearAlgebra.LU</a></span>
-
-
-
-    </dd>
-</dl>
-
-
-        
-
-    
-</dd>
-
-        
-            
-<hr>
-<dt>
-    <h4 class="name" id="qr"><span class="type-signature"></span>qr()</h4>
-    
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        <p>Returns a sparse <a href="module-LinearAlgebra.QR.html">QR</a> factorization of this sparse matrix.</p>
-    </div>
-    
-
-    
-
-    
-
-    
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <h5>Returns:</h5>
-    
-            
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type"><a href="module-LinearAlgebra.QR.html">module:LinearAlgebra.QR</a></span>
-
-
-
-    </dd>
-</dl>
-
-
-        
-
-    
-</dd>
-
-        
-            
-<hr>
-<dt>
-    <h4 class="name" id="toDense"><span class="type-signature"></span>toDense()</h4>
-    
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        <p>Returns a dense copy of this sparse matrix.</p>
-    </div>
-    
-
-    
-
-    
-
-    
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <h5>Returns:</h5>
-    
-            
 
 
 <dl>
@@ -1878,7 +779,7 @@ let C = SparseMatrix.diag(d);</pre>
             
 <hr>
 <dt>
-    <h4 class="name" id="incrementBy"><span class="type-signature"></span>incrementBy(B)</h4>
+    <h4 class="name" id="buildEdgeVector"><span class="type-signature"></span>buildEdgeVector(subset)</h4>
     
     
 </dt>
@@ -1886,7 +787,7 @@ let C = SparseMatrix.diag(d);</pre>
 
     
     <div class="description">
-        <p>A += B</p>
+        <p>Returns a column vector representing the edges of the<br>given subset.</p>
     </div>
     
 
@@ -1921,13 +822,13 @@ let C = SparseMatrix.diag(d);</pre>
 
         <tr>
             
-                <td class="name"><code>B</code></td>
+                <td class="name"><code>subset</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type"><a href="module-LinearAlgebra.SparseMatrix.html">module:LinearAlgebra.SparseMatrix</a></span>
+<span class="param-type"><a href="module-Core.MeshSubset.html">module:Core.MeshSubset</a></span>
 
 
 
@@ -1938,391 +839,7 @@ let C = SparseMatrix.diag(d);</pre>
 
             
 
-            <td class="description last"><p>The sparse matrix added to this sparse matrix.</p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dd>
-
-        
-            
-<hr>
-<dt>
-    <h4 class="name" id="decrementBy"><span class="type-signature"></span>decrementBy(B)</h4>
-    
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        <p>A -= B</p>
-    </div>
-    
-
-    
-
-    
-
-    
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params table table-striped">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>B</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><a href="module-LinearAlgebra.SparseMatrix.html">module:LinearAlgebra.SparseMatrix</a></span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The sparse matrix subtracted from this sparse matrix.</p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dd>
-
-        
-            
-<hr>
-<dt>
-    <h4 class="name" id="scaleBy"><span class="type-signature"></span>scaleBy(s)</h4>
-    
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        <p>A *= s</p>
-    </div>
-    
-
-    
-
-    
-
-    
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params table table-striped">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>s</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">number</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The number this sparse matrix is scaled by.</p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dd>
-
-        
-            
-<hr>
-<dt>
-    <h4 class="name" id="plus"><span class="type-signature"></span>plus(B)</h4>
-    
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        <p>Returns A + B</p>
-    </div>
-    
-
-    
-
-    
-
-    
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params table table-striped">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>B</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><a href="module-LinearAlgebra.SparseMatrix.html">module:LinearAlgebra.SparseMatrix</a></span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The sparse matrix added to this sparse matrix.</p></td>
+            <td class="description last"><p>A subset of our mesh.</p></td>
         </tr>
 
     
@@ -2385,450 +902,10 @@ let C = SparseMatrix.diag(d);</pre>
     <h5>Returns:</h5>
     
             
+<div class="param-desc">
+    <p>A column vector with |E| entries. The ith entry is 1 if<br> edge i is in the given subset and 0 otherwise</p>
+</div>
 
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type"><a href="module-LinearAlgebra.SparseMatrix.html">module:LinearAlgebra.SparseMatrix</a></span>
-
-
-
-    </dd>
-</dl>
-
-
-        
-
-    
-</dd>
-
-        
-            
-<hr>
-<dt>
-    <h4 class="name" id="minus"><span class="type-signature"></span>minus(B)</h4>
-    
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        <p>Returns A - B</p>
-    </div>
-    
-
-    
-
-    
-
-    
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params table table-striped">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>B</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><a href="module-LinearAlgebra.SparseMatrix.html">module:LinearAlgebra.SparseMatrix</a></span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The sparse matrix subtracted from this sparse matrix.</p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <h5>Returns:</h5>
-    
-            
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type"><a href="module-LinearAlgebra.SparseMatrix.html">module:LinearAlgebra.SparseMatrix</a></span>
-
-
-
-    </dd>
-</dl>
-
-
-        
-
-    
-</dd>
-
-        
-            
-<hr>
-<dt>
-    <h4 class="name" id="timesReal"><span class="type-signature"></span>timesReal(s)</h4>
-    
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        <p>Returns A * s</p>
-    </div>
-    
-
-    
-
-    
-
-    
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params table table-striped">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>s</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">number</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The number this sparse matrix is multiplied by.</p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <h5>Returns:</h5>
-    
-            
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type"><a href="module-LinearAlgebra.SparseMatrix.html">module:LinearAlgebra.SparseMatrix</a></span>
-
-
-
-    </dd>
-</dl>
-
-
-        
-
-    
-</dd>
-
-        
-            
-<hr>
-<dt>
-    <h4 class="name" id="timesDense"><span class="type-signature"></span>timesDense(X)</h4>
-    
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        <p>Returns A * X</p>
-    </div>
-    
-
-    
-
-    
-
-    
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params table table-striped">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>X</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><a href="module-LinearAlgebra.DenseMatrix.html">module:LinearAlgebra.DenseMatrix</a></span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The dense matrix this sparse matrix is multiplied by.</p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <h5>Returns:</h5>
-    
-            
 
 
 <dl>
@@ -2854,7 +931,7 @@ let C = SparseMatrix.diag(d);</pre>
             
 <hr>
 <dt>
-    <h4 class="name" id="timesSparse"><span class="type-signature"></span>timesSparse(B)</h4>
+    <h4 class="name" id="buildFaceVector"><span class="type-signature"></span>buildFaceVector(subset)</h4>
     
     
 </dt>
@@ -2862,7 +939,7 @@ let C = SparseMatrix.diag(d);</pre>
 
     
     <div class="description">
-        <p>Returns A * B</p>
+        <p>Returns a column vector representing the faces of the<br>given subset.</p>
     </div>
     
 
@@ -2897,13 +974,13 @@ let C = SparseMatrix.diag(d);</pre>
 
         <tr>
             
-                <td class="name"><code>B</code></td>
+                <td class="name"><code>subset</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type"><a href="module-LinearAlgebra.SparseMatrix.html">module:LinearAlgebra.SparseMatrix</a></span>
+<span class="param-type"><a href="module-Core.MeshSubset.html">module:Core.MeshSubset</a></span>
 
 
 
@@ -2914,7 +991,7 @@ let C = SparseMatrix.diag(d);</pre>
 
             
 
-            <td class="description last"><p>The sparse matrix this sparse matrix is multiplied by.</p></td>
+            <td class="description last"><p>A subset of our mesh.</p></td>
         </tr>
 
     
@@ -2977,6 +1054,10 @@ let C = SparseMatrix.diag(d);</pre>
     <h5>Returns:</h5>
     
             
+<div class="param-desc">
+    <p>A column vector with |F| entries. The ith entry is 1 if<br> face i is in the given subset and 0 otherwise</p>
+</div>
+
 
 
 <dl>
@@ -2985,7 +1066,1375 @@ let C = SparseMatrix.diag(d);</pre>
     </dt>
     <dd>
         
-<span class="param-type"><a href="module-LinearAlgebra.SparseMatrix.html">module:LinearAlgebra.SparseMatrix</a></span>
+<span class="param-type"><a href="module-LinearAlgebra.DenseMatrix.html">module:LinearAlgebra.DenseMatrix</a></span>
+
+
+
+    </dd>
+</dl>
+
+
+        
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="buildVertexEdgeAdjacencyMatrix"><span class="type-signature"></span>buildVertexEdgeAdjacencyMatrix(mesh)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Returns the vertex-edge adjacency matrix of the given mesh.</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>mesh</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="module-Core.Mesh.html">module:Core.Mesh</a></span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The mesh whose adjacency matrix we compute.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    <p>The vertex-edge adjacency matrix of the given mesh.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="module-LinearAlgebra.DenseMatrix.html">module:LinearAlgebra.DenseMatrix</a></span>
+
+
+
+    </dd>
+</dl>
+
+
+        
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="buildEdgeFaceAdjacencyMatrix"><span class="type-signature"></span>buildEdgeFaceAdjacencyMatrix(mesh)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Returns the edge-face adjacency matrix.</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>mesh</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="module-Core.Mesh.html">module:Core.Mesh</a></span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The mesh whose adjacency matrix we compute.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    <p>The edge-face adjacency matrix of the given mesh.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="module-LinearAlgebra.DenseMatrix.html">module:LinearAlgebra.DenseMatrix</a></span>
+
+
+
+    </dd>
+</dl>
+
+
+        
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="isSubcomplex"><span class="type-signature"></span>isSubcomplex(subset)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Returns true if the given subset is a subcomplex and false otherwise.</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>subset</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="module-Core.MeshSubset.html">module:Core.MeshSubset</a></span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>A subset of our mesh.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    <p>True if the given subset is a subcomplex and false otherwise.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">boolean</span>
+
+
+
+    </dd>
+</dl>
+
+
+        
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="pureDegree"><span class="type-signature"></span>pureDegree(subset)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Returns the degree if the given subset is a pure subcomplex and -1 otherwise.</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>subset</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="module-Core.MeshSubset.html">module:Core.MeshSubset</a></span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>A subset of our mesh.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    <p>The degree of the given subset if it is a pure subcomplex and -1 otherwise.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">number</span>
+
+
+
+    </dd>
+</dl>
+
+
+        
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="boundary"><span class="type-signature"></span>boundary(subset)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Returns the boundary of a subset.</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>subset</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="module-Core.MeshSubset.html">module:Core.MeshSubset</a></span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>A subset of our mesh. We assume <code>subset</code> is a pure subcomplex.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    <p>The boundary of the given pure subcomplex.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="module-Core.MeshSubset.html">module:Core.MeshSubset</a></span>
+
+
+
+    </dd>
+</dl>
+
+
+        
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="interior"><span class="type-signature"></span>interior(subset)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Returns the interior of a subset.</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>subset</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="module-Core.MeshSubset.html">module:Core.MeshSubset</a></span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>A subset of our mesh. We assume <code>subset</code> is a pure subcomplex.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    <p>The interior of the given pure subcomplex.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="module-Core.MeshSubset.html">module:Core.MeshSubset</a></span>
+
+
+
+    </dd>
+</dl>
+
+
+        
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="star"><span class="type-signature"></span>star(subset)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Returns the star of a subset.</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>subset</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="module-Core.MeshSubset.html">module:Core.MeshSubset</a></span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>A subset of our mesh.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    <p>The star of the given subset.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="module-Core.MeshSubset.html">module:Core.MeshSubset</a></span>
+
+
+
+    </dd>
+</dl>
+
+
+        
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="closure"><span class="type-signature"></span>closure(subset)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Returns the closure of a subset.</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>subset</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="module-Core.MeshSubset.html">module:Core.MeshSubset</a></span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>A subset of our mesh.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    <p>The closure of the given subset.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="module-Core.MeshSubset.html">module:Core.MeshSubset</a></span>
+
+
+
+    </dd>
+</dl>
+
+
+        
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="link"><span class="type-signature"></span>link(subset)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Returns the link of a subset.</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>subset</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="module-Core.MeshSubset.html">module:Core.MeshSubset</a></span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>A subset of our mesh.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    <p>The link of the given subset.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="module-Core.MeshSubset.html">module:Core.MeshSubset</a></span>
 
 
 
