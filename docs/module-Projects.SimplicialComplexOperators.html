@@ -475,7 +475,7 @@
             
 <hr>
 <dt>
-    <h4 class="name" id="isHomogeneous"><span class="type-signature"></span>isHomogeneous(subset)</h4>
+    <h4 class="name" id="buildVertexEdgeAdjacencyMatrix"><span class="type-signature"></span>buildVertexEdgeAdjacencyMatrix(mesh)</h4>
     
     
 </dt>
@@ -483,7 +483,7 @@
 
     
     <div class="description">
-        <p>Returns true if the given subset is homogeneous and false otherwise.</p>
+        <p>Returns the vertex-edge adjacency matrix of the given mesh.</p>
     </div>
     
 
@@ -518,13 +518,13 @@
 
         <tr>
             
-                <td class="name"><code>subset</code></td>
+                <td class="name"><code>mesh</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type"><a href="module-Core.MeshSubset.html">module:Core.MeshSubset</a></span>
+<span class="param-type"><a href="module-Core.Mesh.html">module:Core.Mesh</a></span>
 
 
 
@@ -535,7 +535,7 @@
 
             
 
-            <td class="description last"><p>A subset of our mesh.</p></td>
+            <td class="description last"><p>The mesh whose adjacency matrix we compute.</p></td>
         </tr>
 
     
@@ -599,7 +599,7 @@
     
             
 <div class="param-desc">
-    <p>True if the given subset is homogeneous and false otherwise.</p>
+    <p>The vertex-edge adjacency matrix of the given mesh.</p>
 </div>
 
 
@@ -610,7 +610,159 @@
     </dt>
     <dd>
         
-<span class="param-type">boolean</span>
+<span class="param-type"><a href="module-LinearAlgebra.DenseMatrix.html">module:LinearAlgebra.DenseMatrix</a></span>
+
+
+
+    </dd>
+</dl>
+
+
+        
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="buildEdgeFaceAdjacencyMatrix"><span class="type-signature"></span>buildEdgeFaceAdjacencyMatrix(mesh)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Returns the edge-face adjacency matrix.</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>mesh</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="module-Core.Mesh.html">module:Core.Mesh</a></span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The mesh whose adjacency matrix we compute.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    <p>The edge-face adjacency matrix of the given mesh.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="module-LinearAlgebra.DenseMatrix.html">module:LinearAlgebra.DenseMatrix</a></span>
 
 
 
@@ -1083,918 +1235,6 @@
             
 <hr>
 <dt>
-    <h4 class="name" id="buildVertexEdgeAdjacencyMatrix"><span class="type-signature"></span>buildVertexEdgeAdjacencyMatrix(mesh)</h4>
-    
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        <p>Returns the vertex-edge adjacency matrix of the given mesh.</p>
-    </div>
-    
-
-    
-
-    
-
-    
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params table table-striped">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>mesh</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><a href="module-Core.Mesh.html">module:Core.Mesh</a></span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The mesh whose adjacency matrix we compute.</p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <h5>Returns:</h5>
-    
-            
-<div class="param-desc">
-    <p>The vertex-edge adjacency matrix of the given mesh.</p>
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type"><a href="module-LinearAlgebra.DenseMatrix.html">module:LinearAlgebra.DenseMatrix</a></span>
-
-
-
-    </dd>
-</dl>
-
-
-        
-
-    
-</dd>
-
-        
-            
-<hr>
-<dt>
-    <h4 class="name" id="buildEdgeFaceAdjacencyMatrix"><span class="type-signature"></span>buildEdgeFaceAdjacencyMatrix(mesh)</h4>
-    
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        <p>Returns the edge-face adjacency matrix.</p>
-    </div>
-    
-
-    
-
-    
-
-    
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params table table-striped">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>mesh</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><a href="module-Core.Mesh.html">module:Core.Mesh</a></span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The mesh whose adjacency matrix we compute.</p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <h5>Returns:</h5>
-    
-            
-<div class="param-desc">
-    <p>The edge-face adjacency matrix of the given mesh.</p>
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type"><a href="module-LinearAlgebra.DenseMatrix.html">module:LinearAlgebra.DenseMatrix</a></span>
-
-
-
-    </dd>
-</dl>
-
-
-        
-
-    
-</dd>
-
-        
-            
-<hr>
-<dt>
-    <h4 class="name" id="isSubcomplex"><span class="type-signature"></span>isSubcomplex(subset)</h4>
-    
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        <p>Returns true if the given subset is a subcomplex and false otherwise.</p>
-    </div>
-    
-
-    
-
-    
-
-    
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params table table-striped">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>subset</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><a href="module-Core.MeshSubset.html">module:Core.MeshSubset</a></span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>A subset of our mesh.</p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <h5>Returns:</h5>
-    
-            
-<div class="param-desc">
-    <p>True if the given subset is a subcomplex and false otherwise.</p>
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">boolean</span>
-
-
-
-    </dd>
-</dl>
-
-
-        
-
-    
-</dd>
-
-        
-            
-<hr>
-<dt>
-    <h4 class="name" id="pureDegree"><span class="type-signature"></span>pureDegree(subset)</h4>
-    
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        <p>Returns the degree if the given subset is a pure subcomplex and -1 otherwise.</p>
-    </div>
-    
-
-    
-
-    
-
-    
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params table table-striped">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>subset</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><a href="module-Core.MeshSubset.html">module:Core.MeshSubset</a></span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>A subset of our mesh.</p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <h5>Returns:</h5>
-    
-            
-<div class="param-desc">
-    <p>The degree of the given subset if it is a pure subcomplex and -1 otherwise.</p>
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">number</span>
-
-
-
-    </dd>
-</dl>
-
-
-        
-
-    
-</dd>
-
-        
-            
-<hr>
-<dt>
-    <h4 class="name" id="boundary"><span class="type-signature"></span>boundary(subset)</h4>
-    
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        <p>Returns the boundary of a subset.</p>
-    </div>
-    
-
-    
-
-    
-
-    
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params table table-striped">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>subset</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><a href="module-Core.MeshSubset.html">module:Core.MeshSubset</a></span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>A subset of our mesh. We assume <code>subset</code> is a pure subcomplex.</p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <h5>Returns:</h5>
-    
-            
-<div class="param-desc">
-    <p>The boundary of the given pure subcomplex.</p>
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type"><a href="module-Core.MeshSubset.html">module:Core.MeshSubset</a></span>
-
-
-
-    </dd>
-</dl>
-
-
-        
-
-    
-</dd>
-
-        
-            
-<hr>
-<dt>
-    <h4 class="name" id="interior"><span class="type-signature"></span>interior(subset)</h4>
-    
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        <p>Returns the interior of a subset.</p>
-    </div>
-    
-
-    
-
-    
-
-    
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params table table-striped">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>subset</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><a href="module-Core.MeshSubset.html">module:Core.MeshSubset</a></span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>A subset of our mesh. We assume <code>subset</code> is a pure subcomplex.</p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <h5>Returns:</h5>
-    
-            
-<div class="param-desc">
-    <p>The interior of the given pure subcomplex.</p>
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type"><a href="module-Core.MeshSubset.html">module:Core.MeshSubset</a></span>
-
-
-
-    </dd>
-</dl>
-
-
-        
-
-    
-</dd>
-
-        
-            
-<hr>
-<dt>
     <h4 class="name" id="star"><span class="type-signature"></span>star(subset)</h4>
     
     
@@ -2424,6 +1664,462 @@
             
 <div class="param-desc">
     <p>The link of the given subset.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="module-Core.MeshSubset.html">module:Core.MeshSubset</a></span>
+
+
+
+    </dd>
+</dl>
+
+
+        
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="isComplex"><span class="type-signature"></span>isComplex(subset)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Returns true if the given subset is a subcomplex and false otherwise.</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>subset</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="module-Core.MeshSubset.html">module:Core.MeshSubset</a></span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>A subset of our mesh.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    <p>True if the given subset is a subcomplex and false otherwise.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">boolean</span>
+
+
+
+    </dd>
+</dl>
+
+
+        
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="isPureComplex"><span class="type-signature"></span>isPureComplex(subset)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Returns the degree if the given subset is a pure subcomplex and -1 otherwise.</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>subset</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="module-Core.MeshSubset.html">module:Core.MeshSubset</a></span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>A subset of our mesh.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    <p>The degree of the given subset if it is a pure subcomplex and -1 otherwise.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">number</span>
+
+
+
+    </dd>
+</dl>
+
+
+        
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="boundary"><span class="type-signature"></span>boundary(subset)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Returns the boundary of a subset.</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>subset</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="module-Core.MeshSubset.html">module:Core.MeshSubset</a></span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>A subset of our mesh. We assume <code>subset</code> is a pure subcomplex.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    <p>The boundary of the given pure subcomplex.</p>
 </div>
 
 

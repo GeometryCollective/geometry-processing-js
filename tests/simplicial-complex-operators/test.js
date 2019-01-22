@@ -17,7 +17,7 @@ describe("Simplicial Complex Operators", function() {
         let mesh = new Mesh();
         mesh.build(polygonSoup);
 
-        describe("isSubcomplex", function() {
+        describe("isComplex", function() {
                 it("A vertex", SubcomplexFunctionTest.testFunction(chai, mesh, vertexComplexTest));
                 it("An edge",  SubcomplexFunctionTest.testFunction(chai, mesh, edgeComplexTest));
                 it("A closed edge",  SubcomplexFunctionTest.testFunction(chai, mesh, closedEdgeComplexTest));
@@ -204,13 +204,6 @@ describe("Simplicial Complex Operators", function() {
                 it("Boundary of an edge",        SubcomplexOperationTest.testFunction(chai, mesh, edgeBoundaryTest));
                 it("Boundary of a face",         SubcomplexOperationTest.testFunction(chai, mesh, faceBoundaryTest));
                 it("Boundary of adjacent faces", SubcomplexOperationTest.testFunction(chai, mesh, facesBoundaryTest));
-        });
-
-        describe("Interior", function() {
-                it("Interior of a vertex",        SubcomplexOperationTest.testFunction(chai, mesh, vertexInteriorTest));
-                it("Interior of an edge",         SubcomplexOperationTest.testFunction(chai, mesh, edgeInteriorTest));
-                it("Interior of a face",          SubcomplexOperationTest.testFunction(chai, mesh, faceInteriorTest));
-                it("Interiory of adjacent faces", SubcomplexOperationTest.testFunction(chai, mesh, facesInteriorTest));
         });
 
         describe("Star", function() {

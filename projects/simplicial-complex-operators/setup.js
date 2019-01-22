@@ -65,22 +65,15 @@ let guiFields = {
                 displayMeshSubset();
                 setDisabledButtons();
         },
-        "isSubcomplex": function() {
-                console.log(simplicialComplexOperators.isSubcomplex(selectedSimplices));
+        "isComplex": function() {
+                console.log(simplicialComplexOperators.isComplex(selectedSimplices));
         },
-        "pureDegree": function() {
-                console.log(simplicialComplexOperators.pureDegree(selectedSimplices));
+        "isPureComplex": function() {
+                console.log(simplicialComplexOperators.isPureComplex(selectedSimplices));
         },
         "Boundary": function() {
-                if (simplicialComplexOperators.pureDegree(selectedSimplices) >= 0) {
+                if (simplicialComplexOperators.isPureComplex(selectedSimplices) >= 0) {
                         selectedSimplices = simplicialComplexOperators.boundary(selectedSimplices);
-                        displayMeshSubset();
-                }
-                setDisabledButtons();
-        },
-        "Interior": function() {
-                if (simplicialComplexOperators.pureDegree(selectedSimplices) >= 0) {
-                        selectedSimplices = simplicialComplexOperators.interior(selectedSimplices);
                         displayMeshSubset();
                 }
                 setDisabledButtons();
@@ -103,12 +96,10 @@ let guiFields = {
 };
 
 function setDisabledButtons() {
-        if (simplicialComplexOperators.pureDegree(selectedSimplices) >= 0) {
+        if (simplicialComplexOperators.isPureComplex(selectedSimplices) >= 0) {
                 getController("Boundary").domElement.parentNode.removeAttribute("disabled");
-                getController("Interior").domElement.parentNode.removeAttribute("disabled");
         } else {
                 getController("Boundary").domElement.parentNode.setAttribute("disabled", "");
-                getController("Interior").domElement.parentNode.setAttribute("disabled", "");
         }
 }
 
@@ -168,10 +159,9 @@ function initGUI() {
         gui.add(guiFields, "Reset");
 
         ops = gui.addFolder("Operations");
-        ops.add(guiFields, "isSubcomplex");
-        ops.add(guiFields, "pureDegree");
+        ops.add(guiFields, "isComplex");
+        ops.add(guiFields, "isPureComplex");
         ops.add(guiFields, "Boundary");
-        ops.add(guiFields, "Interior");
         ops.add(guiFields, "Star");
         ops.add(guiFields, "Closure");
         ops.add(guiFields, "Link");

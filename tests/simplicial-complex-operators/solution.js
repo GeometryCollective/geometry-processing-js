@@ -64,8 +64,6 @@ class SubcomplexOperationTest {
                                 result = simplicialComplexOperators.closure(selectedSimplices);
                         } else if (test.operation == "boundary") {
                                 result = simplicialComplexOperators.boundary(selectedSimplices);
-                        } else if (test.operation == "interior") {
-                                result = simplicialComplexOperators.interior(selectedSimplices);
                         }
 
                         if (!SubcomplexOperationTest.subsetElementsGivenByList(result.vertices, mesh.vertices, test.finalVertices)) {
@@ -137,10 +135,10 @@ class SubcomplexFunctionTest {
                         selectedSimplices.addEdges(meshEdges);
                         selectedSimplices.addFaces(meshFaces);
 
-                        if (test.fn == "isSubcomplex") {
-                                result = simplicialComplexOperators.isSubcomplex(selectedSimplices);
-                        } else if (test.fn == "pureDegree") {
-                                result = simplicialComplexOperators.pureDegree(selectedSimplices);
+                        if (test.fn == "isComplex") {
+                                result = simplicialComplexOperators.isComplex(selectedSimplices);
+                        } else if (test.fn == "isPureComplex") {
+                                result = simplicialComplexOperators.isPureComplex(selectedSimplices);
                         }
 
                         chai.assert.strictEqual(result, test.result);
@@ -179,22 +177,17 @@ let edgeBoundaryTest    = new SubcomplexOperationTest("boundary", [731, 850], [1
 let faceBoundaryTest    = new SubcomplexOperationTest("boundary", [593, 731, 850], [1434, 1638, 2090], [1261], [593, 731, 850], [1434, 1638, 2090], []);
 let facesBoundaryTest   = new SubcomplexOperationTest("boundary", [593, 655, 731, 850, 1011], [2090, 1192, 1434, 1435, 1638, 2088, 2089], [902, 1261, 584], [593, 655, 731, 850, 1011], [1192, 1435, 1638, 2088, 2089], []);
 
-let vertexInteriorTest = new SubcomplexOperationTest("interior", [1064], [], [], [1064], [], []);
-let edgeInteriorTest   = new SubcomplexOperationTest("interior", [731, 1064], [1969], [], [], [1969], []);
-let faceInteriorTest   = new SubcomplexOperationTest("interior", [593, 731, 850], [1434, 1638, 2090], [1261], [], [], [1261]);
-let facesInteriorTest  = new SubcomplexOperationTest("interior", [593, 655, 731, 850, 1011], [2090, 1192, 1434, 1435, 1638, 2088, 2089], [584, 1261, 902], [], [2090, 1434], [584, 1261, 902]);
+let vertexComplexTest     = new SubcomplexFunctionTest("isComplex", [615], [], [], true);
+let edgeComplexTest       = new SubcomplexFunctionTest("isComplex", [], [607], [], false);
+let closedEdgeComplexTest = new SubcomplexFunctionTest("isComplex", [655, 731], [1192], [], true);
+let faceComplexTest       = new SubcomplexFunctionTest("isComplex", [], [], [584], false);
+let faceEdgesComplexTest  = new SubcomplexFunctionTest("isComplex", [], [1192, 1434, 1435], [584], false);
+let closedFaceComplexTest = new SubcomplexFunctionTest("isComplex", [655, 731, 850], [1192, 1434, 1435], [584], true);
 
-let vertexComplexTest     = new SubcomplexFunctionTest("isSubcomplex", [615], [], [], true);
-let edgeComplexTest       = new SubcomplexFunctionTest("isSubcomplex", [], [607], [], false);
-let closedEdgeComplexTest = new SubcomplexFunctionTest("isSubcomplex", [655, 731], [1192], [], true);
-let faceComplexTest       = new SubcomplexFunctionTest("isSubcomplex", [], [], [584], false);
-let faceEdgesComplexTest  = new SubcomplexFunctionTest("isSubcomplex", [], [1192, 1434, 1435], [584], false);
-let closedFaceComplexTest = new SubcomplexFunctionTest("isSubcomplex", [655, 731, 850], [1192, 1434, 1435], [584], true);
-
-let vertexDegreeTest     = new SubcomplexFunctionTest("pureDegree", [731], [], [], 0);
-let edgeDegreeTest       = new SubcomplexFunctionTest("pureDegree", [], [1969], [], -1);
-let closedEdgeDegreeTest = new SubcomplexFunctionTest("pureDegree", [731, 1064], [1969], [], 1);
-let faceDegreeTest       = new SubcomplexFunctionTest("pureDegree", [], [], [1261], -1);
-let faceEdgesDegreeTest  = new SubcomplexFunctionTest("pureDegree", [], [1638, 1434, 2090], [1261], -1);
-let closedFaceDegreeTest = new SubcomplexFunctionTest("pureDegree", [593, 731, 850], [1638, 1434, 2090], [1261], 2);
-let impureDegreeTest     = new SubcomplexFunctionTest("pureDegree", [593, 731, 850, 610], [1638, 1434, 2090, 2597], [1261], -1);
+let vertexDegreeTest     = new SubcomplexFunctionTest("isPureComplex", [731], [], [], 0);
+let edgeDegreeTest       = new SubcomplexFunctionTest("isPureComplex", [], [1969], [], -1);
+let closedEdgeDegreeTest = new SubcomplexFunctionTest("isPureComplex", [731, 1064], [1969], [], 1);
+let faceDegreeTest       = new SubcomplexFunctionTest("isPureComplex", [], [], [1261], -1);
+let faceEdgesDegreeTest  = new SubcomplexFunctionTest("isPureComplex", [], [1638, 1434, 2090], [1261], -1);
+let closedFaceDegreeTest = new SubcomplexFunctionTest("isPureComplex", [593, 731, 850], [1638, 1434, 2090], [1261], 2);
+let impureDegreeTest    = new SubcomplexFunctionTest("isPureComplex", [593, 731, 850, 610], [1638, 1434, 2090, 2597], [1261], -1);
