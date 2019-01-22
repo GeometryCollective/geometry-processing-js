@@ -31,6 +31,7 @@ let indices = undefined;
 let memoryManager = new EmscriptenMemoryManager();
 let mesh = undefined;
 let geometry = undefined;
+let lengthScale = undefined;
 
 let selectedSimplices = undefined;
 let vertexMeshMap = new Map();
@@ -41,7 +42,7 @@ let edgeIndexMap   = new Map();
 let faceIndexMap   = new Map();
 let simplicialComplexOperators = undefined;
 
-let filename = "small_bunny.obj";
+let filename = "small_disk.obj";
 
 const plainColor    = new THREE.Color(0.64, 0.64, 0.81);
 const selectedColor = new THREE.Color(1.0, 0.5, 0.0);
@@ -105,18 +106,16 @@ function setDisabledButtons() {
         if (simplicialComplexOperators.pureDegree(selectedSimplices) >= 0) {
                 getController("Boundary").domElement.parentNode.removeAttribute("disabled");
                 getController("Interior").domElement.parentNode.removeAttribute("disabled");
-        
         } else {
                 getController("Boundary").domElement.parentNode.setAttribute("disabled", "");
                 getController("Interior").domElement.parentNode.setAttribute("disabled", "");
         }
-
 }
 
 function getController(name) {
         for (let c of ops.__controllers) {
                 if (c.object == guiFields && c.property == name) {
-                        return c; 
+                        return c;
                 }
         }
         return null;
@@ -135,7 +134,7 @@ function init() {
         initCamera();
         initScene();
         initLights();
-        initMesh(bunny_small);
+        initMesh(small_disk);
         initControls();
         addEventListeners();
 }
@@ -289,6 +288,7 @@ function initMesh(text) {
 
                 // create geometry object
                 geometry = new Geometry(mesh, polygonSoup["v"]);
+                lengthScale = geometry.meanEdgeLength();
                 selectedSimplices = new MeshSubset();
 
                 // create a THREE.js mesh (and geometry) object
@@ -547,7 +547,7 @@ function initThreePickMesh() {
 function initVertexMesh(id) {
         if (!vertexMeshMap.has(id)) {
                 let material = new THREE.MeshPhongMaterial({color: selectedColor});
-                let threeVertexMesh = new THREE.Mesh(new THREE.SphereGeometry(0.015), material);
+                let threeVertexMesh = new THREE.Mesh(new THREE.SphereGeometry(0.1 * lengthScale), material);
 
                 let center = geometry.positions[id];
                 threeVertexMesh.position.set(center.x, center.y, center.z);
@@ -566,7 +566,7 @@ function initEdgeMesh(id) {
 
                 let height = heading.norm();
                 heading.normalize();
-                let r = 0.005;
+                let r = 0.05 * lengthScale;
                 let material = new THREE.MeshPhongMaterial({color: selectedColor});
                 let threeEdgeMesh = new THREE.Mesh(new THREE.CylinderGeometry(r, r, height, 8, true), material);
                 threeEdgeMesh.position.set(center.x, center.y, center.z);
@@ -589,7 +589,7 @@ function initFaceMesh(id) {
                 let p3 = geometry.positions[vertexIndexMap.get(vs[2].index)];
 
                 let center = p1.plus(p2).plus(p3).over(3);
-                let s = .15;
+                let s = 0.15;
                 let shrunk_p1 = p1.times(1-s).plus(center.times(s));
                 let shrunk_p2 = p2.times(1-s).plus(center.times(s));
                 let shrunk_p3 = p3.times(1-s).plus(center.times(s));

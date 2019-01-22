@@ -1,7 +1,5 @@
 "use strict";
 
-// TODO: what is the degree of the empty subset
-
 class SimplicialComplexOperators {
 
         /** This class implements various operators (e.g. boundary, star, link) on a mesh.
@@ -133,12 +131,12 @@ class SimplicialComplexOperators {
          * @returns {module:LinearAlgebra.DenseMatrix} The vertex-edge adjacency matrix of the given mesh.
          */
         buildVertexEdgeAdjacencyMatrix(mesh) {
-                let T = new Triplet(mesh.vertices.length, mesh.edges.length);
+                let T = new Triplet(mesh.edges.length, mesh.vertices.length);
                 for (let e of mesh.edges) {
                         let v1 = e.halfedge.vertex;
                         let v2 = e.halfedge.next.vertex;
-                        T.addEntry(1, v1.index, e.index);
-                        T.addEntry(1, v2.index, e.index);
+                        T.addEntry(1, e.index, v1.index);
+                        T.addEntry(1, e.index, v2.index);
                 }
                 return SparseMatrix.fromTriplet(T);
         }
@@ -149,10 +147,10 @@ class SimplicialComplexOperators {
          * @returns {module:LinearAlgebra.DenseMatrix} The edge-face adjacency matrix of the given mesh.
          */
         buildEdgeFaceAdjacencyMatrix(mesh) {
-                let T = new Triplet(mesh.edges.length, mesh.faces.length);
+                let T = new Triplet(mesh.faces.length, mesh.edges.length);
                 for (let f of mesh.faces) {
                         for (let e of f.adjacentEdges()) {
-                                T.addEntry(1, e.index, f.index);
+                                T.addEntry(1, f.index, e.index);
                         }
                 }
                 return SparseMatrix.fromTriplet(T);
@@ -180,7 +178,7 @@ class SimplicialComplexOperators {
                 let es = this.buildEdgeVector(subset);
                 let fs = this.buildFaceVector(subset);
                 if (subset.faces.size > 0) {
-                        let faceVertices = this.A0.timesDense(this.A1.timesDense(fs));
+                        let faceVertices = this.A0.transpose().timesDense(this.A1.transpose().timesDense(fs));
 
                         for (let i = 0; i < this.mesh.vertices.length; i++) {
                                 if (faceVertices.get(i, 0) == 0 && vs.get(i, 0) != 0) {
@@ -190,7 +188,7 @@ class SimplicialComplexOperators {
                         }
                         return 2;
                 } else if (subset.edges.size > 0) {
-                        let edgeVertices = this.A0.timesDense(es);
+                        let edgeVertices = this.A0.transpose().timesDense(es);
 
                         for (let i = 0; i < this.mesh.vertices.length; i++) {
                                 if (edgeVertices.get(i, 0) == 0 && vs.get(i, 0) != 0) {
@@ -215,14 +213,14 @@ class SimplicialComplexOperators {
         boundary(subset) {
                 let boundary = new MeshSubset();
                 if (subset.faces.size > 0) {
-                        let faceEdges = this.A1.timesDense(this.buildFaceVector(subset));
+                        let faceEdges = this.A1.transpose().timesDense(this.buildFaceVector(subset));
                         for (let i = 0; i < this.mesh.edges.length; i++) {
                                 if (faceEdges.get(i, 0) == 1) {
                                         boundary.addEdge(i);
                                 }
                         }
                 } else if (subset.edges.size > 0) {
-                        let edgeVertices = this.A0.timesDense(this.buildEdgeVector(subset));
+                        let edgeVertices = this.A0.transpose().timesDense(this.buildEdgeVector(subset));
                         for (let i = 0; i < this.mesh.vertices.length; i++) {
                                 if (edgeVertices.get(i, 0) == 1) {
                                         boundary.addVertex(i);
@@ -251,7 +249,7 @@ class SimplicialComplexOperators {
          */
         star(subset) {
                 subset = MeshSubset.deepCopy(subset);
-                let edgeVector = this.A0.transpose().timesDense(this.buildVertexVector(subset));
+                let edgeVector = this.A0.timesDense(this.buildVertexVector(subset));
                 let edges = new Set();
                 for (let i = 0; i < this.mesh.edges.length; i++) {
                         if (edgeVector.get(i, 0) != 0) {
@@ -261,7 +259,7 @@ class SimplicialComplexOperators {
 
                 subset.addEdges(edges);
 
-                let faceVector = this.A1.transpose().timesDense(this.buildEdgeVector(subset));
+                let faceVector = this.A1.timesDense(this.buildEdgeVector(subset));
                 let faces = new Set()
                 for (let i = 0; i < this.mesh.faces.length; i++) {
                         if (faceVector.get(i, 0) != 0) {
@@ -283,7 +281,7 @@ class SimplicialComplexOperators {
          */
         closure(subset) {
                 subset = MeshSubset.deepCopy(subset);
-                let edgeVector = this.A1.timesDense(this.buildFaceVector(subset));
+                let edgeVector = this.A1.transpose().timesDense(this.buildFaceVector(subset));
                 let edges = new Set();
                 for (let i = 0; i < this.mesh.edges.length; i++) {
                         if (edgeVector.get(i, 0) != 0) {
@@ -293,7 +291,7 @@ class SimplicialComplexOperators {
 
                 subset.addEdges(edges);
 
-                let vertexVector = this.A0.timesDense(this.buildEdgeVector(subset));
+                let vertexVector = this.A0.transpose().timesDense(this.buildEdgeVector(subset));
                 let vertices = new Set()
                 for (let i = 0; i < this.mesh.vertices.length; i++) {
                         if (vertexVector.get(i, 0) != 0) {

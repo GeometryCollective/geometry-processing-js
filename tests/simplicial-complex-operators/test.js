@@ -13,7 +13,7 @@ function subsetElementsGivenByList(subset, simplexList, indices) {
 }
 
 describe("Simplicial Complex Operators", function() {
-        let polygonSoup = MeshIO.readOBJ(bunny_small);
+        let polygonSoup = MeshIO.readOBJ(small_bunny);
         let mesh = new Mesh();
         mesh.build(polygonSoup);
 
@@ -24,7 +24,6 @@ describe("Simplicial Complex Operators", function() {
                 it("A face",  SubcomplexFunctionTest.testFunction(chai, mesh, faceComplexTest));
                 it("A face with its edges",  SubcomplexFunctionTest.testFunction(chai, mesh, faceEdgesComplexTest));
                 it("A closed face",  SubcomplexFunctionTest.testFunction(chai, mesh, closedFaceComplexTest));
-        
         });
 
         describe("pureDegree", function() {
@@ -38,21 +37,32 @@ describe("Simplicial Complex Operators", function() {
         });
 
         describe("A0", function() {
-                it("Has |V| rows", function() {
+                it("Has |E| rows", function() {
                         let simplicialComplexOperators = new SimplicialComplexOperators(mesh);
-                        chai.assert.strictEqual(simplicialComplexOperators.A0.nRows(), mesh.vertices.length, "A0 does not have |V| rows");
+                        chai.assert.strictEqual(simplicialComplexOperators.A0.nRows(), mesh.edges.length, "A0 does not have |E| rows");
                 });
-
-                it("Has |E| columns", function() {
+                it("Has |V| columns", function() {
                         let simplicialComplexOperators = new SimplicialComplexOperators(mesh);
-                        chai.assert.strictEqual(simplicialComplexOperators.A0.nCols(), mesh.edges.length, "A0 does not have |E| columns");
+                        chai.assert.strictEqual(simplicialComplexOperators.A0.nCols(), mesh.vertices.length, "A0 does not have |V| columns");
                 });
+                it("Rows sum to two", function() {
+                        let selectedSimplices = new MeshSubset();
+                        let simplicialComplexOperators = new SimplicialComplexOperators(mesh);
+                        let ones = DenseMatrix.ones(mesh.vertices.length, 1);
+                        let colSums = simplicialComplexOperators.A0.timesDense(ones);
 
-                it("Rows sum to degrees", function() {
+                        let colSumsAllTwo = true;
+                        for (let i = 0; i < mesh.vertices.length; i++) {
+                                colSumsAllTwo = colSumsAllTwo && (colSums.get(i, 0) == 2);
+                        }
+                        chai.assert(colSumsAllTwo, "There is a row in your A0 which does not sum to 2.\n");
+
+                });
+                it("Columns sum to degrees", function() {
                         let selectedSimplices = new MeshSubset();
                         let simplicialComplexOperators = new SimplicialComplexOperators(mesh);
                         let ones = DenseMatrix.ones(mesh.edges.length, 1);
-                        let rowSums = simplicialComplexOperators.A0.timesDense(ones);
+                        let rowSums = simplicialComplexOperators.A0.transpose().timesDense(ones);
 
                         let degrees = new Array(mesh.vertices.length);
                         for (let v of mesh.vertices) {
@@ -63,52 +73,26 @@ describe("Simplicial Complex Operators", function() {
                         for (let i = 0; i < mesh.vertices.length; i++) {
                                 rowSumsAllCorrect = rowSumsAllCorrect && (rowSums.get(i, 0) == degrees[i]);
                         }
-                        chai.assert(rowSumsAllCorrect, "There is a row in your A0 which does not sum to the degree of the corresponding vertex.\n");
-
-                });
-                it("Columns sum to two", function() {
-                        let selectedSimplices = new MeshSubset();
-                        let simplicialComplexOperators = new SimplicialComplexOperators(mesh);
-                        let ones = DenseMatrix.ones(mesh.vertices.length, 1);
-                        let colSums = simplicialComplexOperators.A0.transpose().timesDense(ones);
-
-                        let colSumsAllTwo = true;
-                        for (let i = 0; i < mesh.vertices.length; i++) {
-                                colSumsAllTwo = colSumsAllTwo && (colSums.get(i, 0) == 2);
-                        }
-                        chai.assert(colSumsAllTwo, "There is a column in your A0 which does not sum to 2.\n");
+                        chai.assert(rowSumsAllCorrect, "There is a column in your A0 which does not sum to the degree of the corresponding vertex.\n");
 
                 });
         });
 
         describe("A1", function() {
-                it("Has |E| rows", function() {
+                it("Has |F| rows", function() {
                         let simplicialComplexOperators = new SimplicialComplexOperators(mesh);
-                        chai.assert.strictEqual(simplicialComplexOperators.A1.nRows(), mesh.edges.length, "A1 does not have |E| rows");
+                        chai.assert.strictEqual(simplicialComplexOperators.A1.nRows(), mesh.faces.length, "A1 does not have |F| rows");
                 });
 
-                it("Has |F| columns", function() {
+                it("Has |E| columns", function() {
                         let simplicialComplexOperators = new SimplicialComplexOperators(mesh);
-                        chai.assert.strictEqual(simplicialComplexOperators.A1.nCols(), mesh.faces.length, "A1 does not have |F| columns");
+                        chai.assert.strictEqual(simplicialComplexOperators.A1.nCols(), mesh.edges.length, "A1 does not have |E| columns");
                 });
-                it("Rows sum to two", function() {
-                        let selectedSimplices = new MeshSubset();
-                        let simplicialComplexOperators = new SimplicialComplexOperators(mesh);
-                        let ones = DenseMatrix.ones(mesh.faces.length, 1);
-                        let rowSums = simplicialComplexOperators.A1.timesDense(ones);
-
-                        let rowSumsAllTwo = true;
-                        for (let i = 0; i < mesh.vertices.length; i++) {
-                                rowSumsAllTwo = rowSumsAllTwo && (rowSums.get(i, 0) == 2);
-                        }
-                        chai.assert(rowSumsAllTwo, "There is a row in your A1 which does not sum to 2.\n");
-
-                });
-                it("Columns sum to number of faces", function() {
+                it("Rows sum to number of faces", function() {
                         let selectedSimplices = new MeshSubset();
                         let simplicialComplexOperators = new SimplicialComplexOperators(mesh);
                         let ones = DenseMatrix.ones(mesh.edges.length, 1);
-                        let colSums = simplicialComplexOperators.A1.transpose().timesDense(ones);
+                        let colSums = simplicialComplexOperators.A1.timesDense(ones);
 
                         let nEdges = new Array(mesh.faces.length);
                         for (let f of mesh.faces) {
@@ -120,7 +104,20 @@ describe("Simplicial Complex Operators", function() {
                         for (let i = 0; i < mesh.vertices.length; i++) {
                                 colSumsAllCorrect = colSumsAllCorrect && (colSums.get(i, 0) == nEdges[i]);
                         }
-                        chai.assert(colSumsAllCorrect, "There is a column in your A1 which does not sum to the number of edges of the corresponding face.\n");
+                        chai.assert(colSumsAllCorrect, "There is a row in your A1 which does not sum to the number of edges of the corresponding face.\n");
+
+                });
+                it("Columns sum to two", function() {
+                        let selectedSimplices = new MeshSubset();
+                        let simplicialComplexOperators = new SimplicialComplexOperators(mesh);
+                        let ones = DenseMatrix.ones(mesh.faces.length, 1);
+                        let rowSums = simplicialComplexOperators.A1.transpose().timesDense(ones);
+
+                        let rowSumsAllTwo = true;
+                        for (let i = 0; i < mesh.vertices.length; i++) {
+                                rowSumsAllTwo = rowSumsAllTwo && (rowSums.get(i, 0) == 2);
+                        }
+                        chai.assert(rowSumsAllTwo, "There is a column in your A1 which does not sum to 2.\n");
 
                 });
         });
