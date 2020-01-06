@@ -72,7 +72,7 @@ class SimplicialComplexOperators {
         /** Returns the vertex-edge adjacency matrix of the given mesh.
          * @method module:Projects.SimplicialComplexOperators#buildVertexEdgeAdjacencyMatrix
          * @param {module:Core.Mesh} mesh The mesh whose adjacency matrix we compute.
-         * @returns {module:LinearAlgebra.DenseMatrix} The vertex-edge adjacency matrix of the given mesh.
+         * @returns {module:LinearAlgebra.SparseMatrix} The vertex-edge adjacency matrix of the given mesh.
          */
         buildVertexEdgeAdjacencyMatrix(mesh) {
                 let T = new Triplet(mesh.edges.length, mesh.vertices.length);
@@ -88,7 +88,7 @@ class SimplicialComplexOperators {
         /** Returns the edge-face adjacency matrix.
          * @method module:Projects.SimplicialComplexOperators#buildEdgeFaceAdjacencyMatrix
          * @param {module:Core.Mesh} mesh The mesh whose adjacency matrix we compute.
-         * @returns {module:LinearAlgebra.DenseMatrix} The edge-face adjacency matrix of the given mesh.
+         * @returns {module:LinearAlgebra.SparseMatrix} The edge-face adjacency matrix of the given mesh.
          */
         buildEdgeFaceAdjacencyMatrix(mesh) {
                 let T = new Triplet(mesh.faces.length, mesh.edges.length);
