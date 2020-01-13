@@ -53,11 +53,7 @@ cd geometry-processing-js/projects
 The implementation of geometry-processing-js attempts to minimize the use of obscure Javascript language features. It should not be too difficult for anyone with experience in a dynamic language like Python or familiar with the principles of Object Oriented Programming to get a handle on Javascript syntax by reading through some of the code in this framework. The documentation contains examples specific to this framework which will also be of help. For a more formal introduction to Javascript, checkout this really nice [tutorial](https://javascript.info).
 
 ## Building the Documentation
-
-This documentation was generated using [jsdoc](http://usejsdoc.org/) and [ink-docstrap](https://www.npmjs.com/package/ink-docstrap). We used a modified version of the [cosmo](http://docstrap.github.io/docstrap/themes/cosmo/) theme. After installing jsdoc and ink-docstrap, you can build the documentation by running
-```
-jsdoc -c node_modules/ink-docstrap/template/jsdoc.conf.json -t node_modules/ink-docstrap/template/ -R geometry-processing-js/README.md -r -d geometry-processing-js/docs
-```
+See `doc-config/build-instructions.md`.
 
 ## Authors
 

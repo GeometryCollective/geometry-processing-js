@@ -4,7 +4,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width">
-	<title>geometry-processing-js Class: QR</title>
+	<title>geometry-processing-js Module: template/publish</title>
 
 	<!--[if lt IE 9]>
 	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -33,7 +33,7 @@
 			<li class="dropdown">
 				<a href="modules.list.html" class="dropdown-toggle" data-toggle="dropdown">Modules<b class="caret"></b></a>
 				<ul class="dropdown-menu ">
-					<li><a href="module-Core.html">Core</a></li><li><a href="module-LinearAlgebra.html">LinearAlgebra</a></li><li><a href="module-Projects.html">Projects</a></li><li><a href="module-Utils.html">Utils</a></li>
+					<li><a href="module-Core.html">Core</a></li><li><a href="module-template_publish.html">template/publish</a></li><li><a href="module-LinearAlgebra.html">LinearAlgebra</a></li><li><a href="module-Projects.html">Projects</a></li><li><a href="module-Utils.html">Utils</a></li>
 				</ul>
 			</li>
 			
@@ -79,17 +79,10 @@
 		<div id="main">
 			
 
-	<h1 class="page-title">Class: QR</h1>
+	<h1 class="page-title">Module: template/publish</h1>
 <section>
 
 <header>
-    
-        <h2>
-            <span class="ancestors"><a href="module-LinearAlgebra.html">LinearAlgebra</a>.</span>
-        
-        QR
-        </h2>
-        
     
 </header>
 
@@ -98,34 +91,8 @@
     <div class="container-overview">
     
         
-<hr>
-<dt>
-    <h4 class="name" id="QR"><span class="type-signature"></span>new QR()</h4>
-    
-    
-</dt>
-<dd>
 
-    
-    <div class="description">
-        <p>This class represents a QR factorization of a rectangular <a href="module-LinearAlgebra.SparseMatrix.html">SparseMatrix</a>.<br>
-The factorization is computed on the first call to solve, and is reused in<br>
-subsequent calls to solve (e.g. when only the right hand side b of the linear<br>
-system Ax = b changes) unless the sparse matrix itself is altered through<br>
-operations such as *=, += and -=. Do not use the constructor to initialize<br>
-this class, instead access the QR factorization of a sparse matrix directly<br>
-from the matrix itself.</p>
-    </div>
-    
-
-    
-
-    
-
-    
-    
-
-    
+        
 <dl class="details">
     
 
@@ -165,35 +132,7 @@ from the matrix itself.</p>
 </dl>
 
 
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-        <h5>Example</h5>
         
-    <pre class="sunlight-highlight-javascript">// solve the linear system Ax = b, where A is a rectangular sparse matrix
-let A = SparseMatrix.identity(5, 5);
-let b = DenseMatrix.ones(5, 1);
-
-let qr = A.qr();
-let x = qr.solve(b);
-
-b.scaleBy(5);
-x = qr.solve(b); // factorization is reused</pre>
-
-
-    
-</dd>
-
     
     </div>
 
@@ -216,7 +155,7 @@ x = qr.solve(b); // factorization is reused</pre>
             
 <hr>
 <dt>
-    <h4 class="name" id="solve"><span class="type-signature"></span>solve(b)</h4>
+    <h4 class="name" id="~buildNav"><span class="type-signature">&lt;inner> </span>buildNav(members)</h4>
     
     
 </dt>
@@ -224,7 +163,7 @@ x = qr.solve(b); // factorization is reused</pre>
 
     
     <div class="description">
-        <p>Solves the linear system Ax = b, where A is a rectangular sparse matrix.</p>
+        <p>Create the navigation sidebar.</p>
     </div>
     
 
@@ -259,13 +198,13 @@ x = qr.solve(b); // factorization is reused</pre>
 
         <tr>
             
-                <td class="name"><code>b</code></td>
+                <td class="name"><code>members</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type"><a href="module-LinearAlgebra.DenseMatrix.html">module:LinearAlgebra.DenseMatrix</a></span>
+<span class="param-type">object</span>
 
 
 
@@ -276,7 +215,249 @@ x = qr.solve(b); // factorization is reused</pre>
 
             
 
-            <td class="description last"><p>The dense right hand side of the linear system Ax = b.</p></td>
+            <td class="description last"><p>The members that will be used to create the sidebar.</p>
+                <h6 class="method-params-label method-subparams-label">Properties</h6>
+                
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>classes</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">array.&lt;object></span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>externals</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">array.&lt;object></span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>globals</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">array.&lt;object></span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>mixins</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">array.&lt;object></span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>interfaces</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">array.&lt;object></span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>modules</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">array.&lt;object></span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>namespaces</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">array.&lt;object></span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>tutorials</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">array.&lt;object></span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>events</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">array.&lt;object></span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
         </tr>
 
     
@@ -339,6 +520,10 @@ x = qr.solve(b); // factorization is reused</pre>
     <h5>Returns:</h5>
     
             
+<div class="param-desc">
+    <p>The HTML for the navigation sidebar.</p>
+</div>
+
 
 
 <dl>
@@ -347,7 +532,7 @@ x = qr.solve(b); // factorization is reused</pre>
     </dt>
     <dd>
         
-<span class="param-type"><a href="module-LinearAlgebra.DenseMatrix.html">module:LinearAlgebra.DenseMatrix</a></span>
+<span class="param-type">string</span>
 
 
 
@@ -356,6 +541,178 @@ x = qr.solve(b); // factorization is reused</pre>
 
 
         
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id=".publish"><span class="type-signature">&lt;static> </span>publish(taffyData, opts, tutorials)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>taffyData</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">TAFFY</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>See <a href="http:%5C/%5C/taffydb.com/">http://taffydb.com/</a>.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>opts</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>tutorials</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Tutorial</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
 
     
 </dd>
