@@ -53,7 +53,7 @@ cd geometry-processing-js/projects
 The implementation of geometry-processing-js attempts to minimize the use of obscure Javascript language features. It should not be too difficult for anyone with experience in a dynamic language like Python or familiar with the principles of Object Oriented Programming to get a handle on Javascript syntax by reading through some of the code in this framework. The documentation contains examples specific to this framework which will also be of help. For a more formal introduction to Javascript, checkout this really nice [tutorial](https://javascript.info).
 
 ## Building the Documentation
-See `doc-config/build-instructions.md`.
+See [guide here](doc-config/build-instructions.md).
 
 ## Authors
 
