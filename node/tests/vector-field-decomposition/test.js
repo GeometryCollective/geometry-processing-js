@@ -1,14 +1,14 @@
 import chai from 'chai';
 import solution from '../../../tests/vector-field-decomposition/solution.js';
-import LinearAlgebra from '../../linear-algebra/linear-algebra.js';
+import LinearAlgebra from '../../../linear-algebra/linear-algebra.js';
 let memoryManager = LinearAlgebra.memoryManager;
 let DenseMatrix = LinearAlgebra.DenseMatrix;
-import MeshIO from '../../utils/meshio.js';
-import { Mesh } from '../../core/mesh.js';
-import { Geometry } from '../../core/geometry.js';
-import HodgeDecomposition from '../../projects/vector-field-decomposition/hodge-decomposition.js';
-import TreeCotree from '../../projects/vector-field-decomposition/tree-cotree.js';
-import HarmonicBases from '../../projects/vector-field-decomposition/harmonic-bases.js';
+import MeshIO from '../../../utils/meshio.js';
+import { Mesh } from '../../../core/mesh.js';
+import { Geometry } from '../../../core/geometry.js';
+import HodgeDecomposition from '../../../projects/vector-field-decomposition/hodge-decomposition.js';
+import TreeCotree from '../../../projects/vector-field-decomposition/tree-cotree.js';
+import HarmonicBases from '../../../projects/vector-field-decomposition/harmonic-bases.js';
 
 describe("VectorFieldDecomposition", function() {
 	let polygonSoup = MeshIO.readOBJ(solution);

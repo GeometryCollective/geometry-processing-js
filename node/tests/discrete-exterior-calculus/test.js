@@ -1,12 +1,12 @@
 import chai from 'chai';
 import solution from '../../../tests/discrete-exterior-calculus/solution.js';
-import LinearAlgebra from '../../linear-algebra/linear-algebra.js';
+import LinearAlgebra from '../../../linear-algebra/linear-algebra.js';
 let memoryManager = LinearAlgebra.memoryManager;
 let DenseMatrix = LinearAlgebra.DenseMatrix;
-import MeshIO from '../../utils/meshio.js';
-import { Mesh, indexElements } from '../../core/mesh.js';
-import Geometry from '../../core/geometry.js';
-import DEC from '../../core/discrete-exterior-calculus.js';
+import MeshIO from '../../../utils/meshio.js';
+import { Mesh, indexElements } from '../../../core/mesh.js';
+import Geometry from '../../../core/geometry.js';
+import DEC from '../../../core/discrete-exterior-calculus.js';
 
 describe("DEC", function() {
 	let polygonSoup = MeshIO.readOBJ(solution);

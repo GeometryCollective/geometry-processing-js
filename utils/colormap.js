@@ -2077,5 +2077,6 @@ export {
 	colormap,
 	seismic,
 	coolwarm,
-	hot
+	hot,
+	clamp
 };

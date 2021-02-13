@@ -1,13 +1,13 @@
 import chai from 'chai';
 import solution from '../../../tests/geodesic-distance/solution.js';
-import LinearAlgebra from '../../linear-algebra/linear-algebra.js';
+import LinearAlgebra from '../../../linear-algebra/linear-algebra.js';
 let Vector = LinearAlgebra.Vector;
 let memoryManager = LinearAlgebra.memoryManager;
 let DenseMatrix = LinearAlgebra.DenseMatrix;
-import MeshIO from '../../utils/meshio.js';
-import { Mesh } from '../../core/mesh.js';
-import { Geometry } from '../../core/geometry.js';
-import HeatMethod from '../../projects/geodesic-distance/heat-method.js';
+import MeshIO from '../../../utils/meshio.js';
+import { Mesh } from '../../../core/mesh.js';
+import { Geometry } from '../../../core/geometry.js';
+import HeatMethod from '../../../projects/geodesic-distance/heat-method.js';
 
 describe("HeatMethod", function() {
 	let polygonSoup = MeshIO.readOBJ(solution);
