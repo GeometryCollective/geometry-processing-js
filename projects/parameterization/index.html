@@ -48,6 +48,17 @@
 		//import SparseMatrix from "../../linear-algebra/sparse-matrix.js";
 		//import DEC from "../../core/discrete-exterior-calculus.js";
 
+		// Warn the user if WebGL is not Available
+		if (!WEBGL.isWebGLAvailable()){
+			var parent, id, element;
+			let parameters = null || {};
+			parent = parameters.parent !== undefined ? parameters.parent : document.body;
+			id = parameters.id !== undefined ? parameters.id : 'oldie';
+			element = WEBGL.getWebGLErrorMessage();
+			element.id = id;
+			parent.appendChild( element );
+		}
+
 		let input = document.getElementById("fileInput");
 		let renderer = undefined;
 		let camera = undefined;
