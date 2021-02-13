@@ -1,4 +1,39 @@
-if (!Detector.webgl) Detector.addGetWebGLMessage();
+import * as THREE from 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r125/three.module.min.js'
+import dat from 'https://threejs.org/examples/jsm/libs/dat.gui.module.js';
+import { TrackballControls } from 'https://threejs.org/examples/jsm/controls/TrackballControls.js';
+import { WEBGL } from 'https://threejs.org/examples/jsm/WebGL.js';
+
+import SimplicialComplexOperators from "./simplicial-complex-operators.js";
+import Vector from "../../linear-algebra/vector.js";
+import EmscriptenMemoryManager from "../../linear-algebra/emscripten-memory-manager.js";
+import { Mesh } from "../../core/mesh.js";
+import { Geometry } from "../../core/geometry.js";
+import MeshSubset from "../../core/mesh-subset.js";
+//import Vertex from "../../core/vertex.js";
+//import Edge from "../../core/edge.js";
+//import Face from "../../core/face.js";
+//import HalfEdge from "../../core/halfedge.js";
+//import Corner from "../../core/corner.js";
+import small_disk from "../../input/small_disk.js";
+import MeshIO from "../../utils/meshio.js";
+//import { colormap, seismic, coolwarm, hot } from "../../utils/colormap.js";
+//import Distortion  from "../../utils/distortion.js";
+
+// Unused Imports
+//import DenseMatrix from "../../linear-algebra/dense-matrix.js";
+//import SparseMatrix from "../../linear-algebra/sparse-matrix.js";
+//import DEC from "../../core/discrete-exterior-calculus.js";
+
+// Warn the user if WebGL is not Available
+if (!WEBGL.isWebGLAvailable()){
+        var parent, id, element;
+        let parameters = null || {};
+        parent = parameters.parent !== undefined ? parameters.parent : document.body;
+        id = parameters.id !== undefined ? parameters.id : 'oldie';
+        element = WEBGL.getWebGLErrorMessage();
+        element.id = id;
+        parent.appendChild( element );
+}
 
 let input = document.getElementById("fileInput");
 let renderer = undefined;
@@ -361,9 +396,9 @@ function initThreeMesh() {
 
         // set geometry
         threeGeometry.setIndex(new THREE.BufferAttribute(indices, 1));
-        threeGeometry.addAttribute("position", new THREE.BufferAttribute(positions, 3));
-        threeGeometry.addAttribute("normal", new THREE.BufferAttribute(normals, 3));
-        threeGeometry.addAttribute("color", new THREE.BufferAttribute(colors, 3));
+        threeGeometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+        threeGeometry.setAttribute("normal", new THREE.BufferAttribute(normals, 3));
+        threeGeometry.setAttribute("color", new THREE.BufferAttribute(colors, 3));
 
         // create material
         let threeMaterial = new THREE.MeshPhongMaterial(materialSettings);
@@ -522,8 +557,8 @@ function initThreePickMesh() {
         }
 
         // set geometry
-        threePickGeometry.addAttribute("position", new THREE.BufferAttribute(pickPositions, 3));
-        threePickGeometry.addAttribute("color", new THREE.BufferAttribute(pickColors, 3));
+        threePickGeometry.setAttribute("position", new THREE.BufferAttribute(pickPositions, 3));
+        threePickGeometry.setAttribute("color", new THREE.BufferAttribute(pickColors, 3));
 
         // create material
         let threePickMaterial = new THREE.MeshBasicMaterial({
@@ -592,12 +627,15 @@ function initFaceMesh(id) {
                 let p2Minus = shrunk_p2.minus(normal.times(offset));
                 let p3Minus = shrunk_p3.minus(normal.times(offset));
 
-                let threeGeometry = new THREE.Geometry();
-                threeGeometry.vertices.push(toThreeVector(p1Minus));
-                threeGeometry.vertices.push(toThreeVector(p2Minus));
-                threeGeometry.vertices.push(toThreeVector(p3Minus));
-                threeGeometry.faces.push(new THREE.Face3(0, 1, 2));
-                threeGeometry.computeFaceNormals();
+                let threeGeometry = new THREE.BufferGeometry();
+                let verts = [toThreeVector(p1Minus), toThreeVector(p2Minus), toThreeVector(p3Minus)];
+                let threeGeometryVertices = new Float32Array( [
+                         verts[0].x, verts[0].y,  verts[0].z,
+                         verts[1].x, verts[1].y,  verts[1].z,
+                         verts[2].x, verts[2].y,  verts[2].z
+                ] );
+                threeGeometry.setAttribute('position', new THREE.BufferAttribute(threeGeometryVertices, 3));
+                threeGeometry.computeVertexNormals();
 
                 // create mesh
                 let material = new THREE.MeshPhongMaterial({color: selectedColor});
@@ -633,7 +671,7 @@ function deleteFaceMesh(id) {
 }
 
 function initControls() {
-        controls = new THREE.TrackballControls(camera, renderer.domElement);
+        controls = new TrackballControls(camera, renderer.domElement);
         controls.rotateSpeed = 5.0;
 }
 
@@ -663,7 +701,8 @@ function pick(clickX, clickY) {
         // draw
         let pickTarget = new THREE.WebGLRenderTarget(window.innerWidth, window.innerHeight);
         pickTarget.texture.generateMipmaps = false;
-        pickRenderer.render(pickScene, camera, pickTarget);
+        pickRenderer.setRenderTarget(pickTarget);
+        pickRenderer.render(pickScene, camera);
 
         // read color
         let pixelBuffer = new Uint8Array(4);

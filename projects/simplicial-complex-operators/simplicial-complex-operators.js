@@ -1,4 +1,6 @@
-"use strict";
+import { SparseMatrix, Triplet } from "../../linear-algebra/sparse-matrix.js";
+import MeshSubset from "../../core/mesh-subset.js";
+import DenseMatrix from "../../linear-algebra/dense-matrix.js";
 
 class SimplicialComplexOperators {
 
@@ -297,3 +299,5 @@ class SimplicialComplexOperators {
                 return this.closure(boundary);
         }
 }
+
+export default SimplicialComplexOperators;
