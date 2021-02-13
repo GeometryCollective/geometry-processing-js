@@ -1,4 +1,6 @@
-"use strict";
+import LinearAlgebra from '../linear-algebra/linear-algebra.js';
+let Complex = LinearAlgebra.Complex;
+let ComplexDenseMatrix = LinearAlgebra.ComplexDenseMatrix;
 
 /**
  * This class implements frequently used numerical algorithms such as the inverse power method.
@@ -75,3 +77,5 @@ class Solvers {
 		return m;
 	}
 }
+
+export default Solvers;
