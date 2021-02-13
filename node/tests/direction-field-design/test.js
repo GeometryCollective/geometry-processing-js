@@ -14,7 +14,7 @@ describe("TrivialConnections", function() {
 	mesh.build(polygonSoup);
 	let geometry = new Geometry(mesh, polygonSoup["v"], false);
 	let E = mesh.edges.length;
-	let trivialConnections, singularity, deltaBeta, gamma;
+	let trivialConnections, deltaBeta, gamma;
 
 	describe("computeCoExactComponent", function() {
 		it("computes the dual 0-form potential", function() {

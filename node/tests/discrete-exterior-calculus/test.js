@@ -5,7 +5,7 @@ let memoryManager = LinearAlgebra.memoryManager;
 let DenseMatrix = LinearAlgebra.DenseMatrix;
 import MeshIO from '../../../utils/meshio.js';
 import { Mesh, indexElements } from '../../../core/mesh.js';
-import Geometry from '../../../core/geometry.js';
+import { Geometry } from '../../../core/geometry.js';
 import DEC from '../../../core/discrete-exterior-calculus.js';
 
 describe("DEC", function() {

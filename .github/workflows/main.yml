@@ -1,0 +1,24 @@
+name: geometry-processing - Run Tests
+
+on:
+  push
+
+jobs:
+  test:
+    name: Run Unit Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+        with:
+          lfs: true
+
+      - name: Install Testing Frameworks
+        run: |
+          node -v
+          echo '{ "type": "module", "scripts": { "test": "mocha 'node/**/*.js' --recursive" } }' >package.json
+          npm install mocha chai
+
+      - name: Run Unit Tests
+        timeout-minutes: 5
+        run: npm test

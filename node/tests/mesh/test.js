@@ -1,5 +1,5 @@
 import chai from 'chai';
-import faceMesh from '../../../../input/face.js';
+import faceMesh from '../../../input/face.js';
 import MeshIO from '../../../utils/meshio.js';
 import { Mesh } from '../../../core/mesh.js';
 
