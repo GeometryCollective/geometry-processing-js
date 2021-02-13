@@ -16,8 +16,8 @@ jobs:
       - name: Install Testing Frameworks
         run: |
           node -v
-          echo '{ "type": "module", "scripts": { "test": "mocha 'node/**/*.js' --recursive" } }' >package.json
-          npm install mocha chai
+          echo '{ "type": "module", "scripts": { "test": "mocha 'node/**/*.js' --recursive --reporter mocha-github-actions-reporter" } }' >package.json
+          npm install --save-dev mocha chai mocha-github-actions-reporter
 
       - name: Run Unit Tests
         timeout-minutes: 5
