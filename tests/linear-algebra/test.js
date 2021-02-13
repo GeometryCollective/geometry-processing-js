@@ -1,4 +1,14 @@
-"use strict";
+import chai from 'chai';
+import LinearAlgebra from '../../linear-algebra/linear-algebra.js';
+let Vector = LinearAlgebra.Vector;
+let memoryManager = LinearAlgebra.memoryManager;
+let Complex = LinearAlgebra.Complex;
+let DenseMatrix = LinearAlgebra.DenseMatrix;
+let SparseMatrix = LinearAlgebra.SparseMatrix;
+let Triplet = LinearAlgebra.Triplet;
+let ComplexDenseMatrix = LinearAlgebra.ComplexDenseMatrix;
+let ComplexSparseMatrix = LinearAlgebra.ComplexSparseMatrix;
+let ComplexTriplet = LinearAlgebra.ComplexTriplet;
 
 describe("Vector", function() {
 	let u = new Vector(3, 4, 0);

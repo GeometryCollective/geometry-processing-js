@@ -1,3 +1,6 @@
+import MeshSubset from "../../core/mesh-subset.js"
+import SimplicialComplexOperators from "../../projects/simplicial-complex-operators/simplicial-complex-operators.js";
+import { memoryManager } from "../../linear-algebra/emscripten-memory-manager.js"
 class SubcomplexOperationTest {
         // the lists of mesh elements are given as lists of indices. The indices are the positions of those mesh
         // elements in their corresponding lists in the mesh, not the indices assigned by some SimplicialComplexOperators object
@@ -191,3 +194,14 @@ let faceDegreeTest       = new SubcomplexFunctionTest("isPureComplex", [], [], [
 let faceEdgesDegreeTest  = new SubcomplexFunctionTest("isPureComplex", [], [1638, 1434, 2090], [1261], -1);
 let closedFaceDegreeTest = new SubcomplexFunctionTest("isPureComplex", [593, 731, 850], [1638, 1434, 2090], [1261], 2);
 let impureDegreeTest    = new SubcomplexFunctionTest("isPureComplex", [593, 731, 850, 610], [1638, 1434, 2090, 2597], [1261], -1);
+
+export {
+        SubcomplexOperationTest, SubcomplexFunctionTest,
+        vertexStarTest,
+        verticesStarTest, edgeStarTest, faceStarTest,
+        vertexClosureTest, verticesClosureTest, edgeClosureTest, faceClosureTest,
+        vertexLinkTest, verticesLinkTest, edgeLinkTest, faceLinkTest,
+        vertexBoundaryTest, edgeBoundaryTest, faceBoundaryTest, facesBoundaryTest,
+        vertexComplexTest, edgeComplexTest, closedEdgeComplexTest, faceComplexTest, faceEdgesComplexTest, closedFaceComplexTest,
+        vertexDegreeTest, edgeDegreeTest, closedEdgeDegreeTest, faceDegreeTest, faceEdgesDegreeTest, closedFaceDegreeTest, impureDegreeTest
+}

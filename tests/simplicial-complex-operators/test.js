@@ -1,4 +1,21 @@
-"use strict";
+import chai from 'chai';
+import {
+  SubcomplexOperationTest, SubcomplexFunctionTest,
+  vertexStarTest,
+  verticesStarTest, edgeStarTest, faceStarTest,
+  vertexClosureTest, verticesClosureTest, edgeClosureTest, faceClosureTest,
+  vertexLinkTest, verticesLinkTest, edgeLinkTest, faceLinkTest,
+  vertexBoundaryTest, edgeBoundaryTest, faceBoundaryTest, facesBoundaryTest,
+  vertexComplexTest, edgeComplexTest, closedEdgeComplexTest, faceComplexTest, faceEdgesComplexTest, closedFaceComplexTest,
+  vertexDegreeTest, edgeDegreeTest, closedEdgeDegreeTest, faceDegreeTest, faceEdgesDegreeTest, closedFaceDegreeTest, impureDegreeTest
+} from './solution.js';
+import small_bunny from '../../input/small_bunny.js'
+import LinearAlgebra from '../../linear-algebra/linear-algebra.js';
+let DenseMatrix = LinearAlgebra.DenseMatrix;
+import MeshIO from '../../utils/meshio.js';
+import { Mesh } from '../../core/mesh.js';
+import MeshSubset from "../../core/mesh-subset.js";
+import SimplicialComplexOperators from "../../projects/simplicial-complex-operators/simplicial-complex-operators.js";
 
 function subsetElementsGivenByList(subset, simplexList, indices) {
         if(subset.size != indices.length) {

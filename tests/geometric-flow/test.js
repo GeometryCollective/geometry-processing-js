@@ -1,4 +1,13 @@
-"use strict";
+import chai from 'chai';
+import solution from './solution.js';
+import LinearAlgebra from '../../linear-algebra/linear-algebra.js';
+let Vector = LinearAlgebra.Vector;
+let memoryManager = LinearAlgebra.memoryManager;
+import MeshIO from '../../utils/meshio.js';
+import { Mesh } from '../../core/mesh.js';
+import { Geometry } from '../../core/geometry.js';
+import MeanCurvatureFlow from '../../projects/geometric-flow/mean-curvature-flow.js';
+import ModifiedMeanCurvatureFlow from '../../projects/geometric-flow/modified-mean-curvature-flow.js';
 
 describe("MeanCurvatureFlow", function() {
 	let steps, h;

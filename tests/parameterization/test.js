@@ -1,4 +1,15 @@
-"use strict";
+import chai from 'chai';
+import solution from './solution.js';
+import LinearAlgebra from '../../linear-algebra/linear-algebra.js';
+let Vector = LinearAlgebra.Vector;
+let memoryManager = LinearAlgebra.memoryManager;
+let Complex = LinearAlgebra.Complex;
+let ComplexSparseMatrix = LinearAlgebra.ComplexSparseMatrix;
+let ComplexTriplet = LinearAlgebra.ComplexTriplet;
+import MeshIO from '../../utils/meshio.js';
+import { Mesh } from '../../core/mesh.js';
+import { Geometry } from '../../core/geometry.js';
+import SpectralConformalParameterization from '../../projects/parameterization/spectral-conformal-parameterization.js';
 
 describe("SpectralConformalParameterization", function() {
 	let polygonSoup = MeshIO.readOBJ(solution);

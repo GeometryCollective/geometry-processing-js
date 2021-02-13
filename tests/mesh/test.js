@@ -1,37 +1,12 @@
-"use strict";
+import chai from 'chai';
+import faceMesh from '../../input/face.js';
+import MeshIO from '../../utils/meshio.js';
+import { Mesh } from '../../core/mesh.js';
 
-let input = document.getElementById("fileInput");
-input.addEventListener("change", function(e) {
-	let file = input.files[0];
-
-	if (file.name.endsWith(".obj")) {
-		let reader = new FileReader();
-
-		reader.onload = function(e) {
-			setupTests(reader.result);
-			mocha.run();
-
-			// NOTE: Disabling and hiding input tag because mocha does not
-			// allow reruns. Reload page to run tests with different file.
-			input.disabled = true;
-			input.hidden = true;
-		}
-
-		reader.onerror = function(e) {
-			alert("Unable to load OBJ file");
-		}
-
-		reader.readAsText(file);
-
-	} else {
-		alert("Please load an OBJ file");
-	}
-});
-
-function setupTests(text) {
+describe("Mesh", function() {
 	let polygonSoup = undefined;
 	describe("MeshIO.readOBJ", function() {
-		polygonSoup = MeshIO.readOBJ(text);
+		polygonSoup = MeshIO.readOBJ(faceMesh);
 		it("loads a polygon soup", function() {
 			chai.assert.notStrictEqual(polygonSoup, undefined);
 		});
@@ -345,4 +320,4 @@ function setupTests(text) {
 			chai.assert.strictEqual(success, true);
 		});
 	});
-}
+});
