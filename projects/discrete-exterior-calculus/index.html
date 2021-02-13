@@ -32,28 +32,41 @@
 			<img src="../../imgs/logo.png" width="80" height="80" border="0">
 		</a>
 	</div>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/87/three.js"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.6.5/dat.gui.min.js"></script>
-	<script src="../../libs/detector.js"></script>
-	<script src="../../libs/trackball-controls.js"></script>
-	<script src="../../linear-algebra/linear-algebra-asm.js"></script>
-	<script src="../../linear-algebra/vector.js"></script>
-	<script src="../../linear-algebra/emscripten-memory-manager.js"></script>
-	<script src="../../linear-algebra/dense-matrix.js"></script>
-	<script src="../../linear-algebra/sparse-matrix.js"></script>
-	<script src="../../core/vertex.js"></script>
-	<script src="../../core/edge.js"></script>
-	<script src="../../core/face.js"></script>
-	<script src="../../core/halfedge.js"></script>
-	<script src="../../core/corner.js"></script>
-	<script src="../../core/mesh.js"></script>
-	<script src="../../core/geometry.js"></script>
-	<script src="../../core/discrete-exterior-calculus.js"></script>
-	<script src="../../input/hexagon.js"></script>
-	<script src="../../utils/meshio.js"></script>
-	<script src="../../utils/colormap.js"></script>
-	<script>
-		if (!Detector.webgl) Detector.addGetWebGLMessage();
+	<script type="module">
+		import * as THREE from 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r125/three.module.min.js'
+		import dat from 'https://threejs.org/examples/jsm/libs/dat.gui.module.js';
+		import { TrackballControls } from 'https://threejs.org/examples/jsm/controls/TrackballControls.js';
+		import { WEBGL } from 'https://threejs.org/examples/jsm/WebGL.js';
+
+		import Vector from "../../linear-algebra/vector.js";
+		import EmscriptenMemoryManager from "../../linear-algebra/emscripten-memory-manager.js";
+		import { Mesh, indexElements } from "../../core/mesh.js";
+		import { Geometry } from "../../core/geometry.js";
+		//import Vertex from "../../core/vertex.js";
+		//import Edge from "../../core/edge.js";
+		//import Face from "../../core/face.js";
+		//import HalfEdge from "../../core/halfedge.js";
+		//import Corner from "../../core/corner.js";
+		import hexagon from "../../input/hexagon.js";
+		import MeshIO from "../../utils/meshio.js";
+		import { colormap, seismic, coolwarm, hot } from "../../utils/colormap.js";
+		import DEC from "../../core/discrete-exterior-calculus.js";
+
+		// Unused Imports
+		//import { TrackballControls } from 'https://threejs.org/examples/jsm/controls/TrackballControls.js';
+		import DenseMatrix from "../../linear-algebra/dense-matrix.js";
+		//import SparseMatrix from "../../linear-algebra/sparse-matrix.js";
+
+		// Warn the user if WebGL is not Available
+		if (!WEBGL.isWebGLAvailable()){
+			var parent, id, element;
+			let parameters = null || {};
+			parent = parameters.parent !== undefined ? parameters.parent : document.body;
+			id = parameters.id !== undefined ? parameters.id : 'oldie';
+			element = WEBGL.getWebGLErrorMessage();
+			element.id = id;
+			parent.appendChild( element );
+		}
 
 		let input = document.getElementById("fileInput");
 		let renderer = undefined;
@@ -851,8 +864,8 @@
 			}
 
 			// set geometry
-			threeGeometry.addAttribute("position", new THREE.BufferAttribute(positions, 3));
-			threeGeometry.addAttribute("color", new THREE.BufferAttribute(colors, 3));
+			threeGeometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+			threeGeometry.setAttribute("color", new THREE.BufferAttribute(colors, 3));
 
 			// create material
 			let threeMaterial = new THREE.MeshBasicMaterial(materialSettings);
@@ -933,9 +946,9 @@
 			}
 
 			// set geometry
-			threeDualGeometry.addAttribute("position", new THREE.BufferAttribute(new Float32Array(positions), 3));
-			threeDualGeometry.addAttribute("color", new THREE.BufferAttribute(new Float32Array(colors), 3));
-			threeDualWireGeometry.addAttribute("position", new THREE.BufferAttribute(new Float32Array(edgePositions), 3));
+			threeDualGeometry.setAttribute("position", new THREE.BufferAttribute(new Float32Array(positions), 3));
+			threeDualGeometry.setAttribute("color", new THREE.BufferAttribute(new Float32Array(colors), 3));
+			threeDualWireGeometry.setAttribute("position", new THREE.BufferAttribute(new Float32Array(edgePositions), 3));
 
 			// create material
 			let threeDualMaterial = new THREE.MeshBasicMaterial(materialSettings);
@@ -991,7 +1004,7 @@
 				let F = mesh.faces.length;
 
 				let primal1FormGeometry = new THREE.BufferGeometry();
-				primal1FormGeometry.addAttribute("position", new THREE.BufferAttribute(new Float32Array(F * 6 * 3), 3));
+				primal1FormGeometry.setAttribute("position", new THREE.BufferAttribute(new Float32Array(F * 6 * 3), 3));
 				let primal1FormMaterial = new THREE.LineBasicMaterial({
 					color: 0x000000
 				});
@@ -1038,7 +1051,7 @@
 				}
 
 				let dual1FormGeometry = new THREE.BufferGeometry();
-				dual1FormGeometry.addAttribute("position", new THREE.BufferAttribute(new Float32Array(V * 6 * 3), 3));
+				dual1FormGeometry.setAttribute("position", new THREE.BufferAttribute(new Float32Array(V * 6 * 3), 3));
 				let dual1FormMaterial = new THREE.LineBasicMaterial({
 					color: 0x000000
 				});
@@ -1064,7 +1077,7 @@
 		}
 
 		function initControls() {
-			controls = new THREE.TrackballControls(camera, renderer.domElement);
+			controls = new TrackballControls(camera, renderer.domElement);
 			controls.noRotate = true;
 		}
 
