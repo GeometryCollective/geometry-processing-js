@@ -1,5 +1,6 @@
 import LinearAlgebra from '../linear-algebra/linear-algebra.js';
 let Vector = LinearAlgebra.Vector;
+import { colormap, seismic } from "./colormap.js";
 
 /**
  * This class computes the quasi conformal error and area scaling resulting from
