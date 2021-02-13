@@ -1,9 +1,10 @@
-"use strict";
+import Module from './linear-algebra-asm.js';
+import memoryManager from './emscripten-memory-manager.js';
 
 class Complex {
 	/**
 	 * This class represents a complex number a + bi.
-	 * @constructor module:LinearAlgebra.Complex
+	 * @constructor Complex
 	 * @param {number} re The real component of this complex number.
 	 * @param {number} im The imaginary component of this complex number.
 	 */
@@ -14,7 +15,7 @@ class Complex {
 
 	/**
 	 * Deletes the emscripten heap allocated data of this complex number.
-	 * @method module:LinearAlgebra.Complex#delete
+	 * @method Complex#delete
 	 * @ignore
 	 */
 	delete() {
@@ -23,7 +24,7 @@ class Complex {
 
 	/**
 	 * The real component of this complex number.
-	 * @member module:LinearAlgebra.Complex#re
+	 * @member Complex#re
 	 * @type {number}
 	 */
 	get re() {
@@ -32,7 +33,7 @@ class Complex {
 
 	/**
 	 * The imaginary component of this complex number.
-	 * @member module:LinearAlgebra.Complex#im
+	 * @member Complex#im
 	 * @type {number}
 	 */
 	get im() {
@@ -41,7 +42,7 @@ class Complex {
 
 	/**
 	 * Computes the phase angle of this complex number.
-	 * @method module:LinearAlgebra.Complex#arg
+	 * @method Complex#arg
 	 * @returns {number}
 	 */
 	arg() {
@@ -50,7 +51,7 @@ class Complex {
 
 	/**
 	 * Computes the norm of this complex number.
-	 * @method module:LinearAlgebra.Complex#norm
+	 * @method Complex#norm
 	 * @returns {number}
 	 */
 	norm() {
@@ -59,7 +60,7 @@ class Complex {
 
 	/**
 	 * Computes the squared norm of this complex number.
-	 * @method module:LinearAlgebra.Complex#norm2
+	 * @method Complex#norm2
 	 * @returns {number}
 	 */
 	norm2() {
@@ -68,8 +69,8 @@ class Complex {
 
 	/**
 	 * Computes a - bi
-	 * @method module:LinearAlgebra.Complex#conjugate
-	 * @returns {module:LinearAlgebra.Complex}
+	 * @method Complex#conjugate
+	 * @returns {Complex}
 	 */
 	conjugate() {
 		return new Complex(this.re, -this.im);
@@ -77,8 +78,8 @@ class Complex {
 
 	/**
 	 * Computes (a + bi)^-1
-	 * @method module:LinearAlgebra.Complex#inverse
-	 * @returns {module:LinearAlgebra.Complex}
+	 * @method Complex#inverse
+	 * @returns {Complex}
 	 */
 	inverse() {
 		return this.conjugate().overReal(this.norm2());
@@ -87,8 +88,8 @@ class Complex {
 	/**
 	 * Computes the polar form ae^(iθ), where a is the norm and θ is the
 	 * phase angle of this complex number.
-	 * @method module:LinearAlgebra.Complex#polar
-	 * @returns {module:LinearAlgebra.Complex}
+	 * @method Complex#polar
+	 * @returns {Complex}
 	 */
 	polar() {
 		let a = this.norm();
@@ -99,8 +100,8 @@ class Complex {
 
 	/**
 	 * Exponentiates this complex number.
-	 * @method module:LinearAlgebra.Complex#exp
-	 * @returns {module:LinearAlgebra.Complex}
+	 * @method Complex#exp
+	 * @returns {Complex}
 	 */
 	exp() {
 		let a = Math.exp(this.re);
@@ -111,9 +112,9 @@ class Complex {
 
 	/**
 	 * Returns u + v
-	 * @method module:LinearAlgebra.Complex#plus
-	 * @param {module:LinearAlgebra.Complex} v The complex number added to this complex number.
-	 * @return {module:LinearAlgebra.Complex}
+	 * @method Complex#plus
+	 * @param {Complex} v The complex number added to this complex number.
+	 * @return {Complex}
 	 */
 	plus(v) {
 		return new Complex(this.re + v.re, this.im + v.im);
@@ -121,9 +122,9 @@ class Complex {
 
 	/**
 	 * Returns u - v
-	 * @method module:LinearAlgebra.Complex#minus
-	 * @param {module:LinearAlgebra.Complex} v The complex number subtracted from this complex number.
-	 * @return {module:LinearAlgebra.Complex}
+	 * @method Complex#minus
+	 * @param {Complex} v The complex number subtracted from this complex number.
+	 * @return {Complex}
 	 */
 	minus(v) {
 		return new Complex(this.re - v.re, this.im - v.im);
@@ -131,9 +132,9 @@ class Complex {
 
 	/**
 	 * Returns u * s
-	 * @method module:LinearAlgebra.Complex#timesReal
+	 * @method Complex#timesReal
 	 * @param {number} s The number this complex number is multiplied by.
-	 * @return {module:LinearAlgebra.Complex}
+	 * @return {Complex}
 	 */
 	timesReal(s) {
 		return new Complex(this.re * s, this.im * s);
@@ -141,9 +142,9 @@ class Complex {
 
 	/**
 	 * Returns u / s
-	 * @method module:LinearAlgebra.Complex#overReal
+	 * @method Complex#overReal
 	 * @param {number} s The number this complex number is divided by.
-	 * @return {module:LinearAlgebra.Complex}
+	 * @return {Complex}
 	 */
 	overReal(s) {
 		return this.timesReal(1 / s);
@@ -151,9 +152,9 @@ class Complex {
 
 	/**
 	 * Returns u * v
-	 * @method module:LinearAlgebra.Complex#timesComplex
-	 * @param {module:LinearAlgebra.Complex} v The complex number this complex number is multiplied by.
-	 * @return {module:LinearAlgebra.Complex}
+	 * @method Complex#timesComplex
+	 * @param {Complex} v The complex number this complex number is multiplied by.
+	 * @return {Complex}
 	 */
 	timesComplex(v) {
 		let a = this.re;
@@ -169,11 +170,13 @@ class Complex {
 
 	/**
 	 * Returns u / v
-	 * @method module:LinearAlgebra.Complex#overComplex
-	 * @param {module:LinearAlgebra.Complex} v The complex number this complex number is divided by.
-	 * @return {module:LinearAlgebra.Complex}
+	 * @method Complex#overComplex
+	 * @param {Complex} v The complex number this complex number is divided by.
+	 * @return {Complex}
 	 */
 	overComplex(v) {
 		return this.timesComplex(v.inverse());
 	}
 }
+
+export default Complex;

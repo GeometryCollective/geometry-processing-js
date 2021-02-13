@@ -1,11 +1,13 @@
-"use strict";
+import LinearAlgebra from '../../linear-algebra/linear-algebra.js';
+let DenseMatrix = LinearAlgebra.DenseMatrix;
+import { indexElements } from '../../core/mesh.js';
 
 /**
  * @module Projects
  */
 class ScalarPoissonProblem {
 	/**
-	 * This class solves a {@link https://cs.cmu.edu/~kmcrane/Projects/DDG/paper.pdf scalar poisson problem} on a surface mesh.
+	 * This class solves a {@link https://www.cs.cmu.edu/~kmcrane/Projects/DDG/paper.pdf scalar poisson problem} on a surface mesh.
 	 * @constructor module:Projects.ScalarPoissonProblem
 	 * @param {module:Core.Geometry} geometry The input geometry of the mesh this class acts on.
 	 * @property {Object} vertexIndex A dictionary mapping each vertex of the input mesh to a unique index.
@@ -44,3 +46,5 @@ class ScalarPoissonProblem {
 		return phi;
 	}
 }
+
+export default ScalarPoissonProblem;

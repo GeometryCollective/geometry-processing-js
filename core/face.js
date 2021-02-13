@@ -1,5 +1,3 @@
-"use strict";
-
 class Face {
 	/**
 	 * This class represents a face in a {@link module:Core.Mesh Mesh}.
@@ -307,3 +305,5 @@ class FaceCornerIterator {
 		}
 	}
 }
+
+export default Face;

@@ -1,4 +1,9 @@
-"use strict";
+import LinearAlgebra from '../../linear-algebra/linear-algebra.js';
+let Vector = LinearAlgebra.Vector;
+let DenseMatrix = LinearAlgebra.DenseMatrix;
+let SparseMatrix = LinearAlgebra.SparseMatrix;
+import Solvers from '../../utils/solvers.js';
+import { normalize } from '../../core/geometry.js';
 
 class BoundaryFirstFlattening {
 	/**
@@ -392,3 +397,5 @@ class BoundaryFirstFlattening {
 		return flattening;
 	}
 }
+
+export default BoundaryFirstFlattening;

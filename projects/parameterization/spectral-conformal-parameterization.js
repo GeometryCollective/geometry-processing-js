@@ -1,8 +1,15 @@
-"use strict";
+import LinearAlgebra from '../../linear-algebra/linear-algebra.js';
+let Vector = LinearAlgebra.Vector;
+let Complex = LinearAlgebra.Complex;
+let ComplexSparseMatrix = LinearAlgebra.ComplexSparseMatrix;
+let ComplexTriplet = LinearAlgebra.ComplexTriplet;
+import Solvers from '../../utils/solvers.js';
+import { indexElements } from '../../core/mesh.js';
+import { normalize } from '../../core/geometry.js';
 
 class SpectralConformalParameterization {
 	/**
-	 * This class implements the {@link https://cs.cmu.edu/~kmcrane/Projects/DDG/paper.pdf spectral conformal parameterization} algorithm to flatten
+	 * This class implements the {@link https://www.cs.cmu.edu/~kmcrane/Projects/DDG/paper.pdf spectral conformal parameterization} algorithm to flatten
 	 * surface meshes with boundaries conformally.
 	 * @constructor module:Projects.SpectralConformalParameterization
 	 * @param {module:Core.Geometry} geometry The input geometry of the mesh this class acts on.
@@ -72,3 +79,5 @@ class SpectralConformalParameterization {
 		return flattening;
 	}
 }
+
+export default SpectralConformalParameterization;

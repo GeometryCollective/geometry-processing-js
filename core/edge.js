@@ -1,5 +1,3 @@
-"use strict";
-
 class Edge {
 	/**
 	 * This class represents an edge in a {@link module:Core.Mesh Mesh}.
@@ -30,3 +28,5 @@ class Edge {
 		return this.index;
 	}
 }
+
+export default Edge;

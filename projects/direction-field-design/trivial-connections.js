@@ -1,8 +1,15 @@
-"use strict";
+import LinearAlgebra from '../../linear-algebra/linear-algebra.js';
+let DenseMatrix = LinearAlgebra.DenseMatrix;
+let SparseMatrix = LinearAlgebra.SparseMatrix;
+let Triplet = LinearAlgebra.Triplet;
+import HodgeDecomposition from '../vector-field-decomposition/hodge-decomposition.js';
+import TreeCotree from '../vector-field-decomposition/tree-cotree.js';
+import HarmonicBases from '../vector-field-decomposition/harmonic-bases.js';
+import { indexElements } from '../../core/mesh.js';
 
 class TrivialConnections {
 	/**
-	 * This class implements the {@link https://cs.cmu.edu/~kmcrane/Projects/TrivialConnections trivial connections} algorithm to compute a smooth
+	 * This class implements the {@link https://www.cs.cmu.edu/~kmcrane/Projects/DDG/paper.pdf trivial connections} algorithm to compute a smooth
 	 * 1-form vector fields on a surface mesh.
 	 * @constructor module:Projects.TrivialConnections
 	 * @param {module:Core.Geometry} geometry The input geometry of the mesh this class acts on.
@@ -218,3 +225,5 @@ class TrivialConnections {
 		return deltaBeta.plus(gamma);
 	}
 }
+
+export default TrivialConnections;

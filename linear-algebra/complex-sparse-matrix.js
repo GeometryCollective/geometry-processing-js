@@ -1,11 +1,13 @@
-"use strict";
+import Module from './linear-algebra-asm.js';
+import memoryManager from './emscripten-memory-manager.js';
+import ComplexDenseMatrix from './complex-dense-matrix.js';
 
 class ComplexSparseMatrix {
 	/**
 	 * This class represents a m by n complex matrix where only nonzero entries
 	 * are stored explicitly. Do not create a ComplexSparseMatrix from its constructor,
 	 * instead use static factory methods such as fromTriplet, identity and diag.
-	 * @constructor module:LinearAlgebra.ComplexSparseMatrix
+	 * @constructor ComplexSparseMatrix
 	 * @example
 	 * let T = new ComplexTriplet(100, 100);
 	 * T.addEntry(new Complex(3.4, 6.4), 11, 43);
@@ -25,18 +27,18 @@ class ComplexSparseMatrix {
 	/**
 	 * Deletes the emscripten heap allocated data of this complex sparse matrix.
 	 * @ignore
-	 * @method module:LinearAlgebra.ComplexSparseMatrix#delete
+	 * @method ComplexSparseMatrix#delete
 	 */
 	delete() {
 		this.data.delete();
 	}
 
 	/**
-	 * Initializes a complex sparse matrix from a {@link module:LinearAlgebra.ComplexTriplet ComplexTriplet} object.
-	 * @method module:LinearAlgebra.ComplexSparseMatrix.fromTriplet
-	 * @param {module:LinearAlgebra.ComplexTriplet} T A complex triplet object containing only the nonzero
+	 * Initializes a complex sparse matrix from a {@link ComplexTriplet} object.
+	 * @method ComplexSparseMatrix.fromTriplet
+	 * @param {ComplexTriplet} T A complex triplet object containing only the nonzero
 	 * entries that need to be stored in this complex sparse matrix.
-	 * @returns {module:LinearAlgebra.ComplexSparseMatrix}
+	 * @returns {ComplexSparseMatrix}
 	 */
 	static fromTriplet(T) {
 		return new ComplexSparseMatrix(new Module.ComplexSparseMatrix(T.data));
@@ -44,10 +46,10 @@ class ComplexSparseMatrix {
 
 	/**
 	 * Initializes a m by n complex sparse identity matrix.
-	 * @method module:LinearAlgebra.ComplexSparseMatrix.identity
+	 * @method ComplexSparseMatrix.identity
 	 * @param {number} m The number of rows in this complex sparse matrix.
 	 * @param {number} n The number of columns in this complex sparse matrix.
-	 * @returns {module:LinearAlgebra.ComplexSparseMatrix}
+	 * @returns {ComplexSparseMatrix}
 	 */
 	static identity(m, n) {
 		return new ComplexSparseMatrix(Module.ComplexSparseMatrix.identity(m, n));
@@ -55,10 +57,10 @@ class ComplexSparseMatrix {
 
 	/**
 	 * Initializes a complex sparse diagonal matrix.
-	 * @method module:LinearAlgebra.ComplexSparseMatrix.diag
-	 * @param {module:LinearAlgebra.ComplexDenseMatrix} d The complex dense vector (d.nCols() == 1) used
+	 * @method ComplexSparseMatrix.diag
+	 * @param {ComplexDenseMatrix} d The complex dense vector (d.nCols() == 1) used
 	 * to initialize this complex sparse diagonal matrix.
-	 * @returns {module:LinearAlgebra.ComplexSparseMatrix}
+	 * @returns {ComplexSparseMatrix}
 	 */
 	static diag(d) {
 		return new ComplexSparseMatrix(Module.ComplexSparseMatrix.diag(d.data));
@@ -66,8 +68,8 @@ class ComplexSparseMatrix {
 
 	/**
 	 * Returns the transpose of this complex sparse matrix.
-	 * @method module:LinearAlgebra.ComplexSparseMatrix#transpose
-	 * @returns {module:LinearAlgebra.ComplexSparseMatrix}
+	 * @method ComplexSparseMatrix#transpose
+	 * @returns {ComplexSparseMatrix}
 	 */
 	transpose() {
 		return new ComplexSparseMatrix(this.data.transpose());
@@ -75,8 +77,8 @@ class ComplexSparseMatrix {
 
 	/**
 	 * Returns the inverse of this diagonal complex sparse matrix.
-	 * @method module:LinearAlgebra.ComplexSparseMatrix#invertDiagonal
-	 * @returns {module:LinearAlgebra.ComplexSparseMatrix}
+	 * @method ComplexSparseMatrix#invertDiagonal
+	 * @returns {ComplexSparseMatrix}
 	 */
 	invertDiagonal() {
 		let N = this.nRows();
@@ -91,8 +93,8 @@ class ComplexSparseMatrix {
 
 	/**
 	 * Returns the conjugate of this complex sparse matrix.
-	 * @method module:LinearAlgebra.ComplexSparseMatrix#conjugate
-	 * @returns {module:LinearAlgebra.ComplexSparseMatrix}
+	 * @method ComplexSparseMatrix#conjugate
+	 * @returns {ComplexSparseMatrix}
 	 */
 	conjugate() {
 		return new ComplexSparseMatrix(this.data.conjugate());
@@ -100,7 +102,7 @@ class ComplexSparseMatrix {
 
 	/**
 	 * Returns the number of rows in this complex sparse matrix.
-	 * @method module:LinearAlgebra.ComplexSparseMatrix#nRows
+	 * @method ComplexSparseMatrix#nRows
 	 * @returns {number}
 	 */
 	nRows() {
@@ -109,7 +111,7 @@ class ComplexSparseMatrix {
 
 	/**
 	 * Returns the number of columns in this complex sparse matrix.
-	 * @method module:LinearAlgebra.ComplexSparseMatrix#nCols
+	 * @method ComplexSparseMatrix#nCols
 	 * @returns {number}
 	 */
 	nCols() {
@@ -118,7 +120,7 @@ class ComplexSparseMatrix {
 
 	/**
 	 * Returns the number of nonzero entries in this complex sparse matrix.
-	 * @method module:LinearAlgebra.ComplexSparseMatrix#nnz
+	 * @method ComplexSparseMatrix#nnz
 	 * @returns {number}
 	 */
 	nnz() {
@@ -127,7 +129,7 @@ class ComplexSparseMatrix {
 
 	/**
 	 * Computes the frobenius norm of this complex sparse matrix.
-	 * @method module:LinearAlgebra.ComplexSparseMatrix#frobeniusNorm
+	 * @method ComplexSparseMatrix#frobeniusNorm
 	 * @returns {number}
 	 */
 	frobeniusNorm() {
@@ -137,39 +139,39 @@ class ComplexSparseMatrix {
 	/**
 	 * Extracts a complex sparse sub-matrix in the range [r0, r1) x [c0, c1), i.e.,
 	 * a matrix of size (r1 - r0) x (c1 - c0) starting at indices (r0, c0).
-	 * @method module:LinearAlgebra.ComplexSparseMatrix#subMatrix
+	 * @method ComplexSparseMatrix#subMatrix
 	 * @param {number} r0 The start row index.
 	 * @param {number} r1 The end row index (not included).
 	 * @param {number} c0 The start column index.
 	 * @param {number} c1 The end column index (not included).
-	 * @returns {module:LinearAlgebra.ComplexSparseMatrix}
+	 * @returns {ComplexSparseMatrix}
 	 */
 	subMatrix(r0, r1, c0, c1) {
 		return new ComplexSparseMatrix(this.data.subMatrix(r0, r1, c0, c1));
 	}
 
 	/**
-	 * Returns a sparse {@link module:LinearAlgebra.ComplexCholesky ComplexCholesky} factorization of this complex sparse matrix.
-	 * @method module:LinearAlgebra.ComplexSparseMatrix#chol
-	 * @returns {module:LinearAlgebra.ComplexCholesky}
+	 * Returns a sparse {@link ComplexCholesky} factorization of this complex sparse matrix.
+	 * @method ComplexSparseMatrix#chol
+	 * @returns {ComplexCholesky}
 	 */
 	chol() {
 		return new ComplexCholesky(this.data.chol());
 	}
 
 	/**
-	 * Returns a sparse {@link module:LinearAlgebra.ComplexLU ComplexLU} factorization of this complex sparse matrix.
-	 * @method module:LinearAlgebra.ComplexSparseMatrix#lu
-	 * @returns {module:LinearAlgebra.ComplexLU}
+	 * Returns a sparse {@link ComplexLU} factorization of this complex sparse matrix.
+	 * @method ComplexSparseMatrix#lu
+	 * @returns {ComplexLU}
 	 */
 	lu() {
 		return new ComplexLU(this.data.lu());
 	}
 
 	/**
-	 * Returns a sparse {@link module:LinearAlgebra.ComplexQR ComplexQR} factorization of this complex sparse matrix.
-	 * @method module:LinearAlgebra.ComplexSparseMatrix#qr
-	 * @returns {module:LinearAlgebra.ComplexQR}
+	 * Returns a sparse {@link ComplexQR} factorization of this complex sparse matrix.
+	 * @method ComplexSparseMatrix#qr
+	 * @returns {ComplexQR}
 	 */
 	qr() {
 		return new ComplexQR(this.data.qr());
@@ -177,8 +179,8 @@ class ComplexSparseMatrix {
 
 	/**
 	 * Returns a dense copy of this complex sparse matrix.
-	 * @method module:LinearAlgebra.ComplexSparseMatrix#toDense
-	 * @returns {module:LinearAlgebra.ComplexDenseMatrix}
+	 * @method ComplexSparseMatrix#toDense
+	 * @returns {ComplexDenseMatrix}
 	 */
 	toDense() {
 		return new ComplexDenseMatrix(this.data.toDense());
@@ -186,8 +188,8 @@ class ComplexSparseMatrix {
 
 	/**
 	 * A += B
-	 * @method module:LinearAlgebra.ComplexSparseMatrix#incrementBy
-	 * @param {module:LinearAlgebra.ComplexSparseMatrix} B The complex sparse matrix added to this complex
+	 * @method ComplexSparseMatrix#incrementBy
+	 * @param {ComplexSparseMatrix} B The complex sparse matrix added to this complex
 	 * sparse matrix.
 	 */
 	incrementBy(B) {
@@ -196,8 +198,8 @@ class ComplexSparseMatrix {
 
 	/**
 	 * A -= B
-	 * @method module:LinearAlgebra.ComplexSparseMatrix#decrementBy
-	 * @param {module:LinearAlgebra.ComplexSparseMatrix} B The complex sparse matrix subtracted from
+	 * @method ComplexSparseMatrix#decrementBy
+	 * @param {ComplexSparseMatrix} B The complex sparse matrix subtracted from
 	 * this complex sparse matrix.
 	 */
 	decrementBy(B) {
@@ -206,8 +208,8 @@ class ComplexSparseMatrix {
 
 	/**
 	 * A *= s
-	 * @method module:LinearAlgebra.ComplexSparseMatrix#scaleBy
-	 * @param {module:LinearAlgebra.Complex} s The complex number this complex sparse matrix is scaled by.
+	 * @method ComplexSparseMatrix#scaleBy
+	 * @param {Complex} s The complex number this complex sparse matrix is scaled by.
 	 */
 	scaleBy(s) {
 		this.data.scaleBy(s.data);
@@ -215,10 +217,10 @@ class ComplexSparseMatrix {
 
 	/**
 	 * Returns A + B
-	 * @method module:LinearAlgebra.ComplexSparseMatrix#plus
-	 * @param {module:LinearAlgebra.ComplexSparseMatrix} B The complex sparse matrix added to this complex
+	 * @method ComplexSparseMatrix#plus
+	 * @param {ComplexSparseMatrix} B The complex sparse matrix added to this complex
 	 * sparse matrix.
-	 * @returns {module:LinearAlgebra.ComplexSparseMatrix}
+	 * @returns {ComplexSparseMatrix}
 	 */
 	plus(B) {
 		return new ComplexSparseMatrix(this.data.plus(B.data));
@@ -226,10 +228,10 @@ class ComplexSparseMatrix {
 
 	/**
 	 * Returns A - B
-	 * @method module:LinearAlgebra.ComplexSparseMatrix#minus
-	 * @param {module:LinearAlgebra.ComplexSparseMatrix} B The complex sparse matrix subtracted from this
+	 * @method ComplexSparseMatrix#minus
+	 * @param {ComplexSparseMatrix} B The complex sparse matrix subtracted from this
 	 * complex sparse matrix.
-	 * @returns {module:LinearAlgebra.ComplexSparseMatrix}
+	 * @returns {ComplexSparseMatrix}
 	 */
 	minus(B) {
 		return new ComplexSparseMatrix(this.data.minus(B.data));
@@ -237,9 +239,9 @@ class ComplexSparseMatrix {
 
 	/**
 	 * Returns A * s
-	 * @method module:LinearAlgebra.ComplexSparseMatrix#timesComplex
-	 * @param {module:LinearAlgebra.Complex} s The complex number this complex sparse matrix is multiplied by.
-	 * @returns {module:LinearAlgebra.ComplexSparseMatrix}
+	 * @method ComplexSparseMatrix#timesComplex
+	 * @param {Complex} s The complex number this complex sparse matrix is multiplied by.
+	 * @returns {ComplexSparseMatrix}
 	 */
 	timesComplex(s) {
 		return new ComplexSparseMatrix(this.data.timesComplex(s.data));
@@ -247,10 +249,10 @@ class ComplexSparseMatrix {
 
 	/**
 	 * Returns A * X
-	 * @method module:LinearAlgebra.ComplexSparseMatrix#timesDense
-	 * @param {module:LinearAlgebra.ComplexDenseMatrix} X The complex dense matrix this complex sparse matrix
+	 * @method ComplexSparseMatrix#timesDense
+	 * @param {ComplexDenseMatrix} X The complex dense matrix this complex sparse matrix
 	 * is multiplied by.
-	 * @returns {module:LinearAlgebra.ComplexDenseMatrix}
+	 * @returns {ComplexDenseMatrix}
 	 */
 	timesDense(X) {
 		return new ComplexDenseMatrix(this.data.timesDense(X.data));
@@ -258,10 +260,10 @@ class ComplexSparseMatrix {
 
 	/**
 	 * Returns A * B
-	 * @method module:LinearAlgebra.ComplexSparseMatrix#timesSparse
-	 * @param {module:LinearAlgebra.ComplexSparseMatrix} B The complex sparse matrix this complex sparse matrix
+	 * @method ComplexSparseMatrix#timesSparse
+	 * @param {ComplexSparseMatrix} B The complex sparse matrix this complex sparse matrix
 	 * is multiplied by.
-	 * @returns {module:LinearAlgebra.ComplexSparseMatrix}
+	 * @returns {ComplexSparseMatrix}
 	 */
 	timesSparse(B) {
 		return new ComplexSparseMatrix(this.data.timesSparse(B.data));
@@ -270,9 +272,9 @@ class ComplexSparseMatrix {
 
 class ComplexTriplet {
 	/**
-	 * This class represents a small structure to hold nonzero entries in a {@link module:LinearAlgebra.ComplexSparseMatrix ComplexSparseMatrix}.
+	 * This class represents a small structure to hold nonzero entries in a {@link ComplexSparseMatrix}.
 	 * Each entry is a triplet of a complex value and the (i, j)th indices, i.e., (x, i, j).
-	 * @constructor module:LinearAlgebra.ComplexTriplet
+	 * @constructor ComplexTriplet
 	 * @param {number} m The number of rows in the complex sparse matrix that will be
 	 * initialized from this complex triplet.
 	 * @param {number} n The number of columns in the complex sparse matrix that will be
@@ -292,7 +294,7 @@ class ComplexTriplet {
 	/**
 	 * Deletes the emscripten heap allocated data of this sparse matrix.
 	 * @ignore
-	 * @method module:LinearAlgebra.ComplexTriplet#delete
+	 * @method ComplexTriplet#delete
 	 */
 	delete() {
 		this.data.delete();
@@ -300,7 +302,7 @@ class ComplexTriplet {
 
 	/**
 	 * A(i, j) += x
-	 * @method module:LinearAlgebra.ComplexTriplet#addEntry
+	 * @method ComplexTriplet#addEntry
 	 * @param {number} x The value of the nonzero entry being inserted into this
 	 * complex triplet.
 	 * @param {number} i The ith row of the complex sparse matrix that will be initialized
@@ -316,14 +318,14 @@ class ComplexTriplet {
 class ComplexCholesky {
 	/**
 	 * This class represents a complex Choleksy LL^T factorization of a square and
-	 * positive definite {@link module:LinearAlgebra.ComplexSparseMatrix ComplexSparseMatrix}. The factorization is computed on the
+	 * positive definite {@link ComplexSparseMatrix}. The factorization is computed on the
 	 * first call to solvePositiveDefinite, and is reused in subsequent calls to
 	 * solvePositiveDefinite (e.g. when only the right hand side b of the linear system
 	 * Ax = b changes) unless the complex sparse matrix itself is altered through
 	 * operations such as *=, += and -=. Do not use the constructor to initialize
 	 * this class, instead access the complex Choleksy factorization of a complex
 	 * sparse matrix directly from the matrix itself.
-	 * @constructor module:LinearAlgebra.ComplexCholesky
+	 * @constructor ComplexCholesky
 	 * @example
 	 * // solve the linear system Ax = b, where A is a square
 	 * // and complex positive definite sparse matrix
@@ -343,9 +345,9 @@ class ComplexCholesky {
 	/**
 	 * Solves the linear system Ax = b, where A is a square and complex positive
 	 * definite sparse matrix.
-	 * @method module:LinearAlgebra.ComplexCholesky#solvePositiveDefinite
-	 * @param {module:LinearAlgebra.ComplexDenseMatrix} b The complex dense right hand side of the linear system Ax = b.
-	 * @returns {module:LinearAlgebra.ComplexDenseMatrix}
+	 * @method ComplexCholesky#solvePositiveDefinite
+	 * @param {ComplexDenseMatrix} b The complex dense right hand side of the linear system Ax = b.
+	 * @returns {ComplexDenseMatrix}
 	 */
 	solvePositiveDefinite(b) {
 		return new ComplexDenseMatrix(this.data.solvePositiveDefinite(b.data));
@@ -354,14 +356,14 @@ class ComplexCholesky {
 
 class ComplexLU {
 	/**
-	 * This class represents a complex LU factorization of a square {@link module:LinearAlgebra.ComplexSparseMatrix ComplexSparseMatrix}.
+	 * This class represents a complex LU factorization of a square {@link ComplexSparseMatrix}.
 	 * The factorization is computed on the first call to solveSquare, and is reused
 	 * in subsequent calls to solveSquare (e.g. when only the right hand side b
 	 * of the linear system Ax = b changes) unless the complex sparse matrix itself
 	 * is altered through operations such as *=, += and -=. Do not use the constructor
 	 * to initialize this class, instead access the complex LU factorization
 	 * of a complex sparse matrix directly from the matrix itself.
-	 * @constructor module:LinearAlgebra.ComplexLU
+	 * @constructor ComplexLU
 	 * @example
 	 * // solve the linear system Ax = b, where A is a square and complex sparse matrix
 	 * let A = ComplexSparseMatrix.identity(5, 5);
@@ -379,9 +381,9 @@ class ComplexLU {
 
 	/**
 	 * Solves the linear system Ax = b, where A is a square and complex sparse matrix.
-	 * @method module:LinearAlgebra.ComplexLU#solveSquare
-	 * @param {module:LinearAlgebra.ComplexDenseMatrix} b The complex dense right hand side of the linear system Ax = b.
-	 * @returns {module:LinearAlgebra.ComplexDenseMatrix}
+	 * @method ComplexLU#solveSquare
+	 * @param {ComplexDenseMatrix} b The complex dense right hand side of the linear system Ax = b.
+	 * @returns {ComplexDenseMatrix}
 	 */
 	solveSquare(b) {
 		return new ComplexDenseMatrix(this.data.solveSquare(b.data));
@@ -390,14 +392,14 @@ class ComplexLU {
 
 class ComplexQR {
 	/**
-	 * This class represents a complex QR factorization of a rectangular {@link module:LinearAlgebra.ComplexSparseMatrix ComplexSparseMatrix}.
+	 * This class represents a complex QR factorization of a rectangular {@link ComplexSparseMatrix}.
 	 * The factorization is computed on the first call to solve, and is reused in
 	 * subsequent calls to solve (e.g. when only the right hand side b of the linear
 	 * system Ax = b changes) unless the complex sparse matrix itself is altered
 	 * through operations such as *=, += and -=. Do not use the constructor to initialize
 	 * this class, instead access the complex QR factorization of a complex sparse
 	 * matrix directly from the matrix itself.
-	 * @constructor module:LinearAlgebra.ComplexQR
+	 * @constructor ComplexQR
 	 * @example
 	 * // solve the linear system Ax = b, where A is a rectangular and complex sparse matrix
 	 * let A = ComplexSparseMatrix.identity(5, 5);
@@ -406,7 +408,7 @@ class ComplexQR {
 	 * let qr = A.qr();
 	 * let x = qr.solve(b);
 	 *
-	 * b.scaleBy(new Complex(5, 0));
+	 * b.scaleBy(Complex(5, 0));
 	 * x = qr.solve(b); // factorization is reused
 	 */
 	constructor(data) {
@@ -415,11 +417,13 @@ class ComplexQR {
 
 	/**
 	 * Solves the linear system Ax = b, where A is a rectangular and complex sparse matrix.
-	 * @method module:LinearAlgebra.ComplexQR#solve
-	 * @param {module:LinearAlgebra.ComplexDenseMatrix} b The dense right hand side of the linear system Ax = b.
-	 * @returns {module:LinearAlgebra.ComplexDenseMatrix}
+	 * @method ComplexQR#solve
+	 * @param {ComplexDenseMatrix} b The dense right hand side of the linear system Ax = b.
+	 * @returns {ComplexDenseMatrix}
 	 */
 	solve(b) {
 		return new ComplexDenseMatrix(this.data.solve(b.data));
 	}
 }
+
+export { ComplexSparseMatrix, ComplexTriplet };

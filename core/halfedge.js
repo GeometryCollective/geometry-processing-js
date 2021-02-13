@@ -1,5 +1,3 @@
-"use strict";
-
 /**
  * This module implements a halfedge mesh data structure and its associated geometry.
  * A halfedge mesh stores mesh elements such as vertices, edges and faces as well as
@@ -58,3 +56,5 @@ class Halfedge {
 		return this.index;
 	}
 }
+
+export default Halfedge;

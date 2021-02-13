@@ -1,7 +1,9 @@
-"use strict";
+import LinearAlgebra from '../linear-algebra/linear-algebra.js';
+let SparseMatrix = LinearAlgebra.SparseMatrix;
+let Triplet = LinearAlgebra.Triplet;
 
 /**
- * This class contains methods to build common {@link https://cs.cmu.edu/~kmcrane/Projects/DDG/paper.pdf discrete exterior calculus} operators.
+ * This class contains methods to build common {@link https://www.cs.cmu.edu/~kmcrane/Projects/DDG/paper.pdf discrete exterior calculus} operators.
  * @memberof module:Core
  */
 class DEC {
@@ -124,3 +126,5 @@ class DEC {
 		return SparseMatrix.fromTriplet(T);
 	}
 }
+
+export default DEC;

@@ -1,8 +1,11 @@
-"use strict";
+import LinearAlgebra from '../../linear-algebra/linear-algebra.js';
+let SparseMatrix = LinearAlgebra.SparseMatrix;
+import DEC from '../../core/discrete-exterior-calculus.js';
+import { indexElements } from '../../core/mesh.js';
 
 class HodgeDecomposition {
 	/**
-	 * This class computes the {@link https://cs.cmu.edu/~kmcrane/Projects/DDG/paper.pdf hodge decomposition} of a vector field on a surface mesh.
+	 * This class computes the {@link https://www.cs.cmu.edu/~kmcrane/Projects/DDG/paper.pdf hodge decomposition} of a vector field on a surface mesh.
 	 * @constructor module:Projects.HodgeDecomposition
 	 * @param {module:Core.Geometry} geometry The input geometry of the mesh this class acts on.
 	 * @property {Object} edgeIndex A dictionary mapping each edge of the input mesh to a unique index.
@@ -90,3 +93,5 @@ class HodgeDecomposition {
 		return omega.minus(dAlpha.plus(deltaBeta));
 	}
 }
+
+export default HodgeDecomposition;
