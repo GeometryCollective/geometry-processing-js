@@ -1,12 +1,12 @@
-let chai = require('chai');
-let solution = require('../../../tests/poisson-problem/solution.js');
-let LinearAlgebra = require('../../linear-algebra/linear-algebra.js');
+import chai from 'chai';
+import solution from '../../../tests/poisson-problem/solution.js';
+import LinearAlgebra from '../../linear-algebra/linear-algebra.js';
 let memoryManager = LinearAlgebra.memoryManager;
 let DenseMatrix = LinearAlgebra.DenseMatrix;
-let MeshIO = require('../../utils/meshio.js');
-let Mesh = require('../../core/mesh.js')[0];
-let Geometry = require('../../core/geometry.js')[0];
-let ScalarPoissonProblem = require('../../projects/poisson-problem/scalar-poisson-problem.js');
+import MeshIO from '../../utils/meshio.js';
+import { Mesh } from '../../core/mesh.js';
+import { Geometry } from '../../core/geometry.js';
+import ScalarPoissonProblem from '../../projects/poisson-problem/scalar-poisson-problem.js';
 
 describe("ScalarPoissonProblem", function() {
 	let polygonSoup = MeshIO.readOBJ(solution);

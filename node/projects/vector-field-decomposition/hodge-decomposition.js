@@ -1,7 +1,7 @@
-let LinearAlgebra = require('../../linear-algebra/linear-algebra.js');
+import LinearAlgebra from '../../linear-algebra/linear-algebra.js';
 let SparseMatrix = LinearAlgebra.SparseMatrix;
-let DEC = require('../../core/discrete-exterior-calculus.js');
-let indexElements = require('../../core/mesh.js')[1];
+import DEC from '../../core/discrete-exterior-calculus.js';
+import { indexElements } from '../../core/mesh.js';
 
 class HodgeDecomposition {
 	/**
@@ -94,4 +94,4 @@ class HodgeDecomposition {
 	}
 }
 
-module.exports = HodgeDecomposition
+export default HodgeDecomposition;

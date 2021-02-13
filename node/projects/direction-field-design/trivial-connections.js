@@ -1,11 +1,11 @@
-let LinearAlgebra = require('../../linear-algebra/linear-algebra.js');
+import LinearAlgebra from '../../linear-algebra/linear-algebra.js';
 let DenseMatrix = LinearAlgebra.DenseMatrix;
 let SparseMatrix = LinearAlgebra.SparseMatrix;
 let Triplet = LinearAlgebra.Triplet;
-let HodgeDecomposition = require('../vector-field-decomposition/hodge-decomposition.js');
-let TreeCotree = require('../vector-field-decomposition/tree-cotree.js');
-let HarmonicBases = require('../vector-field-decomposition/harmonic-bases.js');
-let indexElements = require('../../core/mesh.js')[1];
+import HodgeDecomposition from '../vector-field-decomposition/hodge-decomposition.js';
+import TreeCotree from '../vector-field-decomposition/tree-cotree.js';
+import HarmonicBases from '../vector-field-decomposition/harmonic-bases.js';
+import { indexElements } from '../../core/mesh.js';
 
 class TrivialConnections {
 	/**
@@ -226,4 +226,4 @@ class TrivialConnections {
 	}
 }
 
-module.exports = TrivialConnections
+export default TrivialConnections;

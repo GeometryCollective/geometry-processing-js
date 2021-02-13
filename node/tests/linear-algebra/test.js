@@ -1,5 +1,5 @@
-let chai = require('chai');
-let LinearAlgebra = require('../../linear-algebra/linear-algebra.js');
+import chai from 'chai';
+import LinearAlgebra from '../../linear-algebra/linear-algebra.js';
 let Vector = LinearAlgebra.Vector;
 let memoryManager = LinearAlgebra.memoryManager;
 let Complex = LinearAlgebra.Complex;

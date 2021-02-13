@@ -169,4 +169,4 @@ class TreeCotree {
 	}
 }
 
-module.exports = TreeCotree
+export default TreeCotree;

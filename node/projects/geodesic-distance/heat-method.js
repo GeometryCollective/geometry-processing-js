@@ -1,7 +1,7 @@
-let LinearAlgebra = require('../../linear-algebra/linear-algebra.js');
+import LinearAlgebra from '../../linear-algebra/linear-algebra.js';
 let Vector = LinearAlgebra.Vector;
 let DenseMatrix = LinearAlgebra.DenseMatrix;
-let indexElements = require('../../core/mesh.js')[1];
+import { indexElements } from '../../core/mesh.js';
 
 class HeatMethod {
 	/**
@@ -137,4 +137,4 @@ class HeatMethod {
 	}
 }
 
-module.exports = HeatMethod
+export default HeatMethod;

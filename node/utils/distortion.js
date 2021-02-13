@@ -1,4 +1,4 @@
-let LinearAlgebra = require('../linear-algebra/linear-algebra.js');
+import LinearAlgebra from '../linear-algebra/linear-algebra.js';
 let Vector = LinearAlgebra.Vector;
 
 /**
@@ -254,4 +254,4 @@ function hsv(h, s, v) {
 	return new Vector(r, g, b);
 }
 
-module.exports = Distortion
+export default Distortion;

@@ -1,19 +1,19 @@
-let Vector = require('./vector.js');
-let memoryManager = require('./emscripten-memory-manager.js');
-let Complex = require('./complex.js');
-let DenseMatrix = require('./dense-matrix.js');
-let ComplexDenseMatrix = require('./complex-dense-matrix.js');
-let [SparseMatrix, Triplet] = require('./sparse-matrix.js');
-let [ComplexSparseMatrix, ComplexTriplet] = require('./complex-sparse-matrix.js');
+import Vector from './vector.js';
+import memoryManager from './emscripten-memory-manager.js';
+import Complex from './complex.js';
+import DenseMatrix from './dense-matrix.js';
+import ComplexDenseMatrix from' ./complex-dense-matrix.js';
+import { SparseMatrix, Triplet } from './sparse-matrix.js';
+import { ComplexSparseMatrix, ComplexTriplet } from './complex-sparse-matrix.js';
 
-module.exports = {
-	"Vector": Vector,
-	"memoryManager": memoryManager,
-	"Complex": Complex,
-	"DenseMatrix": DenseMatrix,
-	"SparseMatrix": SparseMatrix,
-	"Triplet": Triplet,
-	"ComplexDenseMatrix": ComplexDenseMatrix,
-	"ComplexSparseMatrix": ComplexSparseMatrix,
-	"ComplexTriplet": ComplexTriplet
-}
+export default {
+	Vector,
+	memoryManager,
+	Complex,
+	DenseMatrix,
+	SparseMatrix,
+	Triplet,
+	ComplexDenseMatrix,
+	ComplexSparseMatrix,
+	ComplexTriplet
+};

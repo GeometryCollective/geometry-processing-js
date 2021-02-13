@@ -1,4 +1,4 @@
-let MeanCurvatureFlow = require('./mean-curvature-flow.js');
+import MeanCurvatureFlow from './mean-curvature-flow.js';
 
 class ModifiedMeanCurvatureFlow extends MeanCurvatureFlow {
 	/**
@@ -22,4 +22,4 @@ class ModifiedMeanCurvatureFlow extends MeanCurvatureFlow {
 	}
 }
 
-module.exports = ModifiedMeanCurvatureFlow
+export default ModifiedMeanCurvatureFlow;

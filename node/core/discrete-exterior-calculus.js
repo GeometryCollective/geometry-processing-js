@@ -1,4 +1,4 @@
-let LinearAlgebra = require('../linear-algebra/linear-algebra.js');
+import LinearAlgebra from '../linear-algebra/linear-algebra.js';
 let SparseMatrix = LinearAlgebra.SparseMatrix;
 let Triplet = LinearAlgebra.Triplet;
 
@@ -127,4 +127,4 @@ class DEC {
 	}
 }
 
-module.exports = DEC
+export default DEC;

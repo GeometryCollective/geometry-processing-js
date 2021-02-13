@@ -1,15 +1,15 @@
-let chai = require('chai');
-let solution = require('../../../tests/parameterization/solution.js');
-let LinearAlgebra = require('../../linear-algebra/linear-algebra.js');
+import chai from 'chai';
+import solution from '../../../tests/parameterization/solution.js';
+import LinearAlgebra from '../../linear-algebra/linear-algebra.js';
 let Vector = LinearAlgebra.Vector;
 let memoryManager = LinearAlgebra.memoryManager;
 let Complex = LinearAlgebra.Complex;
 let ComplexSparseMatrix = LinearAlgebra.ComplexSparseMatrix;
 let ComplexTriplet = LinearAlgebra.ComplexTriplet;
-let MeshIO = require('../../utils/meshio.js');
-let Mesh = require('../../core/mesh.js')[0];
-let Geometry = require('../../core/geometry.js')[0];
-let SpectralConformalParameterization = require('../../projects/parameterization/spectral-conformal-parameterization.js');
+import MeshIO from '../../utils/meshio.js';
+import { Mesh } from '../../core/mesh.js';
+import { Geometry } from '../../core/geometry.js';
+import SpectralConformalParameterization from '../../projects/parameterization/spectral-conformal-parameterization.js';
 
 describe("SpectralConformalParameterization", function() {
 	let polygonSoup = MeshIO.readOBJ(solution);

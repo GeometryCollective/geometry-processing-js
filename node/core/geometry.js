@@ -1,4 +1,4 @@
-let LinearAlgebra = require('../linear-algebra/linear-algebra.js');
+import LinearAlgebra from '../linear-algebra/linear-algebra.js';
 let Vector = LinearAlgebra.Vector;
 let Complex = LinearAlgebra.Complex;
 let SparseMatrix = LinearAlgebra.SparseMatrix;
@@ -579,4 +579,4 @@ function normalize(positions, vertices, rescale = true) {
 	}
 }
 
-module.exports = [Geometry, normalize]
+export { Geometry, normalize };

@@ -1,7 +1,7 @@
-let LinearAlgebra = require('../../linear-algebra/linear-algebra.js');
+import LinearAlgebra from '../../linear-algebra/linear-algebra.js';
 let DenseMatrix = LinearAlgebra.DenseMatrix;
-let indexElements = require('../../core/mesh.js')[1];
-let normalize = require('../../core/geometry.js')[1];
+import { indexElements } from '../../core/mesh.js';
+import { normalize } from '../../core/geometry.js';
 
 class MeanCurvatureFlow {
 	/**
@@ -75,4 +75,4 @@ class MeanCurvatureFlow {
 	}
 }
 
-module.exports = MeanCurvatureFlow
+export default MeanCurvatureFlow;

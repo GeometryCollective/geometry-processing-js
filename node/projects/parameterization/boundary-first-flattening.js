@@ -1,9 +1,9 @@
-let LinearAlgebra = require('../../linear-algebra/linear-algebra.js');
+import LinearAlgebra from '../../linear-algebra/linear-algebra.js';
 let Vector = LinearAlgebra.Vector;
 let DenseMatrix = LinearAlgebra.DenseMatrix;
 let SparseMatrix = LinearAlgebra.SparseMatrix;
-let Solvers = require('../../utils/solvers.js');
-let normalize = require('../../core/geometry.js')[1];
+import Solvers from '../../utils/solvers.js';
+import { normalize } from '../../core/geometry.js';
 
 class BoundaryFirstFlattening {
 	/**
@@ -398,4 +398,4 @@ class BoundaryFirstFlattening {
 	}
 }
 
-module.exports = BoundaryFirstFlattening
+export default BoundaryFirstFlattening;

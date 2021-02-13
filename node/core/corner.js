@@ -57,4 +57,4 @@ class Corner {
 	}
 }
 
-module.exports = Corner
+export default Corner;

@@ -1,14 +1,14 @@
-let chai = require('chai');
-let solution = require('../../../tests/geometry/solution.js');
-let LinearAlgebra = require('../../linear-algebra/linear-algebra.js');
+import chai from 'chai';
+import solution from '../../../tests/geometry/solution.js';
+import LinearAlgebra from '../../linear-algebra/linear-algebra.js';
 let Vector = LinearAlgebra.Vector;
 let memoryManager = LinearAlgebra.memoryManager;
 let DenseMatrix = LinearAlgebra.DenseMatrix;
 let SparseMatrix = LinearAlgebra.SparseMatrix;
 let Triplet = LinearAlgebra.Triplet;
-let MeshIO = require('../../utils/meshio.js');
-let [Mesh, indexElements] = require('../../core/mesh.js');
-let Geometry = require('../../core/geometry.js')[0];
+import MeshIO from '../../utils/meshio.js';
+import { Mesh, indexElements } from '../../core/mesh.js';
+import { Geometry } from '../../core/geometry.js';
 
 describe("Geometry", function() {
 	let polygonSoup = MeshIO.readOBJ(solution);

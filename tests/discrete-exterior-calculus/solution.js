@@ -55290,4 +55290,4 @@ f 1484 508 1482
 f 1476 1482 510 
 `;
 
-module.exports = solution
+export default solution;

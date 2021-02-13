@@ -1,5 +1,5 @@
-let Module = require('./linear-algebra-asm.js');
-let memoryManager = require('./emscripten-memory-manager.js');
+import Module from './linear-algebra-asm.js';
+import memoryManager from './emscripten-memory-manager.js';
 
 class Complex {
 	/**
@@ -179,4 +179,4 @@ class Complex {
 	}
 }
 
-module.exports = Complex
+export default Complex;

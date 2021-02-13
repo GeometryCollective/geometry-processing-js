@@ -1,7 +1,7 @@
-let chai = require('chai');
-let faceMesh = require('../../../input/face.js');
-let MeshIO = require('../../utils/meshio.js');
-let Mesh = require('../../core/mesh.js')[0];
+import chai from 'chai';
+import faceMesh from '../../../input/face.js';
+import MeshIO from '../../utils/meshio.js';
+import { Mesh } from '../../core/mesh.js';
 
 describe("Mesh", function() {
 	let polygonSoup = undefined;

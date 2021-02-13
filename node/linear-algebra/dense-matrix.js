@@ -1,5 +1,5 @@
-let Module = require('./linear-algebra-asm.js');
-let memoryManager = require('./emscripten-memory-manager.js');
+import Module from './linear-algebra-asm.js';
+import memoryManager from './emscripten-memory-manager.js';
 
 class DenseMatrix {
 	/**
@@ -276,4 +276,4 @@ class DenseMatrix {
 	}
 }
 
-module.exports = DenseMatrix
+export default DenseMatrix;

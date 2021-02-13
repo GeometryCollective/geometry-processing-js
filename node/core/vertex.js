@@ -335,4 +335,4 @@ class VertexCornerIterator {
 	}
 }
 
-module.exports = Vertex
+export default Vertex;

@@ -181,4 +181,4 @@ class Vector {
 	}
 }
 
-module.exports = Vector
+export default Vector;

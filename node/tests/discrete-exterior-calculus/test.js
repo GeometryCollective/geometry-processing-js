@@ -1,12 +1,12 @@
-let chai = require('chai');
-let solution = require('../../../tests/discrete-exterior-calculus/solution.js');
-let LinearAlgebra = require('../../linear-algebra/linear-algebra.js');
+import chai from 'chai';
+import solution from '../../../tests/discrete-exterior-calculus/solution.js';
+import LinearAlgebra from '../../linear-algebra/linear-algebra.js';
 let memoryManager = LinearAlgebra.memoryManager;
 let DenseMatrix = LinearAlgebra.DenseMatrix;
-let MeshIO = require('../../utils/meshio.js');
-let [Mesh, indexElements] = require('../../core/mesh.js');
-let Geometry = require('../../core/geometry.js')[0];
-let DEC = require('../../core/discrete-exterior-calculus.js');
+import MeshIO from '../../utils/meshio.js';
+import { Mesh, indexElements } from '../../core/mesh.js';
+import Geometry from '../../core/geometry.js';
+import DEC from '../../core/discrete-exterior-calculus.js';
 
 describe("DEC", function() {
 	let polygonSoup = MeshIO.readOBJ(solution);

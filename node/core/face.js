@@ -306,4 +306,4 @@ class FaceCornerIterator {
 	}
 }
 
-module.exports = Face
+export default Face;

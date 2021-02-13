@@ -17411,4 +17411,4 @@ f 322 3102 2789
 f 358 3483 1119 
 `;
 
-module.exports = solution
+export default solution

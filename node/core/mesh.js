@@ -1,8 +1,8 @@
-let Vertex = require('./vertex.js');
-let Edge = require('./edge.js');
-let Face = require('./face.js');
-let Halfedge = require('./halfedge.js');
-let Corner = require('./corner.js');
+import Vertex from './vertex.js';
+import Edge from './edge.js';
+import Face  from './face.js';
+import Halfedge from './halfedge.js';
+import Corner from './corner.js';
 
 class Mesh {
 	/**
@@ -406,4 +406,4 @@ function indexElements(elementList) {
 	return index;
 }
 
-module.exports = [Mesh, indexElements]
+export { Mesh, indexElements }

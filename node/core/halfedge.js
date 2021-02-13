@@ -57,4 +57,4 @@ class Halfedge {
 	}
 }
 
-module.exports = Halfedge
+export default Halfedge;

@@ -51301,4 +51301,4 @@ f 17145 17118 17157
 f 17118 17145 1087 
 `;
 
-module.exports = face
+export default face;

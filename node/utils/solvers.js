@@ -1,4 +1,4 @@
-let LinearAlgebra = require('../linear-algebra/linear-algebra.js');
+import LinearAlgebra from '../linear-algebra/linear-algebra.js';
 let Complex = LinearAlgebra.Complex;
 let ComplexDenseMatrix = LinearAlgebra.ComplexDenseMatrix;
 
@@ -78,4 +78,4 @@ class Solvers {
 	}
 }
 
-module.exports = Solvers
+export default Solvers;

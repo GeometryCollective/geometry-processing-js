@@ -1,11 +1,11 @@
-let LinearAlgebra = require('../../linear-algebra/linear-algebra.js');
+import LinearAlgebra from '../../linear-algebra/linear-algebra.js';
 let Vector = LinearAlgebra.Vector;
 let Complex = LinearAlgebra.Complex;
 let ComplexSparseMatrix = LinearAlgebra.ComplexSparseMatrix;
 let ComplexTriplet = LinearAlgebra.ComplexTriplet;
-let Solvers = require('../../utils/solvers.js');
-let indexElements = require('../../core/mesh.js')[1];
-let normalize = require('../../core/geometry.js')[1];
+import Solvers from '../../utils/solvers.js';
+import { indexElements } from '../../core/mesh.js';
+import { normalize } from '../../core/geometry.js';
 
 class SpectralConformalParameterization {
 	/**
@@ -80,4 +80,4 @@ class SpectralConformalParameterization {
 	}
 }
 
-module.exports = SpectralConformalParameterization
+export default SpectralConformalParameterization;

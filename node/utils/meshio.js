@@ -1,4 +1,4 @@
-let LinearAlgebra = require('../linear-algebra/linear-algebra.js');
+import LinearAlgebra from '../linear-algebra/linear-algebra.js';
 let Vector = LinearAlgebra.Vector;
 
 /**
@@ -91,4 +91,4 @@ class MeshIO {
 	}
 }
 
-module.exports = MeshIO
+export default MeshIO;

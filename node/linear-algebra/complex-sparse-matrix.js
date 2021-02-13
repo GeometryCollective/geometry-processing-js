@@ -1,6 +1,6 @@
-let Module = require('./linear-algebra-asm.js');
-let memoryManager = require('./emscripten-memory-manager.js');
-let ComplexDenseMatrix = require('./complex-dense-matrix.js');
+import Module from './linear-algebra-asm.js';
+import memoryManager from './emscripten-memory-manager.js';
+import ComplexDenseMatrix from './complex-dense-matrix.js';
 
 class ComplexSparseMatrix {
 	/**
@@ -426,4 +426,4 @@ class ComplexQR {
 	}
 }
 
-module.exports = [ComplexSparseMatrix, ComplexTriplet]
+export { ComplexSparseMatrix, ComplexTriplet };

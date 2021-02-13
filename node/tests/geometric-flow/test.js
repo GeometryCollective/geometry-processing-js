@@ -1,13 +1,13 @@
-let chai = require('chai');
-let solution = require('../../../tests/geometric-flow/solution.js');
-let LinearAlgebra = require('../../linear-algebra/linear-algebra.js');
+import chai from 'chai';
+import solution from '../../../tests/geometric-flow/solution.js';
+import LinearAlgebra from '../../linear-algebra/linear-algebra.js';
 let Vector = LinearAlgebra.Vector;
 let memoryManager = LinearAlgebra.memoryManager;
-let MeshIO = require('../../utils/meshio.js');
-let Mesh = require('../../core/mesh.js')[0];
-let Geometry = require('../../core/geometry.js')[0];
-let MeanCurvatureFlow = require('../../projects/geometric-flow/mean-curvature-flow.js');
-let ModifiedMeanCurvatureFlow = require('../../projects/geometric-flow/modified-mean-curvature-flow.js');
+import MeshIO from '../../utils/meshio.js';
+import { Mesh } from '../../core/mesh.js';
+import { Geometry } from '../../core/geometry.js';
+import MeanCurvatureFlow from '../../projects/geometric-flow/mean-curvature-flow.js';
+import ModifiedMeanCurvatureFlow from '../../projects/geometric-flow/modified-mean-curvature-flow.js';
 
 describe("MeanCurvatureFlow", function() {
 	let steps, h;

@@ -1,4 +1,4 @@
-let LinearAlgebra = require('../linear-algebra/linear-algebra.js');
+import LinearAlgebra from '../linear-algebra/linear-algebra.js';
 let Vector = LinearAlgebra.Vector;
 
 let seismic = [
@@ -1567,9 +1567,9 @@ function colormap(x, min, max, values) {
 	return c1.plus(c2.minus(c1).times(scaling));
 }
 
-module.exports = {
-	"colormap": colormap,
-	"seismic": seismic,
-	"coolwarm": coolwarm,
-	"hot": hot
-}
+export {
+	colormap,
+	seismic,
+	coolwarm,
+	hot
+};
