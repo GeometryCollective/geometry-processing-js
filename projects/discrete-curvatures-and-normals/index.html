@@ -21,23 +21,42 @@
 			<img src="../../imgs/logo.png" width="80" height="80" border="0">
 		</a>
 	</div>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/87/three.js"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.6.5/dat.gui.min.js"></script>
-	<script src="../../libs/detector.js"></script>
-	<script src="../../libs/trackball-controls.js"></script>
-	<script src="../../linear-algebra/vector.js"></script>
-	<script src="../../core/vertex.js"></script>
-	<script src="../../core/edge.js"></script>
-	<script src="../../core/face.js"></script>
-	<script src="../../core/halfedge.js"></script>
-	<script src="../../core/corner.js"></script>
-	<script src="../../core/mesh.js"></script>
-	<script src="../../core/geometry.js"></script>
-	<script src="../../input/bunny.js"></script>
-	<script src="../../utils/meshio.js"></script>
-	<script src="../../utils/colormap.js"></script>
-	<script>
-		if (!Detector.webgl) Detector.addGetWebGLMessage();
+	<script type="module">
+		import * as THREE from 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r125/three.module.min.js'
+		import dat from 'https://threejs.org/examples/jsm/libs/dat.gui.module.js';
+		import { TrackballControls } from 'https://threejs.org/examples/jsm/controls/TrackballControls.js';
+		import { WEBGL } from 'https://threejs.org/examples/jsm/WebGL.js';
+		import { VertexNormalsHelper } from 'https://threejs.org/examples/jsm/helpers/VertexNormalsHelper.js';
+
+		import Vector from "../../linear-algebra/vector.js";
+		import EmscriptenMemoryManager from "../../linear-algebra/emscripten-memory-manager.js";
+		import { Mesh } from "../../core/mesh.js";
+		import { Geometry } from "../../core/geometry.js";
+		//import Vertex from "../../core/vertex.js";
+		//import Edge from "../../core/edge.js";
+		//import Face from "../../core/face.js";
+		//import HalfEdge from "../../core/halfedge.js";
+		//import Corner from "../../core/corner.js";
+		import bunny from "../../input/bunny.js";
+		import MeshIO from "../../utils/meshio.js";
+		import { colormap, seismic, coolwarm, hot } from "../../utils/colormap.js";
+
+		// Unused Imports
+		//import { TrackballControls } from 'https://threejs.org/examples/jsm/controls/TrackballControls.js';
+		//import DenseMatrix from "../../linear-algebra/dense-matrix.js";
+		//import SparseMatrix from "../../linear-algebra/sparse-matrix.js";
+		//import DEC from "../../core/discrete-exterior-calculus.js";
+
+		// Warn the user if WebGL is not Available
+		if (!WEBGL.isWebGLAvailable()){
+			var parent, id, element;
+			let parameters = null || {};
+			parent = parameters.parent !== undefined ? parameters.parent : document.body;
+			id = parameters.id !== undefined ? parameters.id : 'oldie';
+			element = WEBGL.getWebGLErrorMessage();
+			element.id = id;
+			parent.appendChild( element );
+		}
 
 		let input = document.getElementById("fileInput");
 		let renderer = undefined;
@@ -338,9 +357,9 @@
 
 			// set geometry
 			threeGeometry.setIndex(new THREE.BufferAttribute(indices, 1));
-			threeGeometry.addAttribute("position", new THREE.BufferAttribute(positions, 3));
-			threeGeometry.addAttribute("normal", new THREE.BufferAttribute(normals, 3));
-			threeGeometry.addAttribute("color", new THREE.BufferAttribute(colors, 3));
+			threeGeometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+			threeGeometry.setAttribute("normal", new THREE.BufferAttribute(normals, 3));
+			threeGeometry.setAttribute("color", new THREE.BufferAttribute(colors, 3));
 
 			// create material
 			let threeMaterial = new THREE.MeshPhongMaterial(materialSettings);
@@ -357,7 +376,7 @@
 			threeMesh = new THREE.Mesh(threeGeometry, threeMaterial);
 
 			// create normals helper
-			normalsHelper = new THREE.VertexNormalsHelper(threeMesh, 0.02, 0x0000ff, 0.75);
+			normalsHelper = new VertexNormalsHelper(threeMesh, 0.02, 0x0000ff, 0.75);
 
 			// toggle normals, curvature and wireframe
 			toggleNormals(showNormals);
@@ -366,7 +385,7 @@
 		}
 
 		function initControls() {
-			controls = new THREE.TrackballControls(camera, renderer.domElement);
+			controls = new TrackballControls(camera, renderer.domElement);
 			controls.rotateSpeed = 5.0;
 		}
 
