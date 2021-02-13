@@ -1,28 +1,16 @@
-import * as THREE from 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r125/three.module.min.js'
-import dat from 'https://threejs.org/examples/jsm/libs/dat.gui.module.js';
-import { TrackballControls } from 'https://threejs.org/examples/jsm/controls/TrackballControls.js';
 import { WEBGL } from 'https://threejs.org/examples/jsm/WebGL.js';
+import dat from 'https://threejs.org/examples/jsm/libs/dat.gui.module.js';
+import * as THREE from 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r125/three.module.min.js'
+import { TrackballControls } from 'https://threejs.org/examples/jsm/controls/TrackballControls.js';
 
-import SimplicialComplexOperators from "./simplicial-complex-operators.js";
-import Vector from "../../linear-algebra/vector.js";
-import EmscriptenMemoryManager from "../../linear-algebra/emscripten-memory-manager.js";
 import { Mesh } from "../../core/mesh.js";
-import { Geometry } from "../../core/geometry.js";
-import MeshSubset from "../../core/mesh-subset.js";
-//import Vertex from "../../core/vertex.js";
-//import Edge from "../../core/edge.js";
-//import Face from "../../core/face.js";
-//import HalfEdge from "../../core/halfedge.js";
-//import Corner from "../../core/corner.js";
-import small_disk from "../../input/small_disk.js";
 import MeshIO from "../../utils/meshio.js";
-//import { colormap, seismic, coolwarm, hot } from "../../utils/colormap.js";
-//import Distortion  from "../../utils/distortion.js";
-
-// Unused Imports
-//import DenseMatrix from "../../linear-algebra/dense-matrix.js";
-//import SparseMatrix from "../../linear-algebra/sparse-matrix.js";
-//import DEC from "../../core/discrete-exterior-calculus.js";
+import { Geometry } from "../../core/geometry.js";
+import small_disk from "../../input/small_disk.js";
+import MeshSubset from "../../core/mesh-subset.js";
+import Vector from "../../linear-algebra/vector.js";
+import SimplicialComplexOperators from "./simplicial-complex-operators.js";
+import EmscriptenMemoryManager from "../../linear-algebra/emscripten-memory-manager.js";
 
 // Warn the user if WebGL is not Available
 if (!WEBGL.isWebGLAvailable()){

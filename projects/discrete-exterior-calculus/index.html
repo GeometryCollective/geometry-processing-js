@@ -42,20 +42,11 @@
 		import EmscriptenMemoryManager from "../../linear-algebra/emscripten-memory-manager.js";
 		import { Mesh, indexElements } from "../../core/mesh.js";
 		import { Geometry } from "../../core/geometry.js";
-		//import Vertex from "../../core/vertex.js";
-		//import Edge from "../../core/edge.js";
-		//import Face from "../../core/face.js";
-		//import HalfEdge from "../../core/halfedge.js";
-		//import Corner from "../../core/corner.js";
 		import hexagon from "../../input/hexagon.js";
 		import MeshIO from "../../utils/meshio.js";
 		import { colormap, seismic, coolwarm, hot } from "../../utils/colormap.js";
 		import DEC from "../../core/discrete-exterior-calculus.js";
-
-		// Unused Imports
-		//import { TrackballControls } from 'https://threejs.org/examples/jsm/controls/TrackballControls.js';
 		import DenseMatrix from "../../linear-algebra/dense-matrix.js";
-		//import SparseMatrix from "../../linear-algebra/sparse-matrix.js";
 
 		// Warn the user if WebGL is not Available
 		if (!WEBGL.isWebGLAvailable()){
