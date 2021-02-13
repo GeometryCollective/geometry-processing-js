@@ -52,4 +52,5 @@ class EmscriptenMemoryManager {
 	}
 }
 
-module.exports = new EmscriptenMemoryManager()
+export let memoryManager = new EmscriptenMemoryManager();
+export default EmscriptenMemoryManager;
