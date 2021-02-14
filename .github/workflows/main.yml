@@ -1,4 +1,4 @@
-name: geometry-processing - Run Tests
+name: geometry-processing - Continuous Integration
 
 on:
   push
@@ -21,3 +21,39 @@ jobs:
       - name: Run Unit Tests
         timeout-minutes: 5
         run: npm test
+
+  docs:
+    name: Build Docs
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+        with:
+          lfs: true
+
+      - name: Install Doc Generation Frameworks
+        run: |
+          echo '{ "type": "module", "scripts": { "docs": "jsdoc -c doc-config/jsdoc.conf.json -t node_modules/ink-docstrap/template/ -R README.md -r -d docs ./" } }' >package.json
+          npm install --save-dev jsdoc ink-docstrap
+
+      - name: Pre-Process Docs
+        run: | 
+          cp doc-config/site.cosmo-rohan.css node_modules/ink-docstrap/template/static/styles/site.cosmo-rohan.css
+
+      - name: Generate Docs
+        run: npm run docs
+
+      # New JSDoc appears to do this automatically
+      #- name: Post-Process Docs
+      #  run: sed 's/foo/bar/g' docs/index.html
+
+      - name: Commit Updated Docs
+        run: |
+          git add docs
+          git diff-index --quiet HEAD || git commit -m "Rebuild Docs"
+
+      - name: Push Changes to branch
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ github.ref }}
