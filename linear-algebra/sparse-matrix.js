@@ -405,3 +405,5 @@ class QR {
 		return new DenseMatrix(this.data.solve(b.data));
 	}
 }
+
+export { SparseMatrix, Triplet };
