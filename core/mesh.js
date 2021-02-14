@@ -1,4 +1,8 @@
-"use strict";
+import Vertex from './vertex.js';
+import Edge from './edge.js';
+import Face  from './face.js';
+import Halfedge from './halfedge.js';
+import Corner from './corner.js';
 
 class Mesh {
 	/**
@@ -207,7 +211,7 @@ class Mesh {
 		}
 
 		// index elements
-                this.indexElements();
+		this.indexElements();
 
 		return true;
 	}
@@ -401,3 +405,5 @@ function indexElements(elementList) {
 
 	return index;
 }
+
+export { Mesh, indexElements }

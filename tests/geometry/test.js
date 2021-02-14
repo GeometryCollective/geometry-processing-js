@@ -1,4 +1,14 @@
-"use strict";
+import chai from 'chai';
+import solution from './solution.js';
+import LinearAlgebra from '../../linear-algebra/linear-algebra.js';
+let Vector = LinearAlgebra.Vector;
+let memoryManager = LinearAlgebra.memoryManager;
+let DenseMatrix = LinearAlgebra.DenseMatrix;
+let SparseMatrix = LinearAlgebra.SparseMatrix;
+let Triplet = LinearAlgebra.Triplet;
+import MeshIO from '../../utils/meshio.js';
+import { Mesh, indexElements } from '../../core/mesh.js';
+import { Geometry } from '../../core/geometry.js';
 
 describe("Geometry", function() {
 	let polygonSoup = MeshIO.readOBJ(solution);

@@ -1,4 +1,6 @@
-"use strict";
+import Module from './linear-algebra-asm.js';
+import { memoryManager } from './emscripten-memory-manager.js';
+import Complex from './complex.js';
 
 class ComplexDenseMatrix {
 	/**
@@ -288,3 +290,5 @@ class ComplexDenseMatrix {
 		return new ComplexDenseMatrix(this.data.vcat(B.data));
 	}
 }
+
+export default ComplexDenseMatrix;

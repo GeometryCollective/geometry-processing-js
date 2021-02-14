@@ -1,5 +1,3 @@
-"use strict";
-
 class Corner {
 	/**
 	 * This class represents a corner in a {@link module:Core.Mesh Mesh}. It is a convenience
@@ -58,3 +56,5 @@ class Corner {
 		return this.index;
 	}
 }
+
+export default Corner;

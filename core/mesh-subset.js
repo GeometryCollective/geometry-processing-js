@@ -1,5 +1,3 @@
-"use strict";
-
 class MeshSubset {
         /**
          * This class represents a subset of a {@link module:Core.Mesh Mesh}
@@ -212,3 +210,5 @@ class MeshSubset {
                 return true;
         }
 }
+
+export default MeshSubset;

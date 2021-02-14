@@ -1,4 +1,5 @@
-"use strict";
+import LinearAlgebra from '../linear-algebra/linear-algebra.js';
+let Vector = LinearAlgebra.Vector;
 
 let seismic = [
 	[0.000, [0.000, 0.000, 0.300]],
@@ -2071,3 +2072,11 @@ function colormap(x, min, max, values) {
 
 	return c1.plus(c2.minus(c1).times(scaling));
 }
+
+export {
+	colormap,
+	seismic,
+	coolwarm,
+	hot,
+	clamp
+};

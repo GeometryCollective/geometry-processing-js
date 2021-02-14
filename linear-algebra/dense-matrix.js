@@ -1,4 +1,5 @@
-"use strict";
+import Module from './linear-algebra-asm.js';
+import { memoryManager } from './emscripten-memory-manager.js';
 
 class DenseMatrix {
 	/**
@@ -274,3 +275,5 @@ class DenseMatrix {
 		return new DenseMatrix(this.data.vcat(B.data));
 	}
 }
+
+export default DenseMatrix;

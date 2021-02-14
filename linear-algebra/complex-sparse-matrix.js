@@ -1,4 +1,6 @@
-"use strict";
+import Module from './linear-algebra-asm.js';
+import { memoryManager } from './emscripten-memory-manager.js';
+import ComplexDenseMatrix from './complex-dense-matrix.js';
 
 class ComplexSparseMatrix {
 	/**
@@ -423,3 +425,5 @@ class ComplexQR {
 		return new ComplexDenseMatrix(this.data.solve(b.data));
 	}
 }
+
+export { ComplexSparseMatrix, ComplexTriplet };

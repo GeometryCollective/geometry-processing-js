@@ -1,4 +1,5 @@
-"use strict";
+import Module from './linear-algebra-asm.js';
+import { memoryManager } from './emscripten-memory-manager.js';
 
 class Complex {
 	/**
@@ -177,3 +178,5 @@ class Complex {
 		return this.timesComplex(v.inverse());
 	}
 }
+
+export default Complex;

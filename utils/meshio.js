@@ -1,4 +1,5 @@
-"use strict";
+import LinearAlgebra from '../linear-algebra/linear-algebra.js';
+let Vector = LinearAlgebra.Vector;
 
 /**
  * This class converts text from 3D file formats such as OBJ to a polygon soup mesh
@@ -89,3 +90,5 @@ class MeshIO {
 		return output;
 	}
 }
+
+export default MeshIO;

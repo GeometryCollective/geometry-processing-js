@@ -76611,4 +76611,4 @@ f 3102 2789 322
 f 3483 1119 358 
 `;
 
-module.exports = solution
+export default solution;

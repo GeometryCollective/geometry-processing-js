@@ -1,4 +1,11 @@
-"use strict";
+import LinearAlgebra from '../../linear-algebra/linear-algebra.js';
+let DenseMatrix = LinearAlgebra.DenseMatrix;
+let SparseMatrix = LinearAlgebra.SparseMatrix;
+let Triplet = LinearAlgebra.Triplet;
+import HodgeDecomposition from '../vector-field-decomposition/hodge-decomposition.js';
+import TreeCotree from '../vector-field-decomposition/tree-cotree.js';
+import HarmonicBases from '../vector-field-decomposition/harmonic-bases.js';
+import { indexElements } from '../../core/mesh.js';
 
 class TrivialConnections {
 	/**
@@ -218,3 +225,5 @@ class TrivialConnections {
 		return deltaBeta.plus(gamma);
 	}
 }
+
+export default TrivialConnections;

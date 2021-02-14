@@ -1,4 +1,6 @@
-"use strict";
+import Module from './linear-algebra-asm.js';
+import { memoryManager } from './emscripten-memory-manager.js';
+import DenseMatrix from './dense-matrix.js';
 
 class SparseMatrix {
 	/**
@@ -403,3 +405,5 @@ class QR {
 		return new DenseMatrix(this.data.solve(b.data));
 	}
 }
+
+export { SparseMatrix, Triplet };

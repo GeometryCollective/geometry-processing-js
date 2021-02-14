@@ -1,4 +1,9 @@
-"use strict";
+import LinearAlgebra from '../../linear-algebra/linear-algebra.js';
+let Vector = LinearAlgebra.Vector;
+let DenseMatrix = LinearAlgebra.DenseMatrix;
+let SparseMatrix = LinearAlgebra.SparseMatrix;
+import Solvers from '../../utils/solvers.js';
+import { normalize } from '../../core/geometry.js';
 
 class BoundaryFirstFlattening {
 	/**
@@ -42,7 +47,7 @@ class BoundaryFirstFlattening {
 	 * @method module:Projects.BoundaryFirstFlattening#indexVertices
 	 */
 	indexVertices() {
-		let vertices = geometry.mesh.vertices;
+		let vertices = this.geometry.mesh.vertices;
 		this.nV = vertices.length;
 		this.nI = 0;
 		this.nB = 0;
@@ -75,8 +80,8 @@ class BoundaryFirstFlattening {
 	computeIntegratedCurvatures() {
 		this.K = DenseMatrix.zeros(this.nI, 1);
 		this.k = DenseMatrix.zeros(this.nB, 1);
-		for (let v of geometry.mesh.vertices) {
-			let angleDefect = geometry.angleDefect(v);
+		for (let v of this.geometry.mesh.vertices) {
+			let angleDefect = this.geometry.angleDefect(v);
 
 			if (v.onBoundary()) {
 				// set the integrated geodesic curvature at this boundary vertex
@@ -101,7 +106,7 @@ class BoundaryFirstFlattening {
 		for (let he of this.boundary.adjacentHalfedges()) {
 			let i = this.bVertexIndex[he.vertex];
 
-			this.l.set(geometry.length(he.edge), i, 0);
+			this.l.set(this.geometry.length(he.edge), i, 0);
 		}
 	}
 
@@ -392,3 +397,5 @@ class BoundaryFirstFlattening {
 		return flattening;
 	}
 }
+
+export default BoundaryFirstFlattening;

@@ -1,4 +1,12 @@
-"use strict";
+import chai from 'chai';
+import solution from './solution.js';
+import LinearAlgebra from '../../linear-algebra/linear-algebra.js';
+let memoryManager = LinearAlgebra.memoryManager;
+let DenseMatrix = LinearAlgebra.DenseMatrix;
+import MeshIO from '../../utils/meshio.js';
+import { Mesh } from '../../core/mesh.js';
+import { Geometry } from '../../core/geometry.js';
+import ScalarPoissonProblem from '../../projects/poisson-problem/scalar-poisson-problem.js';
 
 describe("ScalarPoissonProblem", function() {
 	let polygonSoup = MeshIO.readOBJ(solution);

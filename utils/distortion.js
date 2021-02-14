@@ -1,4 +1,6 @@
-"use strict"
+import LinearAlgebra from '../linear-algebra/linear-algebra.js';
+let Vector = LinearAlgebra.Vector;
+import { colormap, seismic } from "./colormap.js";
 
 /**
  * This class computes the quasi conformal error and area scaling resulting from
@@ -252,3 +254,5 @@ function hsv(h, s, v) {
 
 	return new Vector(r, g, b);
 }
+
+export default Distortion;

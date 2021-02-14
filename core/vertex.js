@@ -1,5 +1,3 @@
-"use strict";
-
 class Vertex {
 	/**
 	 * This class represents a vertex in a {@link module:Core.Mesh Mesh}.
@@ -336,3 +334,5 @@ class VertexCornerIterator {
 		}
 	}
 }
+
+export default Vertex;

@@ -1,5 +1,3 @@
-"use strict";
-
 /**
  * This module contains optimized linear algebra routines for sparse and dense matrices
  * in pure Javascript. Support for the former includes methods to compute {@link https://en.wikipedia.org/wiki/Cholesky_decomposition Cholesky},
@@ -194,3 +192,5 @@ class Vector {
 			this.x * v.y - this.y * v.x);
 	}
 }
+
+export default Vector;

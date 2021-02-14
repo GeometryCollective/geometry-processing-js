@@ -21,31 +21,31 @@
 			<img src="../../imgs/logo.png" width="80" height="80" border="0">
 		</a>
 	</div>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/87/three.js"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.6.5/dat.gui.min.js"></script>
-	<script src="../../libs/detector.js"></script>
-	<script src="../../libs/trackball-controls.js"></script>
-	<script src="../../linear-algebra/linear-algebra-asm.js"></script>
-	<script src="../../linear-algebra/vector.js"></script>
-	<script src="../../linear-algebra/emscripten-memory-manager.js"></script>
-	<script src="../../linear-algebra/dense-matrix.js"></script>
-	<script src="../../linear-algebra/sparse-matrix.js"></script>
-	<script src="../../core/vertex.js"></script>
-	<script src="../../core/edge.js"></script>
-	<script src="../../core/face.js"></script>
-	<script src="../../core/halfedge.js"></script>
-	<script src="../../core/corner.js"></script>
-	<script src="../../core/mesh.js"></script>
-	<script src="../../core/geometry.js"></script>
-	<script src="../../core/discrete-exterior-calculus.js"></script>
-	<script src="../../input/bunny.js"></script>
-	<script src="../../utils/meshio.js"></script>
-	<script src="../vector-field-decomposition/hodge-decomposition.js"></script>
-	<script src="../vector-field-decomposition/tree-cotree.js"></script>
-	<script src="../vector-field-decomposition/harmonic-bases.js"></script>
-	<script src="trivial-connections.js"></script>
-	<script>
-		if (!Detector.webgl) Detector.addGetWebGLMessage();
+
+	<script type="module">
+		import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.125.2/build/three.module.js'
+		import dat from 'https://cdn.jsdelivr.net/npm/three@0.125.2/examples/jsm/libs/dat.gui.module.js';
+		import { TrackballControls } from 'https://cdn.jsdelivr.net/npm/three@0.125.2/examples/jsm/controls/TrackballControls.js';
+		import { WEBGL } from 'https://cdn.jsdelivr.net/npm/three@0.125.2/examples/jsm/WebGL.js';
+		
+		import TrivialConnections from "./trivial-connections.js";
+		import Vector from "../../linear-algebra/vector.js";
+		import EmscriptenMemoryManager from "../../linear-algebra/emscripten-memory-manager.js";
+		import { Mesh } from "../../core/mesh.js";
+		import { Geometry } from "../../core/geometry.js";
+		import bunny from "../../input/bunny.js";
+		import MeshIO from "../../utils/meshio.js";
+
+		// Warn the user if WebGL is not Available
+		if (!WEBGL.isWebGLAvailable()){
+			var parent, id, element;
+			let parameters = null || {};
+			parent = parameters.parent !== undefined ? parameters.parent : document.body;
+			id = parameters.id !== undefined ? parameters.id : 'oldie';
+			element = WEBGL.getWebGLErrorMessage();
+			element.id = id;
+			parent.appendChild( element );
+		}
 
 		let input = document.getElementById("fileInput");
 		let renderer = undefined;
@@ -375,9 +375,9 @@
 
 			// set geometry
 			threeGeometry.setIndex(new THREE.BufferAttribute(indices, 1));
-			threeGeometry.addAttribute("position", new THREE.BufferAttribute(positions, 3));
-			threeGeometry.addAttribute("normal", new THREE.BufferAttribute(normals, 3));
-			threeGeometry.addAttribute("color", new THREE.BufferAttribute(colors, 3));
+			threeGeometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+			threeGeometry.setAttribute("normal", new THREE.BufferAttribute(normals, 3));
+			threeGeometry.setAttribute("color", new THREE.BufferAttribute(colors, 3));
 
 			// create material
 			let threeMaterial = new THREE.MeshPhongMaterial({
@@ -451,8 +451,8 @@
 			}
 
 			// set geometry
-			threePickGeometry.addAttribute("position", new THREE.BufferAttribute(pickPositions, 3));
-			threePickGeometry.addAttribute("color", new THREE.BufferAttribute(pickColors, 3));
+			threePickGeometry.setAttribute("position", new THREE.BufferAttribute(pickPositions, 3));
+			threePickGeometry.setAttribute("color", new THREE.BufferAttribute(pickColors, 3));
 
 			// create material
 			let threePickMaterial = new THREE.MeshBasicMaterial({
@@ -568,7 +568,7 @@
 				let F = mesh.faces.length;
 
 				let directionFieldGeometry = new THREE.BufferGeometry();
-				directionFieldGeometry.addAttribute("position", new THREE.BufferAttribute(new Float32Array(F * 6 * 3), 3));
+				directionFieldGeometry.setAttribute("position", new THREE.BufferAttribute(new Float32Array(F * 6 * 3), 3));
 				let directionFieldMaterial = new THREE.LineBasicMaterial({
 					color: 0x000000
 				});
@@ -592,7 +592,7 @@
 		}
 
 		function initControls() {
-			controls = new THREE.TrackballControls(camera, renderer.domElement);
+			controls = new TrackballControls(camera, renderer.domElement);
 			controls.rotateSpeed = 5.0;
 		}
 
@@ -622,7 +622,8 @@
 			// draw
 			let pickTexture = new THREE.WebGLRenderTarget(window.innerWidth, window.innerHeight);
 			pickTexture.texture.generateMipmaps = false;
-			pickRenderer.render(pickScene, camera, pickTexture);
+			pickRenderer.setRenderTarget(pickTexture);
+			pickRenderer.render(pickScene, camera);
 
 			// read color
 			let pixelBuffer = new Uint8Array(4);

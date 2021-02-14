@@ -1,5 +1,3 @@
-"use strict";
-
 class EmscriptenMemoryManager {
 	/**
 	 * This class serves as a semi automatic memory manager/garbage collector
@@ -53,3 +51,6 @@ class EmscriptenMemoryManager {
 		this.objectList = exceptList;
 	}
 }
+
+export let memoryManager = new EmscriptenMemoryManager();
+export default EmscriptenMemoryManager;

@@ -1,4 +1,10 @@
-"use strict";
+import LinearAlgebra from '../linear-algebra/linear-algebra.js';
+let Vector = LinearAlgebra.Vector;
+let Complex = LinearAlgebra.Complex;
+let SparseMatrix = LinearAlgebra.SparseMatrix;
+let Triplet = LinearAlgebra.Triplet;
+let ComplexSparseMatrix = LinearAlgebra.ComplexSparseMatrix;
+let ComplexTriplet = LinearAlgebra.ComplexTriplet;
 
 class Geometry {
 	/**
@@ -245,7 +251,7 @@ class Geometry {
 
 	/**
 	 * Computes the circumcentric dual area of a vertex.
-	 * @see {@link http://cs.cmu.edu/~kmcrane/Projects/Other/TriangleAreasCheatSheet.pdf}
+	 * @see {@link http://www.cs.cmu.edu/~kmcrane/Projects/Other/TriangleAreasCheatSheet.pdf}
 	 * @method module:Core.Geometry#circumcentricDualArea
 	 * @param {module:Core.Vertex} v The vertex whose circumcentric dual area needs to be computed.
 	 * @returns {number}
@@ -572,3 +578,5 @@ function normalize(positions, vertices, rescale = true) {
 		}
 	}
 }
+
+export { Geometry, normalize };

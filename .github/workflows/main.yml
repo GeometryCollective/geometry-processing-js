@@ -1,0 +1,60 @@
+name: geometry-processing - Continuous Integration
+
+on:
+  push
+
+jobs:
+  test:
+    name: Run Unit Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+        with:
+          lfs: true
+
+      - name: Install Testing Frameworks
+        run: |
+          echo '{ "type": "module", "scripts": { "test": "mocha tests/**/*.js --reporter mocha-github-actions-reporter" } }' >package.json
+          npm install --save-dev mocha chai mocha-github-actions-reporter
+
+      - name: Run Unit Tests
+        timeout-minutes: 5
+        run: npm test
+
+  docs:
+    name: Build Docs
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+        with:
+          lfs: true
+
+      - name: Install Doc Generation Frameworks
+        run: |
+          echo '{ "type": "module", "scripts": { "docs": "jsdoc -c doc-config/jsdoc.conf.json -t node_modules/ink-docstrap/template/ -R README.md -r -d docs ./" } }' >package.json
+          npm install --save-dev jsdoc ink-docstrap
+
+      - name: Pre-Process Docs
+        run: | 
+          cp doc-config/site.cosmo-rohan.css node_modules/ink-docstrap/template/static/styles/site.cosmo-rohan.css
+
+      - name: Generate Docs
+        run: npm run docs
+
+      - name: Post-Process Docs
+        run: sed -e 's/imgs\//..\/imgs\//g' docs/index.html > docs/index.html.tmp && mv docs/index.html.tmp docs/index.html
+
+      - name: Commit Updated Docs
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Actions"
+          git add docs
+          git diff-index --quiet HEAD || git commit -m "Rebuild Docs"
+
+      - name: Push Changes to branch
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ github.ref }}

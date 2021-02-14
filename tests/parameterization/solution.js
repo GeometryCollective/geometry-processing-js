@@ -24911,4 +24911,4 @@ f 2265 2063 2267
 f 2267 2269 2271 
 `;
 
-module.exports = solution
+export default solution
