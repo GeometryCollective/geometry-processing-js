@@ -26,6 +26,6 @@
     "hardwrap": true
   },
   "source": {
-      "excludePattern": "geometry-processing-js/node"
+      "excludePattern": "node_modules"
   }
 }
