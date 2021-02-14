@@ -49,6 +49,8 @@ jobs:
 
       - name: Commit Updated Docs
         run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Actions"
           git add docs
           git diff-index --quiet HEAD || git commit -m "Rebuild Docs"
 
