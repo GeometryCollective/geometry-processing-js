@@ -1,6 +1,6 @@
 import { WEBGL } from 'https://cdn.jsdelivr.net/npm/three@0.125.2/examples/jsm/WebGL.js';
 import dat from 'https://cdn.jsdelivr.net/npm/three@0.125.2/examples/jsm/libs/dat.gui.module.js';
-import * as THREE from 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r125/three.module.min.js'
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.125.2/build/three.module.js'
 import { TrackballControls } from 'https://cdn.jsdelivr.net/npm/three@0.125.2/examples/jsm/controls/TrackballControls.js';
 
 import { Mesh } from "../../core/mesh.js";

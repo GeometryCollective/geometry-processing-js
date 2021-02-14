@@ -22,7 +22,7 @@
 		</a>
 	</div>
 	<script type="module">
-		import * as THREE from 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r125/three.module.min.js'
+		import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.125.2/build/three.module.js'
 		import dat from 'https://cdn.jsdelivr.net/npm/three@0.125.2/examples/jsm/libs/dat.gui.module.js';
 		import { TrackballControls } from 'https://cdn.jsdelivr.net/npm/three@0.125.2/examples/jsm/controls/TrackballControls.js';
 		import { WEBGL } from 'https://cdn.jsdelivr.net/npm/three@0.125.2/examples/jsm/WebGL.js';
@@ -299,9 +299,9 @@
 
 			// set geometry
 			threeGeometry.setIndex(new THREE.BufferAttribute(indices, 1));
-			threeGeometry.addAttribute("position", new THREE.BufferAttribute(positions, 3));
-			threeGeometry.addAttribute("normal", new THREE.BufferAttribute(normals, 3));
-			threeGeometry.addAttribute("color", new THREE.BufferAttribute(colors, 3));
+			threeGeometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+			threeGeometry.setAttribute("normal", new THREE.BufferAttribute(normals, 3));
+			threeGeometry.setAttribute("color", new THREE.BufferAttribute(colors, 3));
 
 			// create material
 			let threeMaterial = new THREE.MeshPhongMaterial({
