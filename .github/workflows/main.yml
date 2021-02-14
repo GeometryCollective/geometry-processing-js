@@ -43,9 +43,8 @@ jobs:
       - name: Generate Docs
         run: npm run docs
 
-      # New JSDoc appears to do this automatically
-      #- name: Post-Process Docs
-      #  run: sed 's/foo/bar/g' docs/index.html
+      - name: Post-Process Docs
+        run: sed -e 's/imgs\//..\/imgs\//g' docs/index.html > docs/index.html.tmp && mv docs/index.html.tmp docs/index.html
 
       - name: Commit Updated Docs
         run: |
