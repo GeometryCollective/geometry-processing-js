@@ -14,7 +14,7 @@ class Vector {
 	/**
 	 * This class represents an element of Euclidean 3-space, along with all the usual
 	 * vector space operations (addition, multiplication by scalars, etc.).
-	 * @constructor Vector
+	 * @constructor module:LinearAlgebra.Vector
 	 * @property {number} x The x component of this vector. Default value is 0.
 	 * @property {number} y The y component of this vector. Default value is 0.
 	 * @property {number} z The z component of this vector. Default value is 0.
@@ -27,7 +27,7 @@ class Vector {
 
 	/**
 	 * Computes the Euclidean length of this vector.
-	 * @method Vector#norm
+	 * @method module:LinearAlgebra.Vector#norm
 	 * @returns {number}
 	 */
 	norm() {
@@ -36,7 +36,7 @@ class Vector {
 
 	/**
 	 * Computes the Euclidean length squared of this vector.
-	 * @method Vector#norm2
+	 * @method module:LinearAlgebra.Vector#norm2
 	 * @returns {number}
 	 */
 	norm2() {
@@ -45,7 +45,7 @@ class Vector {
 
 	/**
 	 * Divides this vector by its Euclidean length.
-	 * @method Vector#normalize
+	 * @method module:LinearAlgebra.Vector#normalize
 	 */
 	normalize() {
 		let n = this.norm();
@@ -56,8 +56,8 @@ class Vector {
 
 	/**
 	 * Returns a normalized copy of this vector.
-	 * @method Vector#unit
-	 * @returns {Vector}
+	 * @method module:LinearAlgebra.Vector#unit
+	 * @returns {module:LinearAlgebra.Vector}
 	 */
 	unit() {
 		let n = this.norm();
@@ -70,7 +70,7 @@ class Vector {
 
 	/**
 	 * Checks whether this vector's components are finite.
-	 * @method Vector#isValid
+	 * @method module:LinearAlgebra.Vector#isValid
 	 * @returns {boolean}
 	 */
 	isValid() {
@@ -80,8 +80,8 @@ class Vector {
 
 	/**
 	 * u += v
-	 * @method Vector#incrementBy
-	 * @param {Vector} v The vector added to this vector.
+	 * @method module:LinearAlgebra.Vector#incrementBy
+	 * @param {module:LinearAlgebra.Vector} v The vector added to this vector.
 	 */
 	incrementBy(v) {
 		this.x += v.x;
@@ -91,8 +91,8 @@ class Vector {
 
 	/**
 	 * u -= v
-	 * @method Vector#decrementBy
-	 * @param {Vector} v The vector subtracted from this vector.
+	 * @method module:LinearAlgebra.Vector#decrementBy
+	 * @param {module:LinearAlgebra.Vector} v The vector subtracted from this vector.
 	 */
 	decrementBy(v) {
 		this.x -= v.x;
@@ -102,7 +102,7 @@ class Vector {
 
 	/**
 	 * u *= s
-	 * @method Vector#scaleBy
+	 * @method module:LinearAlgebra.Vector#scaleBy
 	 * @param {number} s The number this vector is scaled by.
 	 */
 	scaleBy(s) {
@@ -113,7 +113,7 @@ class Vector {
 
 	/**
 	 * u /= s
-	 * @method Vector#divideBy
+	 * @method module:LinearAlgebra.Vector#divideBy
 	 * @param {number} s The number this vector is divided by.
 	 */
 	divideBy(s) {
@@ -122,9 +122,9 @@ class Vector {
 
 	/**
 	 * Returns u + v
-	 * @method Vector#plus
-	 * @param {Vector} v The vector added to this vector.
-	 * @return {Vector}
+	 * @method module:LinearAlgebra.Vector#plus
+	 * @param {module:LinearAlgebra.Vector} v The vector added to this vector.
+	 * @return {module:LinearAlgebra.Vector}
 	 */
 	plus(v) {
 		return new Vector(this.x + v.x, this.y + v.y, this.z + v.z);
@@ -132,9 +132,9 @@ class Vector {
 
 	/**
 	 * Returns u - v
-	 * @method Vector#minus
-	 * @param {Vector} v The vector subtracted from this vector.
-	 * @return {Vector}
+	 * @method module:LinearAlgebra.Vector#minus
+	 * @param {module:LinearAlgebra.Vector} v The vector subtracted from this vector.
+	 * @return {module:LinearAlgebra.Vector}
 	 */
 	minus(v) {
 		return new Vector(this.x - v.x, this.y - v.y, this.z - v.z);
@@ -142,9 +142,9 @@ class Vector {
 
 	/**
 	 * Returns u * s
-	 * @method Vector#times
+	 * @method module:LinearAlgebra.Vector#times
 	 * @param {number} s The number this vector is multiplied by.
-	 * @return {Vector}
+	 * @return {module:LinearAlgebra.Vector}
 	 */
 	times(s) {
 		return new Vector(this.x * s, this.y * s, this.z * s);
@@ -152,9 +152,9 @@ class Vector {
 
 	/**
 	 * Returns u / s
-	 * @method Vector#over
+	 * @method module:LinearAlgebra.Vector#over
 	 * @param {number} s The number this vector is divided by.
-	 * @return {Vector}
+	 * @return {module:LinearAlgebra.Vector}
 	 */
 	over(s) {
 		return this.times(1 / s);
@@ -162,8 +162,8 @@ class Vector {
 
 	/**
 	 * Returns -u
-	 * @method Vector#negated
-	 * @return {Vector}
+	 * @method module:LinearAlgebra.Vector#negated
+	 * @return {module:LinearAlgebra.Vector}
 	 */
 	negated() {
 		return this.times(-1);
@@ -171,8 +171,8 @@ class Vector {
 
 	/**
 	 * Computes the dot product of this vector and v
-	 * @method Vector#dot
-	 * @param {Vector} v The vector this vector is dotted with.
+	 * @method module:LinearAlgebra.Vector#dot
+	 * @param {module:LinearAlgebra.Vector} v The vector this vector is dotted with.
 	 * @return {number}
 	 */
 	dot(v) {
@@ -181,9 +181,9 @@ class Vector {
 
 	/**
 	 * Computes the cross product of this vector and v
-	 * @method Vector#cross
-	 * @param {Vector} v The vector this vector is crossed with.
-	 * @return {Vector}
+	 * @method module:LinearAlgebra.Vector#cross
+	 * @param {module:LinearAlgebra.Vector} v The vector this vector is crossed with.
+	 * @return {module:LinearAlgebra.Vector}
 	 */
 	cross(v) {
 		return new Vector(
